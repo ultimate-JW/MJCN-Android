@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary -->
+    <color name="primary">#5B4FCF</color>
+    <color name="primary_dark">#4A3FB8</color>
+    <color name="primary_light">#EEF0FF</color>
+    <color name="primary_container">#E8E6FA</color>
+
+    <!-- Background -->
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#F5F5F5</color>
+    <color name="surface_card">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#111111</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_hint">#AAAAAA</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Input -->
+    <color name="input_background">#F5F5F5</color>
+    <color name="input_stroke">#E0E0E0</color>
+    <color name="input_stroke_focused">#5B4FCF</color>
+
+    <!-- Button -->
+    <color name="btn_primary">#5B4FCF</color>
+    <color name="btn_primary_disabled">#D0D0D0</color>
+    <color name="btn_text_disabled">#999999</color>
+    <color name="btn_kakao">#FEE500</color>
+    <color name="btn_kakao_text">#191919</color>
+
+    <!-- Bottom Nav -->
+    <color name="nav_active">#5B4FCF</color>
+    <color name="nav_inactive">#AAAAAA</color>
+
+    <!-- State -->
+    <color name="error">#E53935</color>
+    <color name="success">#43A047</color>
+    <color name="warning">#FB8C00</color>
+
+    <!-- Divider -->
+    <color name="divider">#EEEEEE</color>
+
+    <!-- Etc -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>

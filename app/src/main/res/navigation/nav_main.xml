@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.home.HomeFragment"
+        android:label="HomeFragment" />
+
+    <fragment
+        android:id="@+id/themeFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeFragment"
+        android:label="ThemeFragment">
+        <action
+            android:id="@+id/action_theme_to_detail"
+            app:destination="@id/themeDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/themeDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetailFragment"
+        android:label="ThemeDetailFragment">
+        <argument
+            android:name="themeId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.chat.ChatFragment"
+        android:label="ChatFragment">
+        <action
+            android:id="@+id/action_chat_to_detail"
+            app:destination="@id/chatDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chatDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.chat.ChatDetailFragment"
+        android:label="ChatDetailFragment">
+        <argument
+            android:name="sessionId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noticeFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.notice.NoticeFragment"
+        android:label="NoticeFragment">
+        <action
+            android:id="@+id/action_notice_to_detail"
+            app:destination="@id/noticeDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noticeDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.notice.NoticeDetailFragment"
+        android:label="NoticeDetailFragment">
+        <argument
+            android:name="noticeId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.info.InfoFragment"
+        android:label="InfoFragment" />
+
+</navigation>

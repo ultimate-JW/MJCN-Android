@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_auth"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.LoginFragment"
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_login_to_signup"
+            app:destination="@id/signUpStep1Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep1Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep1Fragment"
+        android:label="SignUpStep1Fragment">
+        <action
+            android:id="@+id/action_step1_to_step2"
+            app:destination="@id/signUpStep2Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep2Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep2Fragment"
+        android:label="SignUpStep2Fragment">
+        <action
+            android:id="@+id/action_step2_to_step3"
+            app:destination="@id/signUpStep3Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep3Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep3Fragment"
+        android:label="SignUpStep3Fragment">
+        <action
+            android:id="@+id/action_step3_to_onboarding"
+            app:destination="@id/onboardingFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.ultimatejw.mjcn.ui.onboarding.OnboardingFragment"
+        android:label="OnboardingFragment" />
+
+</navigation>

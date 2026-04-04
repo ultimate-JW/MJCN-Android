@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">MJCN</string>
+    <string name="app_full_name">Myong Ji Campus Navigator</string>
+    <string name="app_slogan">대학 정보를 하나로, AI와 함께</string>
+
+    <!-- Auth -->
+    <string name="login">로그인</string>
+    <string name="logout">로그아웃</string>
+    <string name="signup">회원가입</string>
+    <string name="id_hint">이메일 입력</string>
+    <string name="password_hint">비밀번호 입력</string>
+    <string name="forgot_password">비밀번호를 잊으셨나요?</string>
+    <string name="kakao_login">카카오톡으로 계속하기</string>
+    <string name="no_account">아직 회원이 아니신가요?</string>
+    <string name="next">다음</string>
+    <string name="start">시작하기</string>
+
+    <!-- SignUp -->
+    <string name="signup_basic_title">기본 정보</string>
+    <string name="signup_basic_desc">맞춤 서비스를 위해 필요한 정보를 입력해주세요.</string>
+    <string name="signup_id_title">아이디 설정</string>
+    <string name="signup_interest_title">관심 분야</string>
+    <string name="signup_interest_desc">관심 있는 분야를 1~3개 선택해주세요.</string>
+    <string name="name_hint">한글 또는 영문 2~10자 입력</string>
+    <string name="grade_hint">현재 학년 선택</string>
+    <string name="semester_hint">현재 학기 선택</string>
+    <string name="grad_year_hint">연도 선택</string>
+
+    <!-- Bottom Nav -->
+    <string name="nav_home">홈</string>
+    <string name="nav_theme">테마</string>
+    <string name="nav_chat">AI 채팅</string>
+    <string name="nav_notice">공지</string>
+    <string name="nav_info">정보</string>
+
+    <!-- Home -->
+    <string name="home_greeting">반가워요, %s!</string>
+    <string name="home_subtitle">수강 중인 과목의 정정기간이 %d일 남았어요.</string>
+
+    <!-- Theme -->
+    <string name="theme_title">테마</string>
+    <string name="theme_subtitle_format">%s님을 위한 어쩌구 맞춤 가이드</string>
+
+    <!-- Chat -->
+    <string name="chat_title">AI 채팅</string>
+    <string name="chat_subtitle">AI 비서 땡뚱이에게 다 물어보세요!</string>
+    <string name="chat_ask_hint">땡뚱이에게 물어보기</string>
+    <string name="chat_welcome">무엇을 알려드릴까요?</string>
+    <string name="chat_history">이전 대화</string>
+
+    <!-- Notice -->
+    <string name="notice_title">공지</string>
+    <string name="notice_subtitle">맞춤 공지사항을 모아드려요!</string>
+
+    <!-- Info -->
+    <string name="info_title">정보</string>
+    <string name="info_subtitle">맞춤 공지사항을 모아드려요!</string>
+
+    <!-- Settings -->
+    <string name="settings_title">설정</string>
+    <string name="settings_subtitle">정보를 수정해 보세요용~</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">더 쉽고 똑똑한\n대학 생활, MJCN</string>
+    <string name="onboarding_subtitle">공지, 수강, 공모전까지 한 번에 확인하고 관리하세요</string>
+    <string name="onboarding_feature1">AI 비서 땡뚱이에게 무엇이든 물어보세요</string>
+    <string name="onboarding_feature2">중요한 맞춤 공지사항을 골라드려요</string>
+    <string name="onboarding_feature3">수강신청부터 정정까지 미리 챙겨드려요</string>
+    <string name="onboarding_feature4">졸업요건을 분석하고 수강 로드맵을 제공해요</string>
+    <string name="onboarding_feature5">나에게 맞는 공모전만 골라드려요</string>
+</resources>
