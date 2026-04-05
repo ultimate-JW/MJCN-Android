@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -11,7 +11,7 @@
 
         <!-- 헤더 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutHeader"
+            android:id="@+id/layout_header"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/background"
@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/tvGreeting"
+                android:id="@+id/tv_greeting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="반가워요, 사용자님!"
@@ -33,21 +33,21 @@
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ivProfile" />
+                app:layout_constraintEnd_toStartOf="@id/iv_profile" />
 
             <TextView
-                android:id="@+id/tvSubtitle"
+                android:id="@+id/tv_subtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                app:layout_constraintTop_toBottomOf="@id/tv_greeting"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/ivProfile" />
+                app:layout_constraintEnd_toStartOf="@id/iv_profile" />
 
             <ImageView
-                android:id="@+id/ivProfile"
+                android:id="@+id/iv_profile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/surface"
@@ -55,17 +55,17 @@
                 android:src="@drawable/ic_nav_info"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/tvSubtitle" />
+                app:layout_constraintBottom_toBottomOf="@id/tv_subtitle" />
 
             <!-- 통계 카드 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cardStats"
+                android:id="@+id/card_stats"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_card_rounded"
                 android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -91,7 +91,7 @@
                     app:layout_constraintGuide_percent="0.75" />
 
                 <TextView
-                    android:id="@+id/tvCourseCount"
+                    android:id="@+id/tv_course_count"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -111,7 +111,7 @@
                     android:text="수강과목"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvCourseCount"
+                    app:layout_constraintTop_toBottomOf="@id/tv_course_count"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/g25"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -125,7 +125,7 @@
                     app:layout_constraintStart_toStartOf="@id/g25" />
 
                 <TextView
-                    android:id="@+id/tvGraduationCredits"
+                    android:id="@+id/tv_graduation_credits"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -145,7 +145,7 @@
                     android:text="졸업학점"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvGraduationCredits"
+                    app:layout_constraintTop_toBottomOf="@id/tv_graduation_credits"
                     app:layout_constraintStart_toStartOf="@id/g25"
                     app:layout_constraintEnd_toStartOf="@id/g50"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -159,7 +159,7 @@
                     app:layout_constraintStart_toStartOf="@id/g50" />
 
                 <TextView
-                    android:id="@+id/tvDday"
+                    android:id="@+id/tv_dday"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -179,7 +179,7 @@
                     android:text="수강신청"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvDday"
+                    app:layout_constraintTop_toBottomOf="@id/tv_dday"
                     app:layout_constraintStart_toStartOf="@id/g50"
                     app:layout_constraintEnd_toStartOf="@id/g75"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -193,7 +193,7 @@
                     app:layout_constraintStart_toStartOf="@id/g75" />
 
                 <TextView
-                    android:id="@+id/tvGradProgress"
+                    android:id="@+id/tv_grad_progress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -213,7 +213,7 @@
                     android:text="졸업진행도"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvGradProgress"
+                    app:layout_constraintTop_toBottomOf="@id/tv_grad_progress"
                     app:layout_constraintStart_toStartOf="@id/g75"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -224,7 +224,7 @@
 
         <!-- 공모전 섹션 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutContest"
+            android:id="@+id/layout_contest"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -233,12 +233,12 @@
             android:paddingEnd="24dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+            app:layout_constraintTop_toBottomOf="@id/layout_header"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/tvContestTitle"
+                android:id="@+id/tv_contest_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="공모전"
@@ -249,12 +249,12 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvContest"
+                android:id="@+id/rv_contest"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/tvContestTitle"
+                app:layout_constraintTop_toBottomOf="@id/tv_contest_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -263,7 +263,7 @@
 
         <!-- 공지 섹션 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutNotice"
+            android:id="@+id/layout_notice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -272,12 +272,12 @@
             android:paddingEnd="24dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutContest"
+            app:layout_constraintTop_toBottomOf="@id/layout_contest"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/tvNoticeTitle"
+                android:id="@+id/tv_notice_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="공지"
@@ -288,12 +288,12 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvNotice"
+                android:id="@+id/rv_notice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/tvNoticeTitle"
+                app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />

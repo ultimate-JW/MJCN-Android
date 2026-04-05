@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:paddingBottom="24dp">
 
         <TextView
-            android:id="@+id/tvCategory"
+            android:id="@+id/tv_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/primary"
@@ -23,29 +23,29 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/tvCategory"
+            app:layout_constraintTop_toBottomOf="@id/tv_category"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/tvSource"
+            android:id="@+id/tv_source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvDot"
+            android:id="@+id/tv_dot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -53,20 +53,20 @@
             android:layout_marginEnd="8dp"
             android:text="·"
             android:textColor="@color/text_hint"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            app:layout_constraintStart_toEndOf="@id/tvSource"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvSource" />
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintStart_toEndOf="@id/tv_source"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_source" />
 
         <TextView
-            android:id="@+id/tvDate"
+            android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            app:layout_constraintStart_toEndOf="@id/tvDot"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvSource" />
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintStart_toEndOf="@id/tv_dot"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_source" />
 
         <View
             android:id="@+id/divider"
@@ -75,13 +75,13 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="@color/divider"
-            app:layout_constraintTop_toBottomOf="@id/tvSource"
+            app:layout_constraintTop_toBottomOf="@id/tv_source"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- AI 핵심 정리 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutSummary"
+            android:id="@+id/layout_summary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/primary_light"
@@ -92,7 +92,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
-                android:id="@+id/tvSummaryLabel"
+                android:id="@+id/tv_summary_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="✨ AI 핵심 정리"
@@ -103,13 +103,13 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/tvSummary"
+                android:id="@+id/tv_summary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@id/tvSummaryLabel"
+                app:layout_constraintTop_toBottomOf="@id/tv_summary_label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -117,14 +117,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tvContent"
+            android:id="@+id/tv_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:lineSpacingMultiplier="1.5"
             android:textColor="@color/text_primary"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/layoutSummary"
+            app:layout_constraintTop_toBottomOf="@id/layout_summary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

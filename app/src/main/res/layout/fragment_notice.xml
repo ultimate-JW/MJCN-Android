@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -6,7 +6,7 @@
     android:background="@color/background">
 
     <TextView
-        android:id="@+id/tvNoticeTitle"
+        android:id="@+id/tv_notice_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/tvNoticeSubtitle"
+        android:id="@+id/tv_notice_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -27,24 +27,24 @@
         android:text="@string/notice_subtitle"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/tvNoticeTitle"
+        app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- 카테고리 필터 -->
     <HorizontalScrollView
-        android:id="@+id/scrollChips"
+        android:id="@+id/scroll_chips"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/tvNoticeSubtitle"
+        app:layout_constraintTop_toBottomOf="@id/tv_notice_subtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupCategory"
+            android:id="@+id/chip_group_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp">
@@ -94,12 +94,12 @@
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
         android:background="@color/divider"
-        app:layout_constraintTop_toBottomOf="@id/scrollChips"
+        app:layout_constraintTop_toBottomOf="@id/scroll_chips"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvNotices"
+        android:id="@+id/rv_notices"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingStart="24dp"
