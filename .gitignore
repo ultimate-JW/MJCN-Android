@@ -1,15 +1,24 @@
 *.iml
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+local.properties
+
+# IntelliJ IDEA / Android Studio
+.idea/
+
+# 빌드 결과물
 /build
+**/build/
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 키스토어 (보안)
+*.jks
+*.keystore
