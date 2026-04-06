@@ -29,7 +29,7 @@
 
     <style name="Widget.MJCN.Button.Kakao" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/btn_kakao_text</item>
-        <item name="backgroundTint">@color/btn_kakao</item>
+        <item name="android:background">@drawable/bg_btn_kakao</item>
         <item name="cornerRadius">100dp</item>
         <item name="android:textSize">16sp</item>
         <item name="android:letterSpacing">0</item>

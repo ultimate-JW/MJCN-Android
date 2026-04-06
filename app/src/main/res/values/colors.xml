@@ -15,6 +15,7 @@
     <color name="text_primary">#111111</color>
     <color name="text_secondary">#666666</color>
     <color name="text_hint">#AAAAAA</color>
+    <color name="text_disabled">#888888</color>
     <color name="text_on_primary">#FFFFFF</color>
 
     <!-- Input -->
@@ -26,8 +27,8 @@
     <color name="btn_primary">#5B4FCF</color>
     <color name="btn_primary_disabled">#D0D0D0</color>
     <color name="btn_text_disabled">#999999</color>
-    <color name="btn_kakao">#FEE500</color>
-    <color name="btn_kakao_text">#191919</color>
+    <color name="btn_kakao">#EEE268</color>
+    <color name="btn_kakao_text">#464642</color>
 
     <!-- Bottom Nav -->
     <color name="nav_active">#5B4FCF</color>

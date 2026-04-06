@@ -42,6 +42,18 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
         setupListeners()
+
+        // 로그인 버튼 활성화 상태 관찰
+        viewModel.isFormValid.observe(viewLifecycleOwner) { isValid ->
+            binding.btnLogin.isEnabled = isValid
+            if (isValid) {
+                binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)
+                binding.btnLogin.setTextColor(requireContext().getColor(R.color.white))
+            } else {
+                binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_disabled)
+                binding.btnLogin.setTextColor(requireContext().getColor(R.color.text_disabled))
+            }
+        }
     }
 
     private fun observeViewModel() {
