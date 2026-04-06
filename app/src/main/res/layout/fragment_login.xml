@@ -165,7 +165,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- 카카오 로그인 -->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             style="@style/Widget.AppCompat.Button.Colored"
             android:id="@+id/btn_kakao_login"
             android:layout_width="0dp"
@@ -174,7 +174,8 @@
             android:background="@drawable/bg_btn_kakao"
             app:backgroundTint="@null"
             android:drawableLeft="@drawable/ic_kakao"
-            android:drawablePadding="0dp"
+            android:drawablePadding="-80dp"
+            android:paddingLeft="90dp"
             android:text="@string/kakao_login"
             android:textColor="@color/btn_kakao_text"
             android:textSize="15sp"
