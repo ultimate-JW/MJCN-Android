@@ -10,6 +10,24 @@
         android:label="LoginFragment">
         <action
             android:id="@+id/action_login_to_signup"
+            app:destination="@id/signUpIdPwFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpIdPwFragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpIdPwFragment"
+        android:label="SignUpIdPwFragment">
+        <action
+            android:id="@+id/action_signUpIdPw_to_signUpEmailVerify"
+            app:destination="@id/signUpEmailVerifyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpEmailVerifyFragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpEmailVerifyFragment"
+        android:label="SignUpEmailVerifyFragment">
+        <action
+            android:id="@+id/action_signUpEmailVerify_to_step1"
             app:destination="@id/signUpStep1Fragment" />
     </fragment>
 

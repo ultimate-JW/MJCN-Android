@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary -->
-    <color name="primary">#5B4FCF</color>
+    <color name="primary">#534AB7</color>
     <color name="primary_dark">#4A3FB8</color>
     <color name="primary_light">#EEF0FF</color>
     <color name="primary_container">#E8E6FA</color>
@@ -13,8 +13,8 @@
 
     <!-- Text -->
     <color name="text_primary">#111111</color>
-    <color name="text_secondary">#666666</color>
-    <color name="text_hint">#AAAAAA</color>
+    <color name="text_secondary">#595959</color>
+    <color name="text_hint">#CCCCCC</color>
     <color name="text_disabled">#888888</color>
     <color name="text_on_primary">#FFFFFF</color>
 
@@ -24,7 +24,7 @@
     <color name="input_stroke_focused">#5B4FCF</color>
 
     <!-- Button -->
-    <color name="btn_primary">#5B4FCF</color>
+    <color name="btn_primary">#534AB7</color>
     <color name="btn_primary_disabled">#D0D0D0</color>
     <color name="btn_text_disabled">#999999</color>
     <color name="btn_kakao">#EEE268</color>
