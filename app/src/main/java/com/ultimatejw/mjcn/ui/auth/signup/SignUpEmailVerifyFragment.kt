@@ -20,7 +20,7 @@ class SignUpEmailVerifyFragment : Fragment() {
 
     private val viewModel: SignUpViewModel by activityViewModels()
 
-    // 임시 인증 코드 (mock) - "1234"가 올바른 코드
+    // 임시 인증 코드 : 1234
     private val VALID_CODE = "1234"
 
     private var countDownTimer: CountDownTimer? = null

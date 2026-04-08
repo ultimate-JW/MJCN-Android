@@ -59,13 +59,14 @@ class SignUpIdPwFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                // [수정] 입력할 때마다 실시간으로 이메일 상태 반영
+                applyEmailFieldState()
                 validateAndNotify()
             }
         })
 
-        // 아이디 포커스 아웃 시 유효성 검사
         binding.etEmail.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) validateEmail()
+            if (!hasFocus) applyEmailFieldState()
         }
 
         // 비밀번호 입력 감지
@@ -73,12 +74,16 @@ class SignUpIdPwFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                // [수정] 입력할 때마다 실시간으로 비밀번호 상태 반영
+                applyPasswordFieldState()
+                // [수정] 비밀번호가 바뀌면 비밀번호 확인 필드도 즉시 재검사
+                applyPasswordConfirmFieldState()
                 validateAndNotify()
             }
         })
 
         binding.etPassword.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) validatePassword()
+            if (!hasFocus) applyPasswordFieldState()
         }
 
         // 비밀번호 확인 입력 감지
@@ -86,32 +91,26 @@ class SignUpIdPwFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                // [수정] 입력할 때마다 실시간으로 비밀번호 확인 상태 반영
+                applyPasswordConfirmFieldState()
                 validateAndNotify()
             }
         })
 
         binding.etPasswordConfirm.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) validatePasswordConfirm()
+            if (!hasFocus) applyPasswordConfirmFieldState()
         }
 
         // 비밀번호 표시 토글
         binding.btnTogglePassword.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
-            setPasswordVisibility(
-                binding.etPassword,
-                isPasswordVisible,
-                binding.btnTogglePassword
-            )
+            setPasswordVisibility(binding.etPassword, isPasswordVisible, binding.btnTogglePassword)
         }
 
         // 비밀번호 확인 표시 토글
         binding.btnTogglePasswordConfirm.setOnClickListener {
             isPasswordConfirmVisible = !isPasswordConfirmVisible
-            setPasswordVisibility(
-                binding.etPasswordConfirm,
-                isPasswordConfirmVisible,
-                binding.btnTogglePasswordConfirm
-            )
+            setPasswordVisibility(binding.etPasswordConfirm, isPasswordConfirmVisible, binding.btnTogglePasswordConfirm)
         }
 
         // 다음 버튼
@@ -120,6 +119,79 @@ class SignUpIdPwFragment : Fragment() {
                 viewModel.email = binding.etEmail.text.toString().trim()
                 viewModel.password = binding.etPassword.text.toString()
                 findNavController().navigate(R.id.action_signUpIdPw_to_signUpEmailVerify)
+            }
+        }
+    }
+
+    // ------- 필드별 상태 적용 (테두리 색 결정) -------
+
+    // [수정] 이메일 필드: 정상이면 보라색, 오류면 빨간색, 비어있으면 기본
+    private fun applyEmailFieldState() {
+        val email = binding.etEmail.text.toString().trim()
+        when {
+            email.isEmpty() -> {
+                binding.etEmail.setBackgroundResource(R.drawable.bg_input_field)
+                hideEmailError()
+            }
+            !isEmailFormatValid(email) -> {
+                binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
+                showEmailError("올바른 이메일 형식으로 입력해주세요.")
+            }
+            email == DUPLICATE_EMAIL -> {
+                binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
+                showEmailError("이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.")
+            }
+            else -> {
+                // [수정] 정상 입력 → 보라색 테두리 유지
+                binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_active)
+                hideEmailError()
+            }
+        }
+    }
+
+    // [수정] 비밀번호 필드: 정상이면 보라색, 오류면 빨간색, 비어있으면 기본
+    private fun applyPasswordFieldState() {
+        val email = binding.etEmail.text.toString().trim()
+        val password = binding.etPassword.text.toString()
+        when {
+            password.isEmpty() -> {
+                binding.flPassword.setBackgroundResource(R.drawable.bg_input_field)
+                hidePasswordError()
+            }
+            !isPasswordFormatValid(password) -> {
+                binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
+                showPasswordError("영문 + 숫자 포함 8자~20자 이내로 입력해주세요.")
+            }
+            isPasswordSameAsEmail(password, email) -> {
+                binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
+                showPasswordError("이메일과 동일한 비밀번호는 사용할 수 없습니다.")
+            }
+            else -> {
+                // [수정] 정상 입력 → 보라색 테두리 유지
+                binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_active)
+                hidePasswordError()
+            }
+        }
+    }
+
+    // [수정] 비밀번호 확인 필드: 정상이면 보라색, 불일치면 빨간색, 비어있으면 기본
+    private fun applyPasswordConfirmFieldState() {
+        val password = binding.etPassword.text.toString()
+        val passwordConfirm = binding.etPasswordConfirm.text.toString()
+        when {
+            passwordConfirm.isEmpty() -> {
+                binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field)
+                hidePasswordConfirmError()
+            }
+            password != passwordConfirm -> {
+                // [수정] 불일치 → 빨간 테두리
+                binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_error)
+                showPasswordConfirmError("비밀번호가 일치하지 않습니다.")
+            }
+            else -> {
+                // [수정] 일치 → 보라색 테두리 유지
+                binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_active)
+                hidePasswordConfirmError()
             }
         }
     }
@@ -141,66 +213,15 @@ class SignUpIdPwFragment : Fragment() {
         )
     }
 
-    private fun validateEmail(): Boolean {
+    private fun isFormValid(): Boolean {
         val email = binding.etEmail.text.toString().trim()
-        return when {
-            !isEmailFormatValid(email) && email.isNotEmpty() -> {
-                showEmailError("올바른 이메일 형식으로 입력해주세요.")
-                false
-            }
-            email == DUPLICATE_EMAIL -> {
-                showEmailError("이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.")
-                false
-            }
-            else -> {
-                hideEmailError()
-                true
-            }
-        }
-    }
-
-    private fun validatePassword(): Boolean {
-        val email = binding.etEmail.text.toString().trim()
-        val password = binding.etPassword.text.toString()
-        return when {
-            password.isNotEmpty() && !isPasswordFormatValid(password) -> {
-                showPasswordError("영문 + 숫자 포함 8자~20자 이내로 입력해주세요.")
-                false
-            }
-            password.isNotEmpty() && isPasswordSameAsEmail(password, email) -> {
-                showPasswordError("이메일과 동일한 비밀번호는 사용할 수 없습니다.")
-                false
-            }
-            else -> {
-                hidePasswordError()
-                true
-            }
-        }
-    }
-
-    private fun validatePasswordConfirm(): Boolean {
         val password = binding.etPassword.text.toString()
         val passwordConfirm = binding.etPasswordConfirm.text.toString()
-        return when {
-            passwordConfirm.isNotEmpty() && password != passwordConfirm -> {
-                showPasswordConfirmError("비밀번호가 일치하지 않습니다.")
-                false
-            }
-            else -> {
-                hidePasswordConfirmError()
-                true
-            }
-        }
+        return isEmailFormatValid(email) && email != DUPLICATE_EMAIL
+                && isPasswordFormatValid(password) && !isPasswordSameAsEmail(password, email)
+                && password == passwordConfirm && passwordConfirm.isNotEmpty()
     }
 
-    private fun isFormValid(): Boolean {
-        val emailValid = validateEmail()
-        val passwordValid = validatePassword()
-        val confirmValid = validatePasswordConfirm()
-        return emailValid && passwordValid && confirmValid
-    }
-
-    // ------- 헬퍼 -------
 
     private fun isEmailFormatValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
@@ -233,35 +254,29 @@ class SignUpIdPwFragment : Fragment() {
     }
 
     private fun showEmailError(msg: String) {
-        binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
         binding.tvEmailError.text = msg
         binding.tvEmailError.visibility = View.VISIBLE
     }
 
     private fun hideEmailError() {
-        binding.etEmail.setBackgroundResource(R.drawable.bg_input_field)
         binding.tvEmailError.visibility = View.GONE
     }
 
     private fun showPasswordError(msg: String) {
-        binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
         binding.tvPasswordError.text = msg
         binding.tvPasswordError.visibility = View.VISIBLE
     }
 
     private fun hidePasswordError() {
-        binding.flPassword.setBackgroundResource(R.drawable.bg_input_field)
         binding.tvPasswordError.visibility = View.GONE
     }
 
     private fun showPasswordConfirmError(msg: String) {
-        binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_error)
         binding.tvPasswordConfirmError.text = msg
         binding.tvPasswordConfirmError.visibility = View.VISIBLE
     }
 
     private fun hidePasswordConfirmError() {
-        binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field)
         binding.tvPasswordConfirmError.visibility = View.GONE
     }
 
