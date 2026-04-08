@@ -19,7 +19,7 @@ class SignUpIdPwFragment : Fragment() {
 
     private val viewModel: SignUpViewModel by activityViewModels()
 
-    // 임시 중복 이메일 (mock)
+    // 임시 중복 이메일
     private val DUPLICATE_EMAIL = "pppp@test.com"
 
     private var isPasswordVisible = false
@@ -59,7 +59,6 @@ class SignUpIdPwFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                // [수정] 입력할 때마다 실시간으로 이메일 상태 반영
                 applyEmailFieldState()
                 validateAndNotify()
             }
@@ -74,9 +73,7 @@ class SignUpIdPwFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                // [수정] 입력할 때마다 실시간으로 비밀번호 상태 반영
                 applyPasswordFieldState()
-                // [수정] 비밀번호가 바뀌면 비밀번호 확인 필드도 즉시 재검사
                 applyPasswordConfirmFieldState()
                 validateAndNotify()
             }
@@ -86,12 +83,10 @@ class SignUpIdPwFragment : Fragment() {
             if (!hasFocus) applyPasswordFieldState()
         }
 
-        // 비밀번호 확인 입력 감지
         binding.etPasswordConfirm.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                // [수정] 입력할 때마다 실시간으로 비밀번호 확인 상태 반영
                 applyPasswordConfirmFieldState()
                 validateAndNotify()
             }
@@ -123,9 +118,8 @@ class SignUpIdPwFragment : Fragment() {
         }
     }
 
-    // ------- 필드별 상태 적용 (테두리 색 결정) -------
 
-    // [수정] 이메일 필드: 정상이면 보라색, 오류면 빨간색, 비어있으면 기본
+
     private fun applyEmailFieldState() {
         val email = binding.etEmail.text.toString().trim()
         when {
@@ -142,14 +136,12 @@ class SignUpIdPwFragment : Fragment() {
                 showEmailError("이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.")
             }
             else -> {
-                // [수정] 정상 입력 → 보라색 테두리 유지
                 binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_active)
                 hideEmailError()
             }
         }
     }
 
-    // [수정] 비밀번호 필드: 정상이면 보라색, 오류면 빨간색, 비어있으면 기본
     private fun applyPasswordFieldState() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString()
@@ -174,7 +166,6 @@ class SignUpIdPwFragment : Fragment() {
         }
     }
 
-    // [수정] 비밀번호 확인 필드: 정상이면 보라색, 불일치면 빨간색, 비어있으면 기본
     private fun applyPasswordConfirmFieldState() {
         val password = binding.etPassword.text.toString()
         val passwordConfirm = binding.etPasswordConfirm.text.toString()
@@ -184,12 +175,10 @@ class SignUpIdPwFragment : Fragment() {
                 hidePasswordConfirmError()
             }
             password != passwordConfirm -> {
-                // [수정] 불일치 → 빨간 테두리
                 binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_error)
                 showPasswordConfirmError("비밀번호가 일치하지 않습니다.")
             }
             else -> {
-                // [수정] 일치 → 보라색 테두리 유지
                 binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_active)
                 hidePasswordConfirmError()
             }

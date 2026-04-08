@@ -51,7 +51,6 @@ class SignUpEmailVerifyFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val code = s.toString().trim()
-                // 다음 버튼은 1234 정확히 일치할 때만 활성화
                 val isValid = !isTimerExpired && code == VALID_CODE
                 updateNextButton(isValid)
                 when {
@@ -94,7 +93,7 @@ class SignUpEmailVerifyFragment : Fragment() {
             override fun onFinish() {
                 binding.tvTimer.text = "0:00"
                 isTimerExpired = true
-                // 타이머 만료 시 코드가 입력되어 있으면 에러 표시
+                // 타이머 만료 시 코드가 입력되어 있으면 에러
                 val code = binding.etCode.text.toString().trim()
                 if (code.isNotEmpty()) {
                     showCodeError("인증 코드가 만료되었습니다. 다시 요청해주세요.")

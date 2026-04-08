@@ -6,17 +6,16 @@
     android:background="@color/background"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
-    android:paddingTop="20dp"
+    android:paddingTop="60dp"
     android:paddingBottom="24dp">
 
-    <!-- 타이틀 -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="회원가입"
         android:textColor="@color/text_primary"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -27,19 +26,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="아이디와 비밀번호를 설정하세요."
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/text_primary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 아이디 -->
     <TextView
         android:id="@+id/tv_email_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:text="아이디"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_desc"
         app:layout_constraintStart_toStartOf="parent" />
@@ -48,7 +46,7 @@
         android:id="@+id/et_email"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         android:hint="이메일 형식으로 입력"
         android:inputType="textEmailAddress"
@@ -56,7 +54,7 @@
         android:paddingEnd="20dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint"
-        android:textSize="15sp"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_email_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -73,14 +71,13 @@
         app:layout_constraintTop_toBottomOf="@id/et_email"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 비밀번호 -->
     <TextView
         android:id="@+id/tv_password_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="비밀번호"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_email_error"
         app:layout_constraintStart_toStartOf="parent" />
@@ -89,7 +86,7 @@
         android:id="@+id/fl_password"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         app:layout_constraintTop_toBottomOf="@id/tv_password_label"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +103,7 @@
             android:paddingEnd="52dp"
             android:textColor="@color/text_primary"
             android:textColorHint="@color/text_hint"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
 
         <ImageButton
             android:id="@+id/btn_toggle_password"
@@ -131,14 +128,13 @@
         app:layout_constraintTop_toBottomOf="@id/fl_password"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 비밀번호 확인 -->
     <TextView
         android:id="@+id/tv_password_confirm_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="비밀번호 확인"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_password_error"
         app:layout_constraintStart_toStartOf="parent" />
@@ -147,7 +143,7 @@
         android:id="@+id/fl_password_confirm"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         app:layout_constraintTop_toBottomOf="@id/tv_password_confirm_label"
         app:layout_constraintStart_toStartOf="parent"
@@ -164,7 +160,7 @@
             android:paddingEnd="52dp"
             android:textColor="@color/text_primary"
             android:textColorHint="@color/text_hint"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
 
         <ImageButton
             android:id="@+id/btn_toggle_password_confirm"
@@ -189,7 +185,6 @@
         app:layout_constraintTop_toBottomOf="@id/fl_password_confirm"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 다음 버튼 -->
     <Button
         android:id="@+id/btn_next"
         android:layout_width="0dp"
@@ -197,7 +192,7 @@
         android:background="@drawable/bg_btn_primary"
         android:enabled="false"
         android:text="다음"
-        android:textColor="@color/white"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
