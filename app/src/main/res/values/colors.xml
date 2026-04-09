@@ -11,6 +11,9 @@
     <color name="sheet_background">#F5F5F5</color>
     <color name="surface">#F5F5F5</color>
     <color name="surface_card">#FFFFFF</color>
+    <color name="box_color">#534AB7</color>
+    <color name="box2_color">#756EC5</color>
+    <color name="bg_sheet">#F5F5F5</color>
 
     <!-- Text -->
     <color name="text_primary">#111111</color>
