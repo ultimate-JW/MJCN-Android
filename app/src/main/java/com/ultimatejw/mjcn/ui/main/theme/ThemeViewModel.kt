@@ -1,12 +1,11 @@
 package com.ultimatejw.mjcn.ui.main.theme
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.data.model.Theme
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 data class ThemeUiState(
@@ -16,8 +15,8 @@ data class ThemeUiState(
 @HiltViewModel
 class ThemeViewModel @Inject constructor() : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ThemeUiState())
-    val uiState: StateFlow<ThemeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableLiveData(ThemeUiState())
+    val uiState: LiveData<ThemeUiState> = _uiState
 
     init {
         // TODO: 실제 API에서 불러오기

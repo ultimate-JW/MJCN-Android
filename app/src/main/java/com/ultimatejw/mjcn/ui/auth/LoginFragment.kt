@@ -40,33 +40,32 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupListeners()
         observeViewModel()
     }
 
     private fun observeViewModel() {
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            binding.btnLogin.isEnabled = state.isFormValid && !state.isLoading
+            if (state.isFormValid) {
+                binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)
+                binding.btnLogin.setTextColor(requireContext().getColor(R.color.white))
+            } else {
+                binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_disabled)
+                binding.btnLogin.setTextColor(requireContext().getColor(R.color.text_disabled))
+            }
+            state.emailError?.let { binding.etEmail.error = it }
+            state.passwordError?.let { binding.etPassword.error = it }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect { state ->
-                        binding.btnLogin.isEnabled = state.isFormValid && !state.isLoading
-                        if (state.isFormValid) {
-                            binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)
-                            binding.btnLogin.setTextColor(requireContext().getColor(R.color.white))
-                        } else {
-                            binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_disabled)
-                            binding.btnLogin.setTextColor(requireContext().getColor(R.color.text_disabled))
-                        }
-                        state.emailError?.let { binding.etEmail.error = it }
-                        state.passwordError?.let { binding.etPassword.error = it }
-                    }
-                }
-                launch {
-                    viewModel.event.collect { event ->
-                        when (event) {
-                            is LoginEvent.NavigateToMain -> navigateToMain()
-                            is LoginEvent.ShowError -> showToast(event.message)
-                        }
+                viewModel.event.collect { event ->
+                    when (event) {
+                        is LoginEvent.NavigateToMain -> navigateToMain()
+                        is LoginEvent.ShowError -> showToast(event.message)
                     }
                 }
             }
