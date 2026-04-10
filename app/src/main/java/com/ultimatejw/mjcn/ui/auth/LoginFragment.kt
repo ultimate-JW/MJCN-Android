@@ -9,24 +9,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
-import com.ultimatejw.mjcn.data.local.MjcnDatabase
-import com.ultimatejw.mjcn.data.repository.UserRepository
 import com.ultimatejw.mjcn.databinding.FragmentLoginBinding
 import com.ultimatejw.mjcn.ui.main.MainActivity
 import com.ultimatejw.mjcn.utils.showToast
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LoginViewModel by viewModels {
-        val db = MjcnDatabase.getInstance(requireContext())
-        LoginViewModelFactory(UserRepository(requireContext(), db.userDao()))
-    }
-
+    private val viewModel: LoginViewModel by viewModels()
     private var isPasswordVisible = false
 
     override fun onCreateView(
@@ -40,30 +40,33 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeViewModel()
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupListeners()
+        observeViewModel()
+    }
 
-        // 로그인 버튼 활성화 상태 관찰
-        viewModel.isFormValid.observe(viewLifecycleOwner) { isValid ->
-            binding.btnLogin.isEnabled = isValid
-            if (isValid) {
+    private fun observeViewModel() {
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            binding.btnLogin.isEnabled = state.isFormValid && !state.isLoading
+            if (state.isFormValid) {
                 binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)
                 binding.btnLogin.setTextColor(requireContext().getColor(R.color.white))
             } else {
                 binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_disabled)
                 binding.btnLogin.setTextColor(requireContext().getColor(R.color.text_disabled))
             }
+            state.emailError?.let { binding.etEmail.error = it }
+            state.passwordError?.let { binding.etPassword.error = it }
         }
-    }
 
-    private fun observeViewModel() {
-        viewModel.loginState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is LoginState.Loading -> binding.btnLogin.isEnabled = false
-                is LoginState.Success -> navigateToMain()
-                is LoginState.Error -> {
-                    binding.btnLogin.isEnabled = true
-                    showToast(state.message)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.event.collect { event ->
+                    when (event) {
+                        is LoginEvent.NavigateToMain -> navigateToMain()
+                        is LoginEvent.ShowError -> showToast(event.message)
+                    }
                 }
             }
         }
@@ -73,39 +76,31 @@ class LoginFragment : Fragment() {
         binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.onEmailChanged(s.toString())
-            }
+            override fun afterTextChanged(s: Editable?) { viewModel.onEmailChanged(s.toString()) }
         })
 
         binding.etPassword.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.onPasswordChanged(s.toString())
-            }
+            override fun afterTextChanged(s: Editable?) { viewModel.onPasswordChanged(s.toString()) }
         })
 
         binding.btnTogglePassword.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
-            val inputType = if (isPasswordVisible) {
+            binding.etPassword.inputType = if (isPasswordVisible) {
                 android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             } else {
                 android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
-            binding.etPassword.inputType = inputType
-            binding.etPassword.setSelection(binding.etPassword.text.length)
+            binding.etPassword.setSelection(binding.etPassword.text?.length ?: 0)
             binding.btnTogglePassword.setImageResource(
                 if (isPasswordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
             )
         }
 
-        binding.btnLogin.setOnClickListener {
-            navigateToMain()
-        }
+        binding.btnLogin.setOnClickListener { viewModel.login() }
 
         binding.btnKakaoLogin.setOnClickListener {
-            // TODO: 카카오 로그인 연동
             showToast("카카오 로그인 준비 중입니다.")
         }
 
@@ -114,7 +109,6 @@ class LoginFragment : Fragment() {
         }
 
         binding.tvForgotPassword.setOnClickListener {
-            // TODO: 비밀번호 찾기
             showToast("비밀번호 찾기 준비 중입니다.")
         }
     }

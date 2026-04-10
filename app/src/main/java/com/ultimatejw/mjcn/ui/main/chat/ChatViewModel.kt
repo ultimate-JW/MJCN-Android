@@ -1,23 +1,48 @@
 package com.ultimatejw.mjcn.ui.main.chat
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.data.model.ChatSession
 import com.ultimatejw.mjcn.data.repository.ChatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
+data class ChatUiState(
+    val sessions: List<ChatSession> = emptyList(),
+    val selectedCategory: String = "전체",
+)
 
-    val allSessions: LiveData<List<ChatSession>> = chatRepository.getAllSessions().asLiveData()
+@HiltViewModel
+class ChatViewModel @Inject constructor(
+    private val chatRepository: ChatRepository
+) : ViewModel() {
 
-    private var currentCategory = "전체"
+    private val _uiState = MutableLiveData(ChatUiState())
+    val uiState: LiveData<ChatUiState> = _uiState
 
-    fun getSessionsByCategory(category: String): LiveData<List<ChatSession>> {
-        currentCategory = category
-        return if (category == "전체") {
-            chatRepository.getAllSessions().asLiveData()
-        } else {
-            chatRepository.getSessionsByCategory(category).asLiveData()
+    init {
+        observeSessions()
+    }
+
+    private fun observeSessions() {
+        viewModelScope.launch {
+            chatRepository.getAllSessions().collect { sessions ->
+                _uiState.postValue(_uiState.value!!.copy(sessions = sessions))
+            }
+        }
+    }
+
+    fun selectCategory(category: String) {
+        _uiState.value = _uiState.value!!.copy(selectedCategory = category)
+        viewModelScope.launch {
+            val flow = if (category == "전체") chatRepository.getAllSessions()
+                       else chatRepository.getSessionsByCategory(category)
+            flow.collect { sessions ->
+                _uiState.postValue(_uiState.value!!.copy(sessions = sessions))
+            }
         }
     }
 }

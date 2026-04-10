@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.auth.signup
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.text.Editable
@@ -8,10 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupStep2Binding
 
+@AndroidEntryPoint
 class SignUpStep2Fragment : Fragment() {
 
     private var _binding: FragmentSignupStep2Binding? = null
@@ -38,9 +44,13 @@ class SignUpStep2Fragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.step2Valid.observe(viewLifecycleOwner) { valid ->
-            binding.btnNext.isEnabled = valid
-            binding.btnNext.alpha = if (valid) 1f else 0.6f
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.step2Valid.collect { valid ->
+                    binding.btnNext.isEnabled = valid
+                    binding.btnNext.alpha = if (valid) 1f else 0.6f
+                }
+            }
         }
     }
 

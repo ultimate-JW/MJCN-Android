@@ -11,7 +11,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentThemeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ThemeFragment : Fragment() {
 
     private var _binding: FragmentThemeBinding? = null
@@ -31,6 +33,8 @@ class ThemeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerView()
         observeViewModel()
     }
@@ -47,8 +51,8 @@ class ThemeFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.themes.observe(viewLifecycleOwner) { themes ->
-            adapter.submitList(themes)
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            adapter.submitList(state.themes)
         }
     }
 

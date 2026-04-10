@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.auth.signup
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.text.Editable
@@ -8,10 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupIdPwBinding
 
+@AndroidEntryPoint
 class SignUpIdPwFragment : Fragment() {
 
     private var _binding: FragmentSignupIdPwBinding? = null
@@ -41,14 +47,18 @@ class SignUpIdPwFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.step2Valid.observe(viewLifecycleOwner) { valid ->
-            binding.btnNext.isEnabled = valid
-            if (valid) {
-                binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
-                binding.btnNext.setTextColor(requireContext().getColor(R.color.white))
-            } else {
-                binding.btnNext.setBackgroundResource(R.drawable.bg_btn_disabled)
-                binding.btnNext.setTextColor(requireContext().getColor(R.color.text_disabled))
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.step2Valid.collect { valid ->
+                    binding.btnNext.isEnabled = valid
+                    if (valid) {
+                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
+                        binding.btnNext.setTextColor(requireContext().getColor(R.color.white))
+                    } else {
+                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_disabled)
+                        binding.btnNext.setTextColor(requireContext().getColor(R.color.text_disabled))
+                    }
+                }
             }
         }
     }

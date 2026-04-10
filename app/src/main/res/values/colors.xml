@@ -8,6 +8,7 @@
 
     <!-- Background -->
     <color name="background">#FFFFFF</color>
+    <color name="sheet_background">#F5F5F5</color>
     <color name="surface">#F5F5F5</color>
     <color name="surface_card">#FFFFFF</color>
 
@@ -22,6 +23,20 @@
     <color name="input_background">#F5F5F5</color>
     <color name="input_stroke">#E0E0E0</color>
     <color name="input_stroke_focused">#5B4FCF</color>
+
+    <!--    Point Color -->
+    <color name="point_color1">#534AB7</color>
+    <color name="point_color2">#E8E6FB</color>
+    <color name="point_color3">#071648</color>
+    <color name="point_color4">#F9F8FF</color>
+
+    <!--    Font Color -->
+    <color name="font_color1">#1A1A1A</color>
+    <color name="font_color1_1">#595959</color>
+    <color name="font_color2">#888888</color>
+    <color name="font_color3">#B4B4B4</color>
+    <color name="font_color4">#CCCCCC</color>
+    <color name="font_color5">#FF0004</color>
 
     <!-- Button -->
     <color name="btn_primary">#534AB7</color>
@@ -46,4 +61,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="box_border">#F4F4F4</color>
 </resources>
