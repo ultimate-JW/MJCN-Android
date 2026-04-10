@@ -1,10 +1,14 @@
 package com.ultimatejw.mjcn.ui.auth.signup
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class SignUpViewModel : ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor() : ViewModel() {
 
     // Step 1
     var name: String = ""
@@ -19,14 +23,14 @@ class SignUpViewModel : ViewModel() {
     // Step 3
     val selectedInterests = mutableListOf<String>()
 
-    private val _step1Valid = MutableLiveData(false)
-    val step1Valid: LiveData<Boolean> = _step1Valid
+    private val _step1Valid = MutableStateFlow(false)
+    val step1Valid: StateFlow<Boolean> = _step1Valid.asStateFlow()
 
-    private val _step2Valid = MutableLiveData(false)
-    val step2Valid: LiveData<Boolean> = _step2Valid
+    private val _step2Valid = MutableStateFlow(false)
+    val step2Valid: StateFlow<Boolean> = _step2Valid.asStateFlow()
 
-    private val _step3Valid = MutableLiveData(false)
-    val step3Valid: LiveData<Boolean> = _step3Valid
+    private val _step3Valid = MutableStateFlow(false)
+    val step3Valid: StateFlow<Boolean> = _step3Valid.asStateFlow()
 
     fun onStep1Changed(name: String, grade: Int, semester: Int) {
         this.name = name

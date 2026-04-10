@@ -1,217 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingTop="40dp"
-        android:paddingBottom="24dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@color/background">
 
-        <!-- 로고 -->
-        <ImageView
-            android:id="@+id/iv_logo"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:src="@drawable/ic_main"
-            android:contentDescription="@string/app_name"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_app_name"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/app_name"
-            android:textColor="@color/text_primary"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/iv_logo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="24dp">
 
-        <TextView
-            android:id="@+id/tv_app_full_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/app_full_name"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_app_name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <!-- 로고 -->
+            <ImageView
+                android:id="@+id/iv_logo"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_main"
+                android:contentDescription="@string/app_name"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_app_slogan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/app_slogan"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_app_full_name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/tv_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/app_name"
+                android:textColor="@color/text_primary"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/iv_logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 아이디 -->
-        <TextView
-            android:id="@+id/tv_email_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="아이디"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_app_slogan"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/tv_app_full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/app_full_name"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_app_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <EditText
-            android:id="@+id/et_email"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_input_field"
-            android:hint="@string/id_hint"
-            android:inputType="textEmailAddress"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_email_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/tv_app_slogan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/app_slogan"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_app_full_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 비밀번호 -->
-        <TextView
-            android:id="@+id/tv_password_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="비밀번호"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/et_email"
-            app:layout_constraintStart_toStartOf="parent" />
+            <!-- 아이디 -->
+            <TextView
+                android:id="@+id/tv_email_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="아이디"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_app_slogan"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/frame_password"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_password_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:hint="@string/id_hint"
+                android:background="@drawable/bg_input_field"
+                android:inputType="textEmailAddress"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_email_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- 비밀번호 -->
+            <TextView
+                android:id="@+id/tv_password_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="비밀번호"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/et_email"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/et_password"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="56dp"
                 android:background="@drawable/bg_input_field"
                 android:hint="@string/password_hint"
                 android:inputType="textPassword"
+                android:layout_marginTop="8dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="56dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_hint"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_password_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
                 android:id="@+id/btn_toggle_password"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="4dp"
                 android:background="@null"
                 android:contentDescription="비밀번호 보기"
-                android:src="@drawable/ic_visibility_off" />
-        </FrameLayout>
+                android:src="@drawable/ic_visibility_off"
+                app:layout_constraintTop_toTopOf="@id/et_password"
+                app:layout_constraintBottom_toBottomOf="@id/et_password"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_forgot_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/forgot_password"
-            android:textColor="@color/primary"
-            android:textSize="13sp"
-            android:textStyle="normal"
-            app:layout_constraintTop_toBottomOf="@id/frame_password"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/tv_forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/forgot_password"
+                android:textColor="@color/primary"
+                android:textSize="13sp"
+                app:layout_constraintTop_toBottomOf="@id/et_password"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 로그인 버튼 -->
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="81dp"
-            android:background="@drawable/bg_btn_disabled"
-            android:text="@string/login"
-            android:textColor="@color/text_disabled"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@id/tv_forgot_password"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <!-- 로그인 버튼 -->
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="81dp"
+                android:background="@drawable/bg_btn_disabled"
+                android:text="@string/login"
+                android:textColor="@color/text_disabled"
+                android:textSize="16sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/tv_forgot_password"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 카카오 로그인 -->
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:id="@+id/btn_kakao_login"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_btn_kakao"
-            app:backgroundTint="@null"
-            android:drawableLeft="@drawable/ic_kakao"
-            android:drawablePadding="-80dp"
-            android:paddingLeft="90dp"
-            android:text="@string/kakao_login"
-            android:textColor="@color/btn_kakao_text"
-            android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/btn_login"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- 카카오 로그인 -->
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:id="@+id/btn_kakao_login"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_btn_kakao"
+                app:backgroundTint="@null"
+                android:drawableLeft="@drawable/ic_kakao"
+                android:drawablePadding="-80dp"
+                android:paddingLeft="90dp"
+                android:text="@string/kakao_login"
+                android:textColor="@color/btn_kakao_text"
+                android:textSize="15sp"
+                app:layout_constraintTop_toBottomOf="@id/btn_login"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 회원가입 -->
-        <TextView
-            android:id="@+id/tv_no_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/no_account"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/btn_kakao_login"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_sign_up"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <!-- 회원가입 -->
+            <TextView
+                android:id="@+id/tv_no_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/no_account"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/btn_kakao_login"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_sign_up"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_sign_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="4dp"
-            android:text="@string/signup"
-            android:textColor="#111111"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/btn_kakao_login"
-            app:layout_constraintStart_toEndOf="@id/tv_no_account"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <TextView
+                android:id="@+id/tv_sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="4dp"
+                android:text="@string/signup"
+                android:textColor="#111111"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/btn_kakao_login"
+                app:layout_constraintStart_toEndOf="@id/tv_no_account"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</layout>

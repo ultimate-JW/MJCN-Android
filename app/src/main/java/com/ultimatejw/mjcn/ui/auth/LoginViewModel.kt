@@ -1,72 +1,77 @@
 package com.ultimatejw.mjcn.ui.auth
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.data.repository.UserRepository
 import com.ultimatejw.mjcn.utils.isValidEmail
 import com.ultimatejw.mjcn.utils.isValidPassword
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
+sealed class LoginEvent {
+    data object NavigateToMain : LoginEvent()
+    data class ShowError(val message: String) : LoginEvent()
+}
 
-    private val _loginState = MutableLiveData<LoginState>()
-    val loginState: LiveData<LoginState> = _loginState
+data class LoginUiState(
+    val isLoading: Boolean = false,
+    val emailError: String? = null,
+    val passwordError: String? = null,
+    val isFormValid: Boolean = false,
+)
 
-    private val _isFormValid = MutableLiveData(false)
-    val isFormValid: LiveData<Boolean> = _isFormValid
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
-    private val _emailError = MutableLiveData<String?>()
-    val emailError: LiveData<String?> = _emailError
+    private val _event = MutableSharedFlow<LoginEvent>()
+    val event: SharedFlow<LoginEvent> = _event.asSharedFlow()
 
-    private val _passwordError = MutableLiveData<String?>()
-    val passwordError: LiveData<String?> = _passwordError
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private var email = ""
     private var password = ""
 
     fun onEmailChanged(input: String) {
         email = input
-        _emailError.value = null
-        validateForm()
+        _uiState.update { it.copy(emailError = null, isFormValid = email.isNotEmpty() && password.isNotEmpty()) }
     }
 
     fun onPasswordChanged(input: String) {
         password = input
-        _passwordError.value = null
-        validateForm()
-    }
-
-    private fun validateForm() {
-        _isFormValid.value = email.isNotEmpty() && password.isNotEmpty()
+        _uiState.update { it.copy(passwordError = null, isFormValid = email.isNotEmpty() && password.isNotEmpty()) }
     }
 
     fun login() {
         if (!email.isValidEmail()) {
-            _emailError.value = "올바른 이메일 형식을 입력해주세요."
+            _uiState.update { it.copy(emailError = "올바른 이메일 형식을 입력해주세요.") }
             return
         }
         if (!password.isValidPassword()) {
-            _passwordError.value = "비밀번호는 8자 이상이어야 합니다."
+            _uiState.update { it.copy(passwordError = "비밀번호는 8자 이상이어야 합니다.") }
             return
         }
 
-        _loginState.value = LoginState.Loading
+        _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            // TODO: 실제 API 연동 시 교체
             try {
-                userRepository.saveLoginState("dummy_token")
-                _loginState.value = LoginState.Success
+                userRepository.saveLoginState("dummy_token") // TODO: 실제 API 연동
+                _event.emit(LoginEvent.NavigateToMain)
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error("로그인에 실패했습니다.")
+                _event.emit(LoginEvent.ShowError("로그인에 실패했습니다."))
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
-}
-
-sealed class LoginState {
-    object Loading : LoginState()
-    object Success : LoginState()
-    data class Error(val message: String) : LoginState()
 }

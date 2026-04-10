@@ -10,19 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
-import com.ultimatejw.mjcn.data.local.MjcnDatabase
-import com.ultimatejw.mjcn.data.repository.ChatRepository
 import com.ultimatejw.mjcn.databinding.FragmentChatBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChatFragment : Fragment() {
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ChatViewModel by viewModels {
-        val db = MjcnDatabase.getInstance(requireContext())
-        ChatViewModelFactory(ChatRepository(db.chatDao()))
-    }
+    private val viewModel: ChatViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +33,6 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        observeViewModel()
         setupListeners()
     }
 
@@ -44,32 +40,15 @@ class ChatFragment : Fragment() {
         binding.rvChatHistory.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun observeViewModel() {
-        viewModel.allSessions.observe(viewLifecycleOwner) { sessions ->
-            // TODO: adapter.submitList(sessions)
-        }
-    }
-
     private fun setupListeners() {
         binding.btnSend.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_chat_to_detail,
-                bundleOf("sessionId" to "")
-            )
+            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
         }
-
         binding.tvSuggestion1.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_chat_to_detail,
-                bundleOf("sessionId" to "")
-            )
+            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
         }
-
         binding.tvSuggestion2.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_chat_to_detail,
-                bundleOf("sessionId" to "")
-            )
+            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
         }
     }
 
