@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.auth.signup
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupEmailVerifyBinding
 
+@AndroidEntryPoint
 class SignUpEmailVerifyFragment : Fragment() {
 
     private var _binding: FragmentSignupEmailVerifyBinding? = null

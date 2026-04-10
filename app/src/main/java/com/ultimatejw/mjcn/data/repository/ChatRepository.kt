@@ -3,8 +3,9 @@ package com.ultimatejw.mjcn.data.repository
 import com.ultimatejw.mjcn.data.local.dao.ChatDao
 import com.ultimatejw.mjcn.data.model.ChatSession
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ChatRepository(private val chatDao: ChatDao) {
+class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
 
     fun getAllSessions(): Flow<List<ChatSession>> = chatDao.getAllSessions()
 

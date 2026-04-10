@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.main.info
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.databinding.FragmentInfoBinding
 
+@AndroidEntryPoint
 class InfoFragment : Fragment() {
 
     private var _binding: FragmentInfoBinding? = null

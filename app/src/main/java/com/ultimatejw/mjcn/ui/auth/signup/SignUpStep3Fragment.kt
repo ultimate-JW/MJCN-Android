@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.auth.signup
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,13 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import com.google.android.material.chip.Chip
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupStep3Binding
 import com.ultimatejw.mjcn.utils.visible
 import com.ultimatejw.mjcn.utils.gone
 
+@AndroidEntryPoint
 class SignUpStep3Fragment : Fragment() {
 
     private var _binding: FragmentSignupStep3Binding? = null
@@ -37,9 +43,13 @@ class SignUpStep3Fragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.step3Valid.observe(viewLifecycleOwner) { valid ->
-            binding.btnNext.isEnabled = valid
-            binding.btnNext.alpha = if (valid) 1f else 0.6f
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.step3Valid.collect { valid ->
+                    binding.btnNext.isEnabled = valid
+                    binding.btnNext.alpha = if (valid) 1f else 0.6f
+                }
+            }
         }
     }
 

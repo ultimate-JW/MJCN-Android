@@ -7,23 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ultimatejw.mjcn.data.local.MjcnDatabase
-import com.ultimatejw.mjcn.data.repository.NoticeRepository
-import com.ultimatejw.mjcn.data.repository.UserRepository
+import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentHomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: HomeViewModel by viewModels {
-        val db = MjcnDatabase.getInstance(requireContext())
-        HomeViewModelFactory(
-            UserRepository(requireContext(), db.userDao()),
-            NoticeRepository(db.noticeDao())
-        )
-    }
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +30,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerViews()
         observeViewModel()
     }
@@ -46,28 +42,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            val user = state.currentUser
             binding.tvGreeting.text = if (user != null) {
-                getString(com.ultimatejw.mjcn.R.string.home_greeting, user.name)
+                getString(R.string.home_greeting, user.name)
             } else {
                 "반가워요!"
             }
-        }
-
-        viewModel.courseCount.observe(viewLifecycleOwner) { count ->
-            binding.tvCourseCount.text = count.toString()
-        }
-
-        viewModel.graduationCredits.observe(viewLifecycleOwner) { credits ->
-            binding.tvGraduationCredits.text = credits.toString()
-        }
-
-        viewModel.dday.observe(viewLifecycleOwner) { dday ->
-            binding.tvDday.text = dday
-        }
-
-        viewModel.gradProgress.observe(viewLifecycleOwner) { progress ->
-            binding.tvGradProgress.text = progress
+            binding.tvCourseCount.text = state.courseCount.toString()
+            binding.tvGraduationCredits.text = state.graduationCredits.toString()
+            binding.tvDday.text = state.dday
+            binding.tvGradProgress.text = state.gradProgress
         }
     }
 
