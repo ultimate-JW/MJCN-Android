@@ -41,7 +41,8 @@ class SignUpIdPwFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.step2Valid.observe(viewLifecycleOwner) { valid ->
+        // [수정] step2Valid → idPwValid로 변경 (Step2가 전공 선택으로 변경됨)
+        viewModel.idPwValid.observe(viewLifecycleOwner) { valid ->
             binding.btnNext.isEnabled = valid
             if (valid) {
                 binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
@@ -195,7 +196,8 @@ class SignUpIdPwFragment : Fragment() {
         val passwordOk = isPasswordFormatValid(password) && !isPasswordSameAsEmail(password, email)
         val confirmOk = password == passwordConfirm && passwordConfirm.isNotEmpty()
 
-        viewModel.onStep2Changed(
+        // [수정] onStep2Changed → onIdPwChanged로 변경 (Step2가 전공 선택으로 변경됨)
+        viewModel.onIdPwChanged(
             if (emailOk) email else "",
             if (passwordOk) password else "",
             if (confirmOk) passwordConfirm else ""

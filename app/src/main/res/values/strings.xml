@@ -25,6 +25,27 @@
     <string name="grade_hint">현재 학년 선택</string>
     <string name="semester_hint">현재 학기 선택</string>
     <string name="grad_year_hint">연도 선택</string>
+    <!-- [추가] 회원가입 Step1/Step2 바텀시트 및 전공 선택 관련 문자열 -->
+    <string name="entrance_year_label">입학 연도</string>
+    <string name="graduation_label">졸업 희망 시기(선택)</string>
+    <string name="name_error">한글 또는 영문 2~10자 이내로 입력해주세요.</string>
+    <string name="picker_grade">학년 선택</string>
+    <string name="picker_semester">학기 선택</string>
+    <string name="picker_entrance_year">입학 연도 선택</string>
+    <string name="picker_graduation">졸업 희망 시기 선택</string>
+    <string name="signup_major_title">전공 선택</string>
+    <string name="signup_major_desc">전공 정보를 알려주세요.</string>
+    <string name="college_label">대학</string>
+    <string name="college_hint">소속 대학 선택</string>
+    <string name="department_label">학부/학과</string>
+    <string name="department_hint">학부/학과 선택</string>
+    <string name="major_label">전공</string>
+    <string name="major_hint">전공 선택</string>
+    <string name="picker_college">대학 선택</string>
+    <string name="picker_department">학부/학과 선택</string>
+    <string name="picker_major">학부/학과 선택</string>
+    <string name="prev">이전</string>
+    <string name="no_selection">선택 안 함</string>
 
     <!-- Bottom Nav -->
     <string name="nav_home">홈</string>

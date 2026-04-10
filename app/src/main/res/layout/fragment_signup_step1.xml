@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- [수정] 피그마 디자인 기준으로 전면 재설계 -->
+<!-- Spinner → 클릭형 TextView + 바텀시트로 변경 -->
+<!-- 입학 연도, 졸업 희망 시기 필드 추가 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -16,6 +19,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
+    <!-- 제목 -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
@@ -27,6 +31,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- 설명 -->
     <TextView
         android:id="@+id/tv_desc"
         android:layout_width="wrap_content"
@@ -38,124 +43,182 @@
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 이름 -->
-    <TextView
-        android:id="@+id/tv_name_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="이름"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
+    <!-- 스크롤 가능한 폼 영역 -->
+    <ScrollView
+        android:id="@+id/scroll_form"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@id/tv_desc"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/et_name"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_input_field"
-        android:hint="@string/name_hint"
-        android:inputType="textPersonName"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_hint"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@id/tv_name_label"
+        app:layout_constraintBottom_toTopOf="@id/btn_next"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/tv_name_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="8dp"
-        android:textColor="@color/error"
-        android:textSize="12sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/et_name"
-        app:layout_constraintStart_toStartOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <!-- 학년 / 학기 -->
-    <TextView
-        android:id="@+id/tv_grade_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="6dp"
-        android:text="학년"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/tv_name_error"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/guideline50" />
+            <!-- ======= 이름 ======= -->
+            <TextView
+                android:id="@+id/tv_name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="이름"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/tv_semester_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="6dp"
-        android:text="학기"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/tv_name_error"
-        app:layout_constraintStart_toEndOf="@id/guideline50"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <EditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="@string/name_hint"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp" />
 
-    <Spinner
-        android:id="@+id/spinner_grade"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="6dp"
-        android:background="@drawable/bg_input_field"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_grade_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/guideline50" />
+            <!-- [추가] 이름 에러 메시지 -->
+            <TextView
+                android:id="@+id/tv_name_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:text="@string/name_error"
+                android:textColor="@color/error"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
-    <Spinner
-        android:id="@+id/spinner_semester"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="6dp"
-        android:background="@drawable/bg_input_field"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_semester_label"
-        app:layout_constraintStart_toEndOf="@id/guideline50"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <!-- ======= 학년 / 학기 (가로 배치) ======= -->
+            <!-- [수정] Spinner → 클릭형 TextView로 변경 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
 
-    <!-- 졸업 희망 연도 -->
-    <TextView
-        android:id="@+id/tv_grad_year_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="졸업 희망 연도(선택)"
-        android:textColor="@color/text_primary"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/spinner_grade"
-        app:layout_constraintStart_toStartOf="parent" />
+                <!-- 학년 영역 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical">
 
-    <Spinner
-        android:id="@+id/spinner_grad_year"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_input_field"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_grad_year_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="학년"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
 
+                    <TextView
+                        android:id="@+id/tv_grade"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_input_field"
+                        android:gravity="center_vertical"
+                        android:hint="@string/grade_hint"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- 학기 영역 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="학기"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_semester"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_input_field"
+                        android:gravity="center_vertical"
+                        android:hint="@string/semester_hint"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ======= 입학 연도 ======= -->
+            <!-- [추가] 피그마 디자인에 맞춰 입학 연도 필드 추가 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/entrance_year_label"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_entrance_year"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_field"
+                android:gravity="center_vertical"
+                android:hint="@string/grad_year_hint"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp" />
+
+            <!-- ======= 졸업 희망 시기(선택) ======= -->
+            <!-- [수정] 기존 Spinner를 클릭형 TextView로 변경 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/graduation_label"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_graduation"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input_field"
+                android:gravity="center_vertical"
+                android:hint="@string/grad_year_hint"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 다음 버튼 -->
     <Button
         android:id="@+id/btn_next"
         android:layout_width="0dp"
