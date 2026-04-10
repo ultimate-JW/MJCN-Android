@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- [수정] 피그마 디자인 기준으로 전면 재설계 -->
-<!-- 기존 이메일/비밀번호 화면 → 전공 선택 화면으로 변경 -->
-<!-- 대학, 학부/학과, 전공 필드 + 이전/다음 버튼 -->
+<!-- [수정] 피그마 디자인 기준 + fragment_signup_email_verify/id_pw 스타일 통일 -->
+<!-- paddingTop 60dp, 제목 30sp bold, 라벨 14sp text_secondary, 입력 14sp, 버튼 text_secondary -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,7 +8,7 @@
     android:background="@color/background"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
-    android:paddingTop="20dp"
+    android:paddingTop="60dp"
     android:paddingBottom="24dp">
 
     <androidx.constraintlayout.widget.Guideline
@@ -19,47 +18,49 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <!-- 제목 -->
+    <!-- 제목: 30sp bold, text_primary -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signup_major_title"
         android:textColor="@color/text_primary"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 설명 -->
+    <!-- 설명: 14sp, text_primary -->
     <TextView
         android:id="@+id/tv_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/signup_major_desc"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/text_primary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- ======= 대학 ======= -->
+    <!-- 라벨: 14sp, text_secondary, 첫 라벨 marginTop 48dp -->
     <TextView
         android:id="@+id/tv_college_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:text="@string/college_label"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_desc"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- 입력 필드: marginTop 6dp, textSize 14sp -->
     <TextView
         android:id="@+id/tv_college"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         android:gravity="center_vertical"
         android:hint="@string/college_hint"
@@ -67,19 +68,20 @@
         android:paddingEnd="20dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint"
-        android:textSize="15sp"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_college_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- ======= 학부/학과 ======= -->
+    <!-- 라벨: marginTop 24dp -->
     <TextView
         android:id="@+id/tv_department_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="@string/department_label"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_college"
         app:layout_constraintStart_toStartOf="parent" />
@@ -88,7 +90,7 @@
         android:id="@+id/tv_department"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         android:gravity="center_vertical"
         android:hint="@string/department_hint"
@@ -96,7 +98,7 @@
         android:paddingEnd="20dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint"
-        android:textSize="15sp"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_department_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -106,9 +108,9 @@
         android:id="@+id/tv_major_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="@string/major_label"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_department"
         app:layout_constraintStart_toStartOf="parent" />
@@ -117,7 +119,7 @@
         android:id="@+id/tv_major"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/bg_input_field"
         android:gravity="center_vertical"
         android:hint="@string/major_hint"
@@ -125,13 +127,12 @@
         android:paddingEnd="20dp"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_hint"
-        android:textSize="15sp"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_major_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- ======= 이전 버튼 (아웃라인 스타일) ======= -->
-    <!-- [추가] 피그마 디자인의 이전/다음 2버튼 구조 -->
     <Button
         android:id="@+id/btn_prev"
         android:layout_width="0dp"
@@ -146,7 +147,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline50" />
 
-    <!-- ======= 다음 버튼 ======= -->
+    <!-- ======= 다음 버튼: textColor text_secondary (기존 화면과 동일) ======= -->
     <Button
         android:id="@+id/btn_next"
         android:layout_width="0dp"
@@ -155,7 +156,7 @@
         android:background="@drawable/bg_btn_primary"
         android:enabled="false"
         android:text="@string/next"
-        android:textColor="@color/white"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

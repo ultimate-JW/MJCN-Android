@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- [수정] 피그마 디자인 기준으로 전면 재설계 -->
-<!-- Spinner → 클릭형 TextView + 바텀시트로 변경 -->
-<!-- 입학 연도, 졸업 희망 시기 필드 추가 -->
+<!-- [수정] 피그마 디자인 기준 + fragment_signup_email_verify/id_pw 스타일 통일 -->
+<!-- paddingTop 60dp, 제목 30sp bold, 라벨 14sp text_secondary, 입력 14sp, 버튼 text_secondary -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,36 +8,29 @@
     android:background="@color/background"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
-    android:paddingTop="20dp"
+    android:paddingTop="60dp"
     android:paddingBottom="24dp">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline50"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <!-- 제목 -->
+    <!-- 제목: 30sp bold, text_primary (기존 화면과 동일) -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signup_basic_title"
         android:textColor="@color/text_primary"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 설명 -->
+    <!-- 설명: 14sp, text_primary (기존 화면과 동일) -->
     <TextView
         android:id="@+id/tv_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/signup_basic_desc"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/text_primary"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintStart_toStartOf="parent" />
@@ -63,20 +55,22 @@
             android:orientation="vertical">
 
             <!-- ======= 이름 ======= -->
+            <!-- 라벨: 14sp, text_secondary, 첫 라벨 marginTop 24dp (ScrollView 내부이므로) -->
             <TextView
                 android:id="@+id/tv_name_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:text="이름"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
+            <!-- 입력 필드: marginTop 6dp, textSize 14sp -->
             <EditText
                 android:id="@+id/et_name"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input_field"
                 android:hint="@string/name_hint"
                 android:inputType="textPersonName"
@@ -84,26 +78,25 @@
                 android:paddingEnd="20dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_hint"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
-            <!-- [추가] 이름 에러 메시지 -->
+            <!-- 에러 메시지: marginStart 4dp -->
             <TextView
                 android:id="@+id/tv_name_error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:text="@string/name_error"
                 android:textColor="@color/error"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
             <!-- ======= 학년 / 학기 (가로 배치) ======= -->
-            <!-- [수정] Spinner → 클릭형 TextView로 변경 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:orientation="horizontal">
 
                 <!-- 학년 영역 -->
@@ -118,14 +111,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="학년"
-                        android:textColor="@color/text_primary"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tv_grade"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:background="@drawable/bg_input_field"
                         android:gravity="center_vertical"
                         android:hint="@string/grade_hint"
@@ -133,7 +126,7 @@
                         android:paddingEnd="20dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_hint"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <!-- 학기 영역 -->
@@ -148,14 +141,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="학기"
-                        android:textColor="@color/text_primary"
+                        android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tv_semester"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:background="@drawable/bg_input_field"
                         android:gravity="center_vertical"
                         android:hint="@string/semester_hint"
@@ -163,25 +156,24 @@
                         android:paddingEnd="20dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_hint"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <!-- ======= 입학 연도 ======= -->
-            <!-- [추가] 피그마 디자인에 맞춰 입학 연도 필드 추가 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/entrance_year_label"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_entrance_year"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input_field"
                 android:gravity="center_vertical"
                 android:hint="@string/grad_year_hint"
@@ -189,23 +181,22 @@
                 android:paddingEnd="20dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_hint"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <!-- ======= 졸업 희망 시기(선택) ======= -->
-            <!-- [수정] 기존 Spinner를 클릭형 TextView로 변경 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/graduation_label"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_graduation"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input_field"
                 android:gravity="center_vertical"
                 android:hint="@string/grad_year_hint"
@@ -213,12 +204,12 @@
                 android:paddingEnd="20dp"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_hint"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- 다음 버튼 -->
+    <!-- 다음 버튼: textColor text_secondary, 16sp bold (기존 화면과 동일) -->
     <Button
         android:id="@+id/btn_next"
         android:layout_width="0dp"
@@ -226,7 +217,7 @@
         android:background="@drawable/bg_btn_primary"
         android:enabled="false"
         android:text="@string/next"
-        android:textColor="@color/white"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
