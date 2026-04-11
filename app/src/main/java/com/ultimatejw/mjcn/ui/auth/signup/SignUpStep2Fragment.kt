@@ -73,9 +73,30 @@ class SignUpStep2Fragment : Fragment() {
         setupPickers()
         observeViewModel()
         setupButtons()
+        restoreState()
     }
 
-    // [추가] BottomSheet 피커 클릭 리스너 설정
+    // ViewModel에 저장된 값으로 UI 복원
+    private fun restoreState() {
+        if (viewModel.college.isNotEmpty()) {
+            selectedCollege = viewModel.college
+            binding.tvCollege.text = viewModel.college
+            binding.tvCollege.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        if (viewModel.department.isNotEmpty()) {
+            selectedDepartment = viewModel.department
+            binding.tvDepartment.text = viewModel.department
+            binding.tvDepartment.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        if (viewModel.major.isNotEmpty()) {
+            selectedMajor = viewModel.major
+            binding.tvMajor.text = viewModel.major
+            binding.tvMajor.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        updateValidity()
+    }
+
+    // BottomSheet 피커 클릭 리스너 설정
     private fun setupPickers() {
         val colleges = universityData.keys.toList()
 
@@ -89,7 +110,7 @@ class SignUpStep2Fragment : Fragment() {
                 selectedCollege = item
                 binding.tvCollege.text = item
                 binding.tvCollege.setBackgroundResource(R.drawable.bg_input_field_active)
-                // [추가] 대학 변경 시 하위 선택 초기화
+                // 대학 변경 시 하위 선택 초기화
                 selectedDepartment = null
                 selectedMajor = null
                 binding.tvDepartment.text = ""
@@ -102,7 +123,7 @@ class SignUpStep2Fragment : Fragment() {
             }.show(childFragmentManager, "college_picker")
         }
 
-        // 학부/학과 클릭 → BottomSheet (대학 선택 후에만 동작)
+        // 학부/학과 클릭 (대학 선택 후에만 동작)
         binding.tvDepartment.setOnClickListener {
             val college = selectedCollege ?: return@setOnClickListener
             val departments = universityData[college]?.keys?.toList() ?: return@setOnClickListener
@@ -115,7 +136,7 @@ class SignUpStep2Fragment : Fragment() {
                 selectedDepartment = item
                 binding.tvDepartment.text = item
                 binding.tvDepartment.setBackgroundResource(R.drawable.bg_input_field_active)
-                // [추가] 학부/학과 변경 시 전공 초기화
+                // 학부/학과 변경 -> 전공 초기화
                 selectedMajor = null
                 binding.tvMajor.text = ""
                 binding.tvMajor.hint = getString(R.string.major_hint)
@@ -124,7 +145,6 @@ class SignUpStep2Fragment : Fragment() {
             }.show(childFragmentManager, "department_picker")
         }
 
-        // 전공 클릭 → BottomSheet (학부/학과 선택 후에만 동작)
         binding.tvMajor.setOnClickListener {
             val college = selectedCollege ?: return@setOnClickListener
             val department = selectedDepartment ?: return@setOnClickListener
@@ -143,7 +163,6 @@ class SignUpStep2Fragment : Fragment() {
         }
     }
 
-    // [수정] majorStepValid StateFlow 관찰 (기존 step2Valid 대신)
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -161,7 +180,6 @@ class SignUpStep2Fragment : Fragment() {
         }
     }
 
-    // [추가] 이전/다음 버튼 리스너
     private fun setupButtons() {
         // 이전 버튼 → 뒤로 가기
         binding.btnPrev.setOnClickListener {
@@ -174,7 +192,6 @@ class SignUpStep2Fragment : Fragment() {
         }
     }
 
-    // [추가] ViewModel에 전공 선택 유효성 전달
     private fun updateValidity() {
         viewModel.onMajorStepChanged(
             selectedCollege ?: "",
