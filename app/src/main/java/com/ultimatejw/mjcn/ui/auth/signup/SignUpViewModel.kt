@@ -17,6 +17,9 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
     var graduationYear: Int? = null
     var entranceYear: Int = 0
     var graduationTerm: String? = null
+    var selectedGradeText: String? = null
+    var selectedSemesterText: String? = null
+    var selectedEntranceYearText: String? = null
 
     // Step 2
     var email: String = ""

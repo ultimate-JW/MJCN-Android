@@ -26,7 +26,6 @@ class SignUpStep1Fragment : Fragment() {
 
     private val viewModel: SignUpViewModel by activityViewModels()
 
-    // 현재 선택된 값 저장 (BottomSheet 선택 표시용)
     private var selectedGrade: String? = null
     private var selectedSemester: String? = null
     private var selectedEntranceYear: String? = null
@@ -46,6 +45,36 @@ class SignUpStep1Fragment : Fragment() {
         setupPickers()
         observeViewModel()
         setupListeners()
+        restoreState()
+    }
+
+    // ViewModel에 저장된 값으로 UI 복원
+    private fun restoreState() {
+        if (viewModel.name.isNotEmpty()) {
+            binding.etName.setText(viewModel.name)
+            applyNameFieldState(viewModel.name)
+        }
+        viewModel.selectedGradeText?.let { text ->
+            selectedGrade = text
+            binding.tvGrade.text = text
+            binding.tvGrade.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        viewModel.selectedSemesterText?.let { text ->
+            selectedSemester = text
+            binding.tvSemester.text = text
+            binding.tvSemester.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        viewModel.selectedEntranceYearText?.let { text ->
+            selectedEntranceYear = text
+            binding.tvEntranceYear.text = text
+            binding.tvEntranceYear.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        viewModel.graduationTerm?.let { text ->
+            selectedGraduation = text
+            binding.tvGraduation.text = text
+            binding.tvGraduation.setBackgroundResource(R.drawable.bg_input_field_active)
+        }
+        updateValidity()
     }
 
     private fun setupPickers() {
@@ -65,8 +94,8 @@ class SignUpStep1Fragment : Fragment() {
             ) { item ->
                 selectedGrade = item
                 binding.tvGrade.text = item
-                // [추가] 선택 시 active 스타일 적용
                 binding.tvGrade.setBackgroundResource(R.drawable.bg_input_field_active)
+                viewModel.selectedGradeText = item
                 updateValidity()
             }.show(childFragmentManager, "grade_picker")
         }
@@ -79,8 +108,8 @@ class SignUpStep1Fragment : Fragment() {
             ) { item ->
                 selectedSemester = item
                 binding.tvSemester.text = item
-                // [추가] 선택 시 active 스타일 적용
                 binding.tvSemester.setBackgroundResource(R.drawable.bg_input_field_active)
+                viewModel.selectedSemesterText = item
                 updateValidity()
             }.show(childFragmentManager, "semester_picker")
         }
@@ -93,8 +122,8 @@ class SignUpStep1Fragment : Fragment() {
             ) { item ->
                 selectedEntranceYear = item
                 binding.tvEntranceYear.text = item
-                // [추가] 선택 시 active 스타일 적용
                 binding.tvEntranceYear.setBackgroundResource(R.drawable.bg_input_field_active)
+                viewModel.selectedEntranceYearText = item
                 updateValidity()
             }.show(childFragmentManager, "entrance_year_picker")
         }
@@ -113,7 +142,6 @@ class SignUpStep1Fragment : Fragment() {
                 } else {
                     selectedGraduation = item
                     binding.tvGraduation.text = item
-                    // [추가] 선택 시 active 스타일 적용
                     binding.tvGraduation.setBackgroundResource(R.drawable.bg_input_field_active)
                     viewModel.graduationTerm = item
                 }
@@ -121,7 +149,6 @@ class SignUpStep1Fragment : Fragment() {
         }
     }
 
-    // [수정] 버튼 상태 → SignUpEmailVerifyFragment 참고하여 bg/textColor 동적 변경
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -140,7 +167,6 @@ class SignUpStep1Fragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // [수정] 이름 입력 시 실시간 검증 (한글 또는 영문 2~10자)
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -156,7 +182,6 @@ class SignUpStep1Fragment : Fragment() {
         }
     }
 
-    // [추가] 이름 필드 상태 적용 (기본/유효/에러)
     private fun applyNameFieldState(name: String) {
         when {
             name.isEmpty() -> {
@@ -164,23 +189,19 @@ class SignUpStep1Fragment : Fragment() {
                 binding.tvNameError.visibility = View.GONE
             }
             !viewModel.isNameValid(name) -> {
-                // 에러 상태: 빨간 테두리 + 에러 메시지
                 binding.etName.setBackgroundResource(R.drawable.bg_input_field_error)
                 binding.tvNameError.visibility = View.VISIBLE
             }
             else -> {
-                // 유효 상태: 보라색 테두리
                 binding.etName.setBackgroundResource(R.drawable.bg_input_field_active)
                 binding.tvNameError.visibility = View.GONE
             }
         }
     }
 
-    // [추가] 유효성 갱신 → ViewModel에 전달
     private fun updateValidity() {
         val name = binding.etName.text.toString()
         val gradeIndex = if (selectedGrade != null) {
-            // 학년 문자열에서 숫자 추출 (예: "3학년" → 3)
             selectedGrade!!.replace("학년", "").toIntOrNull() ?: 0
         } else 0
         val semesterIndex = if (selectedSemester != null) 1 else 0
