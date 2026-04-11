@@ -47,6 +47,25 @@
         <item name="hintEnabled">false</item>
     </style>
 
+    <!-- 바텀시트 둥근 모서리 스타일 -->
+    <style name="Theme.MJCN.BottomSheet" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MJCN.BottomSheet</item>
+        <item name="colorPrimary">@color/primary</item>
+    </style>
+
+    <style name="Widget.MJCN.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MJCN.BottomSheet</item>
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <style name="ShapeAppearance.MJCN.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
     <!-- Card Style -->
     <style name="Widget.MJCN.Card" parent="Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">16dp</item>
