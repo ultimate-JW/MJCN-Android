@@ -1,11 +1,15 @@
 package com.ultimatejw.mjcn.ui.common
 
 import android.app.Dialog
+import android.graphics.Outline
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
+import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -25,7 +29,6 @@ class ListPickerBottomSheet : BottomSheetDialogFragment() {
     private var selectedItem: String? = null
     private var onItemSelected: ((String) -> Unit)? = null
 
-    // [추가] 바텀시트 둥근 모서리 테마 적용
     override fun getTheme(): Int = R.style.Theme_MJCN_BottomSheet
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -38,6 +41,26 @@ class ListPickerBottomSheet : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.bottom_sheet_list_picker, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val dialog = dialog as? BottomSheetDialog ?: return
+        val bottomSheet = dialog.findViewById<FrameLayout>(
+            com.google.android.material.R.id.design_bottom_sheet
+        ) ?: return
+
+        val cornerRadius = 24f * resources.displayMetrics.density
+
+        bottomSheet.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_bottom_sheet)
+        bottomSheet.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setRoundRect(
+                    0, 0, view.width, view.height + cornerRadius.toInt(), cornerRadius
+                )
+            }
+        }
+        bottomSheet.clipToOutline = true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
