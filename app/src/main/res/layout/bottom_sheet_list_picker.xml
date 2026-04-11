@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- [수정] 바텀시트 피커 레이아웃 - 피그마 기준 간격/크기 재조정 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_bottom_sheet"
     android:paddingTop="16dp"
-    android:paddingBottom="32dp"
+    android:paddingBottom="56dp"
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
-    <!-- 상단 핸들바 - 피그마 기준 위치/크기 조정 -->
+    <!-- [수정] 상단 핸들바 - 바텀시트 윗부분에서 16dp (paddingTop), 제목과 30dp 간격 -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/bg_picker_handle" />
 
-    <!-- 제목 - 피그마 기준 크기/간격 조정 -->
+    <!-- [수정] 제목 - 22sp bold, 리스트와 24dp 간격 -->
     <TextView
         android:id="@+id/tv_picker_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="24dp"
         android:textColor="@color/text_primary"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <!-- 항목 리스트 -->
