@@ -1,5 +1,6 @@
 package com.ultimatejw.mjcn.ui.common
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.ultimatejw.mjcn.R
 
@@ -22,6 +24,13 @@ class ListPickerBottomSheet : BottomSheetDialogFragment() {
     private var items: List<String> = emptyList()
     private var selectedItem: String? = null
     private var onItemSelected: ((String) -> Unit)? = null
+
+    // [추가] 바텀시트 둥근 모서리 테마 적용
+    override fun getTheme(): Int = R.style.Theme_MJCN_BottomSheet
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return BottomSheetDialog(requireContext(), theme)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

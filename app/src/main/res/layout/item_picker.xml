@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 바텀시트 피커 개별 항목 -->
+<!-- [수정] 바텀시트 피커 개별 항목 - paddingStart/End 24dp로 통일 -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tv_picker_item"
     android:layout_width="match_parent"
@@ -7,8 +7,8 @@
     android:background="@drawable/bg_picker_item"
     android:gravity="center_vertical"
     android:minHeight="54dp"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:layout_marginBottom="8dp"
