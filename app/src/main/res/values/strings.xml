@@ -21,6 +21,7 @@
     <string name="signup_id_title">아이디 설정</string>
     <string name="signup_interest_title">관심 분야</string>
     <string name="signup_interest_desc">관심 있는 분야를 1~3개 선택해주세요.</string>
+    <string name="signup_interest_other_hint">내용을 2자 이상, 100자 이하로 자유롭게 작성해주세요.</string>
     <string name="name_hint">한글 또는 영문 2~10자 입력</string>
     <string name="grade_hint">현재 학년 선택</string>
     <string name="semester_hint">현재 학기 선택</string>

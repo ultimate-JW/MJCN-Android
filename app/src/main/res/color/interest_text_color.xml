@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 관심분야 칩 텍스트 색상: 선택 시 검정, 미선택 시 #B4B4B4 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="@color/text_primary" />
+    <item android:color="@color/font_color3" />
+</selector>
