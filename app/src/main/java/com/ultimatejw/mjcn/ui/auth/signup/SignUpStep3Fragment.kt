@@ -1,10 +1,15 @@
 package com.ultimatejw.mjcn.ui.auth.signup
 
+import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -68,9 +73,44 @@ class SignUpStep3Fragment : Fragment() {
         observeViewModel()
         setupChipListeners()
         setupListeners()
+        setupOtherInput()
         // 레이아웃 측정 후 칩 너비를 볼드 기준으로 고정하고
         // 행이 화면 폭을 넘으면 좌우 패딩을 자동으로 줄임
         binding.interestsContainer.post { normalizeChipSizes() }
+    }
+
+    /** 기타 입력칸의 포커스/완료/텍스트 변경 리스너 설정 */
+    private fun setupOtherInput() {
+        binding.etOtherInterest.setOnFocusChangeListener { _, hasFocus ->
+            // 포커스 획득 → 컴팩트 모드(마지막 행만), 포커스 해제 → 풀 모드(전체 행)
+            setCompactMode(hasFocus)
+        }
+        binding.etOtherInterest.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                v.clearFocus()
+                hideKeyboard()
+                true
+            } else {
+                false
+            }
+        }
+        binding.etOtherInterest.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.onOtherInterestTextChanged(s?.toString().orEmpty())
+            }
+        })
+    }
+
+    private fun showKeyboard(view: View) {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
     private fun normalizeChipSizes() {
@@ -98,8 +138,6 @@ class SignUpStep3Fragment : Fragment() {
             }
         }
 
-        // 각 칩의 볼드 너비로 고정 → 선택/해제 시 크기 변하지 않음
-        // 반올림 오차로 텍스트가 줄바꿈되지 않도록 2dp 버퍼 추가
         val widthBuffer = (2 * density).toInt()
         chipViews.forEach { chip ->
             val originalTypeface = chip.typeface
@@ -142,23 +180,40 @@ class SignUpStep3Fragment : Fragment() {
             val selected = viewModel.selectedInterests.contains(chip.text.toString())
             applyChipState(chip, selected)
         }
-        applyOtherMode(viewModel.selectedInterests.contains(otherLabel))
+        val otherSelected = viewModel.selectedInterests.contains(otherLabel)
+        if (otherSelected) {
+            binding.etOtherInterest.setText(viewModel.otherInterestText)
+            binding.etOtherInterest.visible()
+        } else {
+            binding.etOtherInterest.gone()
+        }
+        // 복원 시에는 풀 모드로 시작 (포커스 없음)
+        setCompactMode(false)
     }
 
-    /** 기타 모드 전환 */
-    private fun applyOtherMode(otherSelected: Boolean) {
+    private fun setOtherEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.etOtherInterest.visible()
+            binding.etOtherInterest.requestFocus()
+            showKeyboard(binding.etOtherInterest)
+        } else {
+            binding.etOtherInterest.clearFocus()
+            hideKeyboard()
+            binding.etOtherInterest.gone()
+            setCompactMode(false)
+        }
+    }
+
+    private fun setCompactMode(compact: Boolean) {
         hideableRows.forEach { row ->
-            row.visibility = if (otherSelected) View.GONE else View.VISIBLE
+            row.visibility = if (compact) View.GONE else View.VISIBLE
         }
 
         val density = resources.displayMetrics.density
-        val topMarginDp = if (otherSelected) 28 else 48
+        val topMarginDp = if (compact) 28 else 48
         val params = binding.interestsContainer.layoutParams as ConstraintLayout.LayoutParams
         params.topMargin = (topMarginDp * density).toInt()
         binding.interestsContainer.layoutParams = params
-
-        if (otherSelected) binding.etOtherInterest.visible()
-        else binding.etOtherInterest.gone()
     }
 
     private fun observeViewModel() {
@@ -185,7 +240,7 @@ class SignUpStep3Fragment : Fragment() {
                 viewModel.onInterestToggled(label, willSelect)
 
                 if (label == otherLabel) {
-                    applyOtherMode(willSelect)
+                    setOtherEnabled(willSelect)
                 }
             }
         }
