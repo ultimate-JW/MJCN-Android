@@ -30,6 +30,7 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     // Step 3
     val selectedInterests = mutableListOf<String>()
+    var otherInterestText: String = ""
 
     private val _step1Valid = MutableStateFlow(false)
     val step1Valid: StateFlow<Boolean> = _step1Valid.asStateFlow()
@@ -45,6 +46,9 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         private val NAME_REGEX = Regex("^[가-힣a-zA-Z]{2,10}$")
+        const val OTHER_INTEREST_LABEL = "기타(직접 입력)"
+        const val OTHER_INTEREST_MIN_LENGTH = 2
+        const val OTHER_INTEREST_MAX_LENGTH = 100
     }
 
     fun onStep1Changed(name: String, grade: Int, semester: Int, entranceYear: Int = 0) {
@@ -78,6 +82,21 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         } else {
             selectedInterests.remove(interest)
         }
-        _step3Valid.value = selectedInterests.isNotEmpty()
+        refreshStep3Valid()
+    }
+
+    /** 기타 직접 입력 텍스트 변경 시 유효성 재평가 */
+    fun onOtherInterestTextChanged(text: String) {
+        otherInterestText = text
+        refreshStep3Valid()
+    }
+
+    private fun refreshStep3Valid() {
+        val hasSelection = selectedInterests.isNotEmpty()
+        val otherSelected = selectedInterests.contains(OTHER_INTEREST_LABEL)
+        val onlyOtherSelected = otherSelected && selectedInterests.size == 1
+        val otherTextLen = otherInterestText.trim().length
+        val otherTextValid = otherTextLen in OTHER_INTEREST_MIN_LENGTH..OTHER_INTEREST_MAX_LENGTH
+        _step3Valid.value = hasSelection && (!onlyOtherSelected || otherTextValid)
     }
 }
