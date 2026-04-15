@@ -6,8 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:paddingTop="60dp"
         android:paddingBottom="24dp">
 

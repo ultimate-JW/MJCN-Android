@@ -1,20 +1,16 @@
 package com.ultimatejw.mjcn.ui.main
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.usecase.user.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val logout: LogoutUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
-    fun logout() {
-        viewModelScope.launch {
-            logout()
-        }
+    suspend fun logout() {
+        logoutUseCase()
     }
 }
