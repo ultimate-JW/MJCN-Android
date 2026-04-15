@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.Notice
-import com.ultimatejw.mjcn.data.repository.NoticeRepository
+import com.ultimatejw.mjcn.domain.repository.NoticeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

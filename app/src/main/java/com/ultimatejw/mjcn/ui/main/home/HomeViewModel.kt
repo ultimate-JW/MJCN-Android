@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.Notice
 import com.ultimatejw.mjcn.domain.model.User
-import com.ultimatejw.mjcn.data.repository.NoticeRepository
-import com.ultimatejw.mjcn.data.repository.UserRepository
+import com.ultimatejw.mjcn.domain.repository.NoticeRepository
+import com.ultimatejw.mjcn.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
