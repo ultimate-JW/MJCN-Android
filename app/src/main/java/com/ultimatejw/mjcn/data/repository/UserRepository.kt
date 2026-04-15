@@ -6,7 +6,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.ultimatejw.mjcn.data.local.dao.UserDao
-import com.ultimatejw.mjcn.data.model.User
+import com.ultimatejw.mjcn.data.local.entity.toEntity
+import com.ultimatejw.mjcn.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class UserRepository @Inject constructor(
         prefs[KEY_IS_LOGGED_IN] ?: false
     }
 
-    val currentUser: Flow<User?> = userDao.getUser()
+    val currentUser: Flow<User?> = userDao.getUser().map { it?.toDomain() }
 
     suspend fun saveLoginState(token: String) {
         dataStore.edit { prefs ->
@@ -42,6 +43,6 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun saveUser(user: User) {
-        userDao.insertUser(user)
+        userDao.insertUser(user.toEntity())
     }
 }
