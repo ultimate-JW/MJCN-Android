@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ultimatejw.mjcn.R
-import com.ultimatejw.mjcn.data.model.Theme
+import com.ultimatejw.mjcn.domain.model.Theme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

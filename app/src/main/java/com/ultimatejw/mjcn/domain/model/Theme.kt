@@ -1,4 +1,4 @@
-package com.ultimatejw.mjcn.data.model
+package com.ultimatejw.mjcn.domain.model
 
 data class Theme(
     val id: String,

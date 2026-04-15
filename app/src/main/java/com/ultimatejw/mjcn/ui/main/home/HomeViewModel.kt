@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ultimatejw.mjcn.data.model.Notice
-import com.ultimatejw.mjcn.data.model.User
+import com.ultimatejw.mjcn.domain.model.Notice
+import com.ultimatejw.mjcn.domain.model.User
 import com.ultimatejw.mjcn.data.repository.NoticeRepository
 import com.ultimatejw.mjcn.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
