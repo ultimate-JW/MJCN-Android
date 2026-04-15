@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ultimatejw.mjcn.data.repository.UserRepository
+import com.ultimatejw.mjcn.domain.repository.UserRepository
 import com.ultimatejw.mjcn.utils.isValidEmail
 import com.ultimatejw.mjcn.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel

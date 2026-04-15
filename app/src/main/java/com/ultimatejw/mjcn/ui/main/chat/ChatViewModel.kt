@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.ChatSession
-import com.ultimatejw.mjcn.data.repository.ChatRepository
+import com.ultimatejw.mjcn.domain.repository.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

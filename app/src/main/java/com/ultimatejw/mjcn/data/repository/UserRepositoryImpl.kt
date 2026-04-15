@@ -8,33 +8,35 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.ultimatejw.mjcn.data.local.dao.UserDao
 import com.ultimatejw.mjcn.data.local.entity.toEntity
 import com.ultimatejw.mjcn.domain.model.User
+import com.ultimatejw.mjcn.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(
+class UserRepositoryImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val userDao: UserDao
-) {
+) : UserRepository {
+
     companion object {
         private val KEY_IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         private val KEY_USER_TOKEN = stringPreferencesKey("user_token")
     }
 
-    val isLoggedIn: Flow<Boolean> = dataStore.data.map { prefs ->
+    override val isLoggedIn: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[KEY_IS_LOGGED_IN] ?: false
     }
 
-    val currentUser: Flow<User?> = userDao.getUser().map { it?.toDomain() }
+    override val currentUser: Flow<User?> = userDao.getUser().map { it?.toDomain() }
 
-    suspend fun saveLoginState(token: String) {
+    override suspend fun saveLoginState(token: String) {
         dataStore.edit { prefs ->
             prefs[KEY_IS_LOGGED_IN] = true
             prefs[KEY_USER_TOKEN] = token
         }
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         dataStore.edit { prefs ->
             prefs[KEY_IS_LOGGED_IN] = false
             prefs.remove(KEY_USER_TOKEN)
@@ -42,7 +44,7 @@ class UserRepository @Inject constructor(
         userDao.clearAll()
     }
 
-    suspend fun saveUser(user: User) {
+    override suspend fun saveUser(user: User) {
         userDao.insertUser(user.toEntity())
     }
 }
