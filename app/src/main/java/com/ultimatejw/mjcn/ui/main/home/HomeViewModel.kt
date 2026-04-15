@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.Notice
 import com.ultimatejw.mjcn.domain.model.User
-import com.ultimatejw.mjcn.domain.repository.NoticeRepository
-import com.ultimatejw.mjcn.domain.repository.UserRepository
+import com.ultimatejw.mjcn.domain.usecase.notice.GetAllNoticesUseCase
+import com.ultimatejw.mjcn.domain.usecase.user.ObserveCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +23,8 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val noticeRepository: NoticeRepository,
+    private val observeCurrentUser: ObserveCurrentUserUseCase,
+    private val getAllNotices: GetAllNoticesUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(HomeUiState())
@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
     private fun observeUser() {
         viewModelScope.launch {
-            userRepository.currentUser.collect { user ->
+            observeCurrentUser().collect { user ->
                 _uiState.postValue(_uiState.value!!.copy(currentUser = user))
             }
         }
@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
 
     private fun observeNotices() {
         viewModelScope.launch {
-            noticeRepository.getAllNotices().collect { notices ->
+            getAllNotices().collect { notices ->
                 _uiState.postValue(_uiState.value!!.copy(notices = notices))
             }
         }

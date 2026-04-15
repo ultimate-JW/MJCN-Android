@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.Notice
-import com.ultimatejw.mjcn.domain.repository.NoticeRepository
+import com.ultimatejw.mjcn.domain.usecase.notice.GetAllNoticesUseCase
+import com.ultimatejw.mjcn.domain.usecase.notice.GetNoticesByCategoryUseCase
+import com.ultimatejw.mjcn.domain.usecase.notice.ToggleBookmarkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +19,9 @@ data class NoticeUiState(
 
 @HiltViewModel
 class NoticeViewModel @Inject constructor(
-    private val noticeRepository: NoticeRepository
+    private val getAllNotices: GetAllNoticesUseCase,
+    private val getNoticesByCategory: GetNoticesByCategoryUseCase,
+    private val toggleBookmark: ToggleBookmarkUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(NoticeUiState())
@@ -29,7 +33,7 @@ class NoticeViewModel @Inject constructor(
 
     private fun observeNotices() {
         viewModelScope.launch {
-            noticeRepository.getAllNotices().collect { notices ->
+            getAllNotices().collect { notices ->
                 _uiState.postValue(_uiState.value!!.copy(notices = notices))
             }
         }
@@ -38,8 +42,8 @@ class NoticeViewModel @Inject constructor(
     fun selectCategory(category: String) {
         _uiState.value = _uiState.value!!.copy(selectedCategory = category)
         viewModelScope.launch {
-            val flow = if (category == "전체") noticeRepository.getAllNotices()
-                       else noticeRepository.getNoticesByCategory(category)
+            val flow = if (category == "전체") getAllNotices()
+                       else getNoticesByCategory(category)
             flow.collect { notices ->
                 _uiState.postValue(_uiState.value!!.copy(notices = notices))
             }
@@ -48,7 +52,7 @@ class NoticeViewModel @Inject constructor(
 
     fun toggleBookmark(id: String, bookmarked: Boolean) {
         viewModelScope.launch {
-            noticeRepository.toggleBookmark(id, bookmarked)
+            toggleBookmark(id, bookmarked)
         }
     }
 }

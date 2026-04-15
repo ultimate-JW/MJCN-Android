@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ultimatejw.mjcn.domain.repository.UserRepository
+import com.ultimatejw.mjcn.domain.usecase.user.SaveLoginStateUseCase
 import com.ultimatejw.mjcn.utils.isValidEmail
 import com.ultimatejw.mjcn.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +28,7 @@ data class LoginUiState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val saveLoginState: SaveLoginStateUseCase,
 ) : ViewModel() {
 
     private val _event = MutableSharedFlow<LoginEvent>()
@@ -63,7 +63,7 @@ class LoginViewModel @Inject constructor(
         _uiState.value = _uiState.value!!.copy(isLoading = true)
         viewModelScope.launch {
             try {
-                userRepository.saveLoginState("dummy_token") // TODO: 실제 API 연동
+                saveLoginState("dummy_token") // TODO: 실제 API 연동
                 _event.emit(LoginEvent.NavigateToMain)
             } catch (e: Exception) {
                 _event.emit(LoginEvent.ShowError("로그인에 실패했습니다."))
