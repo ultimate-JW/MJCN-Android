@@ -51,10 +51,7 @@ class SignUpStep3Fragment : Fragment() {
         )
     }
 
-    /** 기타 선택 시 숨길 상위 3행 */
-    private val hideableRows: List<LinearLayout> by lazy {
-        listOf(binding.row1, binding.row2, binding.row3)
-    }
+    private val rowLayouts = mutableListOf<LinearLayout>()
 
     private val otherLabel = "기타(직접 입력)"
 
@@ -74,9 +71,8 @@ class SignUpStep3Fragment : Fragment() {
         setupChipListeners()
         setupListeners()
         setupOtherInput()
-        // 레이아웃 측정 후 칩 너비를 볼드 기준으로 고정하고
-        // 행이 화면 폭을 넘으면 좌우 패딩을 자동으로 줄임
-        binding.interestsContainer.post { normalizeChipSizes() }
+        // 레이아웃 측정 후 칩을 순서대로 greedy flow 배치
+        binding.interestsContainer.post { buildFlowLayout() }
     }
 
     /** 기타 입력칸의 포커스/완료/텍스트 변경 리스너 설정 */
@@ -113,65 +109,104 @@ class SignUpStep3Fragment : Fragment() {
         imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
-    private fun normalizeChipSizes() {
+    /**
+     * 칩이 화면 폭 경계를 넘으면 그 칩부터 다음 줄로 내려보냄
+     */
+    private fun buildFlowLayout() {
         val container = binding.interestsContainer
         val availableWidth = container.width - container.paddingStart - container.paddingEnd
-        if (availableWidth <= 0) return
+        if (availableWidth <= 0) {
+            container.post { buildFlowLayout() }
+            return
+        }
 
-        val rows = listOf(binding.row1, binding.row2, binding.row3, binding.row4)
         val density = resources.displayMetrics.density
-        val minHorizontalPadding = (6 * density).toInt()
-
-        // 현재 패딩 기준으로 각 행의 볼드 시 필요 너비 측정
-        var maxRowWidth = 0
-        rows.forEach { row ->
-            maxRowWidth = maxOf(maxRowWidth, measureRowBoldWidth(row))
-        }
-
-        if (maxRowWidth > availableWidth) {
-            val overflow = maxRowWidth - availableWidth
-            // 한 행에 칩 3개 × 좌우 2면 = 6면으로 분배
-            val reductionPerSide = (overflow + 5) / 6
-            chipViews.forEach { chip ->
-                val newH = (chip.paddingStart - reductionPerSide).coerceAtLeast(minHorizontalPadding)
-                chip.setPadding(newH, chip.paddingTop, newH, chip.paddingBottom)
-            }
-        }
-
+        val marginEndPx = (10 * density).toInt()
+        val rowBottomPx = (12 * density).toInt()
         val widthBuffer = (2 * density).toInt()
+
+        // 최초 호출 시 XML에 선언된 row_1..row_4를 재사용 대상으로 등록
+        if (rowLayouts.isEmpty()) {
+            rowLayouts.addAll(
+                listOf(binding.row1, binding.row2, binding.row3, binding.row4)
+            )
+        }
+
+        // 모든 칩을 현재 부모에서 떼어내고 기존 행을 비움
         chipViews.forEach { chip ->
+            (chip.parent as? ViewGroup)?.removeView(chip)
+        }
+        rowLayouts.forEach { it.removeAllViews() }
+
+        // 볼드 기준 칩 너비 측정 (선택 시 너비 변동 방지)
+        val chipWidths = IntArray(chipViews.size)
+        chipViews.forEachIndexed { i, chip ->
             val originalTypeface = chip.typeface
             chip.typeface = Typeface.DEFAULT_BOLD
             chip.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
             )
-            val boldWidth = chip.measuredWidth + widthBuffer
+            chipWidths[i] = chip.measuredWidth + widthBuffer
             chip.typeface = originalTypeface
+        }
 
-            val lp = chip.layoutParams
-            lp.width = boldWidth
-            chip.layoutParams = lp
+        // Greedy 배치: 가용 폭을 넘기는 순간 해당 칩부터 다음 줄로
+        val distribution = mutableListOf<MutableList<Int>>()
+        var currentRow = mutableListOf<Int>()
+        var currentWidth = 0
+        chipViews.indices.forEach { i ->
+            val w = chipWidths[i]
+            val next = if (currentRow.isEmpty()) w else currentWidth + marginEndPx + w
+            if (currentRow.isNotEmpty() && next > availableWidth) {
+                distribution.add(currentRow)
+                currentRow = mutableListOf()
+                currentWidth = 0
+            }
+            currentRow.add(i)
+            currentWidth = if (currentRow.size == 1) w else currentWidth + marginEndPx + w
+        }
+        if (currentRow.isNotEmpty()) distribution.add(currentRow)
+
+        // 행이 부족하면 추가 생성
+        while (rowLayouts.size < distribution.size) {
+            val newRow = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = rowBottomPx }
+            }
+            container.addView(newRow)
+            rowLayouts.add(newRow)
+        }
+
+        // 분배 결과를 각 행에 주입 (칩 간 간격 10dp, 행 마지막 칩은 0)
+        distribution.forEachIndexed { rowIdx, chipIndices ->
+            val row = rowLayouts[rowIdx]
+            chipIndices.forEachIndexed { pos, chipIdx ->
+                val chip = chipViews[chipIdx]
+                val lp = LinearLayout.LayoutParams(
+                    chipWidths[chipIdx],
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                lp.marginEnd = if (pos < chipIndices.size - 1) marginEndPx else 0
+                chip.layoutParams = lp
+                row.addView(chip)
+            }
+        }
+
+        // 사용하지 않는 행은 숨김
+        rowLayouts.forEach { row ->
+            row.visibility = if (row.childCount == 0) View.GONE else View.VISIBLE
         }
     }
 
-    /** 행 내부 모든 칩을 볼드로 측정해서 합계 너비(마진 포함)를 반환 */
-    private fun measureRowBoldWidth(row: LinearLayout): Int {
-        var total = 0
-        for (i in 0 until row.childCount) {
-            val child = row.getChildAt(i) as? TextView ?: continue
-            val originalTypeface = child.typeface
-            child.typeface = Typeface.DEFAULT_BOLD
-            child.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            )
-            total += child.measuredWidth
-            val lp = child.layoutParams as ViewGroup.MarginLayoutParams
-            total += lp.marginStart + lp.marginEnd
-            child.typeface = originalTypeface
+    private fun ViewGroup.containsChild(view: View): Boolean {
+        for (i in 0 until childCount) {
+            if (getChildAt(i) === view) return true
         }
-        return total
+        return false
     }
 
     /** 이전 선택 상태 복원 */
@@ -187,7 +222,6 @@ class SignUpStep3Fragment : Fragment() {
         } else {
             binding.etOtherInterest.gone()
         }
-        // 복원 시에는 풀 모드로 시작 (포커스 없음)
         setCompactMode(false)
     }
 
@@ -205,8 +239,14 @@ class SignUpStep3Fragment : Fragment() {
     }
 
     private fun setCompactMode(compact: Boolean) {
-        hideableRows.forEach { row ->
-            row.visibility = if (compact) View.GONE else View.VISIBLE
+        // 기타(직접 입력)
+        val otherRow = rowLayouts.firstOrNull { it.containsChild(binding.chipOther) }
+        rowLayouts.forEach { row ->
+            row.visibility = when {
+                row.childCount == 0 -> View.GONE
+                compact && row !== otherRow -> View.GONE
+                else -> View.VISIBLE
+            }
         }
 
         val density = resources.displayMetrics.density
