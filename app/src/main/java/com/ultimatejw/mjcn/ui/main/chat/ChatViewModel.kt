@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.ChatSession
-import com.ultimatejw.mjcn.domain.repository.ChatRepository
+import com.ultimatejw.mjcn.domain.usecase.chat.GetAllChatSessionsUseCase
+import com.ultimatejw.mjcn.domain.usecase.chat.GetChatSessionsByCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +18,8 @@ data class ChatUiState(
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val chatRepository: ChatRepository
+    private val getAllChatSessions: GetAllChatSessionsUseCase,
+    private val getChatSessionsByCategory: GetChatSessionsByCategoryUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(ChatUiState())
@@ -29,7 +31,7 @@ class ChatViewModel @Inject constructor(
 
     private fun observeSessions() {
         viewModelScope.launch {
-            chatRepository.getAllSessions().collect { sessions ->
+            getAllChatSessions().collect { sessions ->
                 _uiState.postValue(_uiState.value!!.copy(sessions = sessions))
             }
         }
@@ -38,8 +40,8 @@ class ChatViewModel @Inject constructor(
     fun selectCategory(category: String) {
         _uiState.value = _uiState.value!!.copy(selectedCategory = category)
         viewModelScope.launch {
-            val flow = if (category == "전체") chatRepository.getAllSessions()
-                       else chatRepository.getSessionsByCategory(category)
+            val flow = if (category == "전체") getAllChatSessions()
+                       else getChatSessionsByCategory(category)
             flow.collect { sessions ->
                 _uiState.postValue(_uiState.value!!.copy(sessions = sessions))
             }
