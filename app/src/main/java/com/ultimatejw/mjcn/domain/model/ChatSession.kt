@@ -1,11 +1,7 @@
-package com.ultimatejw.mjcn.data.model
+package com.ultimatejw.mjcn.domain.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "chat_sessions")
 data class ChatSession(
-    @PrimaryKey val id: String,
+    val id: String,
     val title: String,
     val lastMessage: String,
     val category: String,
