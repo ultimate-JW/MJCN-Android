@@ -28,7 +28,7 @@ class ThemeAdapter(
         fun bind(theme: Theme) {
             binding.tvTitle.text = theme.title
             binding.tvSubtitle.text = theme.subtitle
-            binding.ivIcon.setImageResource(theme.iconRes)
+            //binding.ivIcon.setImageResource(theme.iconRes)
             binding.root.setOnClickListener { onItemClick(theme) }
         }
     }

@@ -29,7 +29,7 @@
 
     <!--    Point Color -->
     <color name="point_color1">#534AB7</color>
-    <color name="point_color2">#E8E6FB</color>
+    <color name="point_color2">#756EC5</color>
     <color name="point_color3">#071648</color>
     <color name="point_color4">#F9F8FF</color>
 
@@ -59,6 +59,26 @@
 
     <!-- Divider -->
     <color name="divider">#EEEEEE</color>
+
+    <!-- Notice Category Chip -->
+    <color name="category_normal_bg">#FBEDFC</color>
+    <color name="category_normal_text">#5E3770</color>
+    <color name="category_academic_bg">#EEEDFC</color>
+    <color name="category_academic_text">#3F3988</color>
+    <color name="category_overseas_bg">#FCEDED</color>
+    <color name="category_overseas_text">#88393A</color>
+    <color name="category_contest_bg">#F6EEDC</color>
+    <color name="category_contest_text">#5E3A14</color>
+    <color name="category_activity_bg">#E7F4EE</color>
+    <color name="category_activity_text">#484F42</color>
+    <color name="category_career_bg">#EAF8FA</color>
+    <color name="category_career_text">#1D4067</color>
+    <color name="category_scholarship_bg">#F6DCE3</color>
+    <color name="category_scholarship_text">#5E1415</color>
+    <color name="category_career_simple_bg">#E0F2FF</color>
+    <color name="category_career_simple_text">#0369A1</color>
+    <color name="category_scholarship_simple_bg">#F0FDF4</color>
+    <color name="category_scholarship_simple_text">#15803D</color>
 
     <!-- Etc -->
     <color name="black">#FF000000</color>
