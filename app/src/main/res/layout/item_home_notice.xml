@@ -35,36 +35,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tv_team"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            app:layout_constraintStart_toEndOf="@id/layout_category_chip"
-            app:layout_constraintTop_toTopOf="@id/layout_category_chip"
-            app:layout_constraintBottom_toBottomOf="@id/layout_category_chip"
-            android:fontFamily="@font/pretendard_regular"
-            android:textSize="12dp"
-            android:textColor="@color/font_color2" />
-
-        <TextView
-            android:id="@+id/tv_dot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            app:layout_constraintStart_toEndOf="@id/tv_team"
-            app:layout_constraintTop_toTopOf="@id/layout_category_chip"
-            app:layout_constraintBottom_toBottomOf="@id/layout_category_chip"
-            android:text="·"
-            android:fontFamily="@font/pretendard_regular"
-            android:textSize="12dp"
-            android:textColor="@color/font_color2" />
-
-        <TextView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            app:layout_constraintStart_toEndOf="@id/tv_dot"
+            app:layout_constraintStart_toEndOf="@id/layout_category_chip"
             app:layout_constraintTop_toTopOf="@id/layout_category_chip"
             app:layout_constraintBottom_toBottomOf="@id/layout_category_chip"
             android:fontFamily="@font/pretendard_regular"
@@ -76,6 +51,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:layout_marginRight="12dp"
             android:lines="1"
             android:ellipsize="end"
             android:fontFamily="@font/pretendard_bold"

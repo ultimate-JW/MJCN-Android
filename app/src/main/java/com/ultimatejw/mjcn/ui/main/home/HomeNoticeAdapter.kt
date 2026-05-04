@@ -32,7 +32,6 @@ class HomeNoticeAdapter(
             binding.tvCategory.text = item.category
             binding.tvTitle.text = item.title
             binding.tvDate.text = item.date
-            binding.tvTeam.text = item.team
             binding.root.setOnClickListener { onItemClick(item) }
             applyCategoryChip(item.category)
         }

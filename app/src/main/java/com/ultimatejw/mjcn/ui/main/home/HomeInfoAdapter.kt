@@ -32,7 +32,6 @@ class HomeInfoAdapter(
             binding.tvCategory.text = item.category
             binding.tvTitle.text = item.title
             binding.tvDday.text = "D-${item.dday}"
-            binding.tvTeam.text = item.team
             binding.tvGroup.text = if (item.isGroup) "팀/개인" else "개인"
             binding.root.setOnClickListener { onItemClick(item) }
             applyCategoryChip(item.category)
