@@ -1,16 +1,19 @@
 package com.ultimatejw.mjcn.ui.auth.signup
 
 import android.content.Context
+import android.graphics.Point
+import android.graphics.Rect
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -51,9 +54,10 @@ class SignUpStep3Fragment : Fragment() {
         )
     }
 
-    private val rowLayouts = mutableListOf<LinearLayout>()
-
     private val otherLabel = "기타(직접 입력)"
+
+    // 기타 칩과 같은 행(같은 top Y)에 위치한 칩 집합. 초기 레이아웃 후 캐싱.
+    private var sameRowChips: Set<TextView>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,16 +75,17 @@ class SignUpStep3Fragment : Fragment() {
         setupChipListeners()
         setupListeners()
         setupOtherInput()
-        // 레이아웃 측정 후 칩을 순서대로 greedy flow 배치
-        binding.interestsContainer.post { buildFlowLayout() }
+        setupKeyboardInsets()
+        // 선택 시 BOLD 적용으로 폭이 변하는 것을 막기 위해 BOLD 기준 폭으로 고정
+        // 폭 고정으로 줄바꿈이 재계산되므로, 한 단계 더 post하여 같은 행 칩을 캐싱한다.
+        binding.interestsContainer.post {
+            lockChipWidthsToBold()
+            binding.interestsContainer.post { cacheSameRowChips() }
+        }
     }
 
-    /** 기타 입력칸의 포커스/완료/텍스트 변경 리스너 설정 */
+    /** 기타 입력칸의 완료/텍스트 변경 리스너 설정 */
     private fun setupOtherInput() {
-        binding.etOtherInterest.setOnFocusChangeListener { _, hasFocus ->
-            // 포커스 획득 → 컴팩트 모드(마지막 행만), 포커스 해제 → 풀 모드(전체 행)
-            setCompactMode(hasFocus)
-        }
         binding.etOtherInterest.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 v.clearFocus()
@@ -94,119 +99,161 @@ class SignUpStep3Fragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.contains('\n')) {
+                    // textMultiLine 환경에서 IME Enter 키가 눌린 경우 입력 종료로 처리:
+                    // 줄바꿈 문자를 제거하고 키보드를 닫는다.
+                    s.replace(0, s.length, s.toString().replace("\n", ""))
+                    binding.etOtherInterest.clearFocus()
+                    hideKeyboard()
+                }
                 viewModel.onOtherInterestTextChanged(s?.toString().orEmpty())
             }
         })
     }
 
+    private var keyboardLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var lastImeVisible: Boolean? = null
+
+    /**
+     * 키보드(IME) 표시 상태에 따라 기타 입력칸의 하단 제약을 동적으로 조정한다.
+     * - 키보드 표시: 버튼 숨김, EditText 하단을 부모 바닥(=키보드 윗면)에서 19dp 위로 고정.
+     *   maxHeight=285dp + bias=1.0으로 285dp까지 채우되 키보드 침범 시 줄어듦.
+     * - 키보드 숨김: 버튼 노출, EditText 하단을 btn_prev 위 10dp로 복귀.
+     *
+     * 다중 트리거로 IME 감지 신뢰성 확보:
+     *   1) decorView OnGlobalLayoutListener (시스템 레이아웃 변경)
+     *   2) showKeyboard / hideKeyboard 호출 직후 postDelayed
+     *   3) EditText 포커스 변경 직후 postDelayed
+     */
+    private fun setupKeyboardInsets() {
+        val decorView = requireActivity().window.decorView
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            checkKeyboardVisibility()
+        }
+        keyboardLayoutListener = listener
+        decorView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+        // 포커스 변경도 트리거로 사용 (사용자가 탭으로 EditText 진입/이탈 시)
+        binding.etOtherInterest.setOnFocusChangeListener { _, _ ->
+            binding.root.postDelayed({ checkKeyboardVisibility() }, 250)
+        }
+    }
+
+    private var lastKeyboardTopY: Int = -1
+
+    /** 다양한 트리거에서 호출되는 키보드 가시성 측정/적용 */
+    private fun checkKeyboardVisibility() {
+        if (_binding == null) return
+        val activity = activity ?: return
+        val decorView = activity.window.decorView
+        val rect = Rect()
+        decorView.getWindowVisibleDisplayFrame(rect)
+        val screenHeight = getRealScreenHeight(activity)
+        if (screenHeight <= 0) return
+        val keypadHeight = screenHeight - rect.bottom
+        val imeVisible = keypadHeight > screenHeight * 0.15
+        val newKeyboardTopY = if (imeVisible) rect.bottom else -1
+        // 키보드 표시 여부가 바뀌거나, 키보드 높이가 의미 있게 변한 경우(IME 교체 등) 재적용
+        val visibilityChanged = lastImeVisible != imeVisible
+        val topChanged = imeVisible && kotlin.math.abs(newKeyboardTopY - lastKeyboardTopY) > 4
+        if (visibilityChanged || topChanged) {
+            lastImeVisible = imeVisible
+            lastKeyboardTopY = newKeyboardTopY
+            applyKeyboardLayout(imeVisible, newKeyboardTopY)
+        }
+    }
+
+    /** 노치/폴더블 등 영향 없는 실제 화면 높이(픽셀) */
+    private fun getRealScreenHeight(activity: android.app.Activity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activity.windowManager.maximumWindowMetrics.bounds.height()
+        } else {
+            val display = activity.windowManager.defaultDisplay
+            val realSize = Point()
+            @Suppress("DEPRECATION")
+            display.getRealSize(realSize)
+            realSize.y
+        }
+    }
+
+    private fun applyKeyboardLayout(imeVisible: Boolean, keyboardTopY: Int = -1) {
+        // 키보드 표시 시 같은 행 칩만 노출, 숨김 시 전체 노출
+        setCompactMode(imeVisible)
+
+        val density = resources.displayMetrics.density
+        val params = binding.etOtherInterest.layoutParams as ConstraintLayout.LayoutParams
+        val root = binding.root
+
+        if (imeVisible && keyboardTopY > 0) {
+            binding.btnPrev.visibility = View.GONE
+            binding.btnNext.visibility = View.GONE
+            root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, 0)
+
+            // Guideline 을 키보드 윗면 - 19dp 위치(부모 기준 거리)로 이동.
+            // 부모(root)의 화면 Y 는 키보드 영향을 받지 않아 안정적이라
+            // setCompactMode 로 칩이 움직여도 영향 없음.
+            val rootLoc = IntArray(2)
+            root.getLocationOnScreen(rootLoc)
+            val rootTopScreenY = rootLoc[1]
+            val guideOffset = (keyboardTopY - (19 * density).toInt() - rootTopScreenY)
+                .coerceAtLeast(0)
+
+            val guideParams = binding.guideInputBottom.layoutParams as ConstraintLayout.LayoutParams
+            guideParams.guideBegin = guideOffset
+            guideParams.guideEnd = -1
+            guideParams.guidePercent = -1f
+            binding.guideInputBottom.layoutParams = guideParams
+
+            // EditText 하단을 Guideline 으로 전환. 높이는 다시 ConstraintLayout 제약 기반(0dp)으로
+            // 두면 라이브 칩 위치를 사용해 자동 계산됨. XML 의 layout_constraintHeight_max="285dp"
+            // 와 bias="0.0" 로 285dp 캡 + 상단 정렬이 그대로 적용됨.
+            params.bottomToTop = binding.guideInputBottom.id
+            params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
+            params.bottomMargin = 0
+            params.height = 0
+        } else {
+            binding.btnPrev.visibility = View.VISIBLE
+            binding.btnNext.visibility = View.VISIBLE
+            root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, (24 * density).toInt())
+            params.height = 0
+            params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
+            params.bottomToTop = binding.btnPrev.id
+            params.bottomMargin = (10 * density).toInt()
+        }
+        binding.etOtherInterest.layoutParams = params
+        binding.etOtherInterest.requestLayout()
+        binding.root.requestLayout()
+    }
+
     private fun showKeyboard(view: View) {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        // 키보드 애니메이션 종료 후 검사(시스템 이벤트가 늦거나 누락되는 경우 대비)
+        view.postDelayed({ checkKeyboardVisibility() }, 350)
     }
 
     private fun hideKeyboard() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+        binding.root.postDelayed({ checkKeyboardVisibility() }, 350)
     }
 
-    /**
-     * 칩이 화면 폭 경계를 넘으면 그 칩부터 다음 줄로 내려보냄
-     */
-    private fun buildFlowLayout() {
-        val container = binding.interestsContainer
-        val availableWidth = container.width - container.paddingStart - container.paddingEnd
-        if (availableWidth <= 0) {
-            container.post { buildFlowLayout() }
-            return
-        }
-
-        val density = resources.displayMetrics.density
-        val marginEndPx = (10 * density).toInt()
-        val rowBottomPx = (12 * density).toInt()
-        val widthBuffer = (2 * density).toInt()
-
-        // 최초 호출 시 XML에 선언된 row_1..row_4를 재사용 대상으로 등록
-        if (rowLayouts.isEmpty()) {
-            rowLayouts.addAll(
-                listOf(binding.row1, binding.row2, binding.row3, binding.row4)
-            )
-        }
-
-        // 모든 칩을 현재 부모에서 떼어내고 기존 행을 비움
+    /** BOLD 기준 폭으로 칩 너비를 고정해 선택 시 폭 변동 방지 */
+    private fun lockChipWidthsToBold() {
+        val widthBuffer = (2 * resources.displayMetrics.density).toInt()
         chipViews.forEach { chip ->
-            (chip.parent as? ViewGroup)?.removeView(chip)
-        }
-        rowLayouts.forEach { it.removeAllViews() }
-
-        // 볼드 기준 칩 너비 측정 (선택 시 너비 변동 방지)
-        val chipWidths = IntArray(chipViews.size)
-        chipViews.forEachIndexed { i, chip ->
             val originalTypeface = chip.typeface
             chip.typeface = Typeface.DEFAULT_BOLD
             chip.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
             )
-            chipWidths[i] = chip.measuredWidth + widthBuffer
+            val fixedWidth = chip.measuredWidth + widthBuffer
             chip.typeface = originalTypeface
+            val lp = chip.layoutParams
+            lp.width = fixedWidth
+            chip.layoutParams = lp
         }
-
-        // Greedy 배치: 가용 폭을 넘기는 순간 해당 칩부터 다음 줄로
-        val distribution = mutableListOf<MutableList<Int>>()
-        var currentRow = mutableListOf<Int>()
-        var currentWidth = 0
-        chipViews.indices.forEach { i ->
-            val w = chipWidths[i]
-            val next = if (currentRow.isEmpty()) w else currentWidth + marginEndPx + w
-            if (currentRow.isNotEmpty() && next > availableWidth) {
-                distribution.add(currentRow)
-                currentRow = mutableListOf()
-                currentWidth = 0
-            }
-            currentRow.add(i)
-            currentWidth = if (currentRow.size == 1) w else currentWidth + marginEndPx + w
-        }
-        if (currentRow.isNotEmpty()) distribution.add(currentRow)
-
-        // 행이 부족하면 추가 생성
-        while (rowLayouts.size < distribution.size) {
-            val newRow = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.HORIZONTAL
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = rowBottomPx }
-            }
-            container.addView(newRow)
-            rowLayouts.add(newRow)
-        }
-
-        // 분배 결과를 각 행에 주입 (칩 간 간격 10dp, 행 마지막 칩은 0)
-        distribution.forEachIndexed { rowIdx, chipIndices ->
-            val row = rowLayouts[rowIdx]
-            chipIndices.forEachIndexed { pos, chipIdx ->
-                val chip = chipViews[chipIdx]
-                val lp = LinearLayout.LayoutParams(
-                    chipWidths[chipIdx],
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                lp.marginEnd = if (pos < chipIndices.size - 1) marginEndPx else 0
-                chip.layoutParams = lp
-                row.addView(chip)
-            }
-        }
-
-        // 사용하지 않는 행은 숨김
-        rowLayouts.forEach { row ->
-            row.visibility = if (row.childCount == 0) View.GONE else View.VISIBLE
-        }
-    }
-
-    private fun ViewGroup.containsChild(view: View): Boolean {
-        for (i in 0 until childCount) {
-            if (getChildAt(i) === view) return true
-        }
-        return false
     }
 
     /** 이전 선택 상태 복원 */
@@ -238,15 +285,24 @@ class SignUpStep3Fragment : Fragment() {
         }
     }
 
+    /** 기타 칩과 같은 행(같은 top Y)에 위치한 칩들을 캐싱 */
+    private fun cacheSameRowChips() {
+        val otherChip = binding.chipOther
+        if (otherChip.height <= 0) {
+            // 아직 레이아웃 미완료 시 한 프레임 더 기다린 뒤 재시도
+            otherChip.post { cacheSameRowChips() }
+            return
+        }
+        val otherTop = otherChip.top
+        sameRowChips = chipViews.filter { it.top == otherTop }.toSet()
+    }
+
     private fun setCompactMode(compact: Boolean) {
-        // 기타(직접 입력)
-        val otherRow = rowLayouts.firstOrNull { it.containsChild(binding.chipOther) }
-        rowLayouts.forEach { row ->
-            row.visibility = when {
-                row.childCount == 0 -> View.GONE
-                compact && row !== otherRow -> View.GONE
-                else -> View.VISIBLE
-            }
+        // 컴팩트 모드: 기타 칩과 같은 행에 있는 칩만 보이도록, 나머지 칩은 GONE
+        // 캐시가 아직 준비되지 않은 경우 안전하게 전체 표시로 폴백
+        val rowChips = sameRowChips
+        chipViews.forEach { chip ->
+            chip.visibility = if (compact && rowChips != null && chip !in rowChips) View.GONE else View.VISIBLE
         }
 
         val density = resources.displayMetrics.density
@@ -301,6 +357,10 @@ class SignUpStep3Fragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        keyboardLayoutListener?.let { listener ->
+            activity?.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(listener)
+        }
+        keyboardLayoutListener = null
         super.onDestroyView()
         _binding = null
     }

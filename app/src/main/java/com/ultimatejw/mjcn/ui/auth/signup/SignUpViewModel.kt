@@ -94,9 +94,9 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
     private fun refreshStep3Valid() {
         val hasSelection = selectedInterests.isNotEmpty()
         val otherSelected = selectedInterests.contains(OTHER_INTEREST_LABEL)
-        val onlyOtherSelected = otherSelected && selectedInterests.size == 1
         val otherTextLen = otherInterestText.trim().length
         val otherTextValid = otherTextLen in OTHER_INTEREST_MIN_LENGTH..OTHER_INTEREST_MAX_LENGTH
-        _step3Valid.value = hasSelection && (!onlyOtherSelected || otherTextValid)
+        // 기타가 선택된 경우 다른 칩 동반 여부와 무관하게 입력 텍스트가 2~100자여야 함
+        _step3Valid.value = hasSelection && (!otherSelected || otherTextValid)
     }
 }
