@@ -29,7 +29,8 @@
         <!-- 로그인/회원가입 -->
         <activity
             android:name=".ui.auth.AuthActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- 메인 -->
         <activity
