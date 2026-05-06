@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary -->
-    <color name="primary">#5B4FCF</color>
+    <color name="primary">#534AB7</color>
     <color name="primary_dark">#4A3FB8</color>
     <color name="primary_light">#EEF0FF</color>
     <color name="primary_container">#E8E6FA</color>
 
     <!-- Background -->
     <color name="background">#FFFFFF</color>
+    <color name="sheet_background">#F5F5F5</color>
     <color name="surface">#F5F5F5</color>
     <color name="surface_card">#FFFFFF</color>
+    <color name="box_color">#534AB7</color>
+    <color name="box2_color">#756EC5</color>
+    <color name="bg_sheet">#F5F5F5</color>
 
     <!-- Text -->
     <color name="text_primary">#111111</color>
-    <color name="text_secondary">#666666</color>
-    <color name="text_hint">#AAAAAA</color>
+    <color name="text_secondary">#595959</color>
+    <color name="text_hint">#CCCCCC</color>
+    <color name="text_disabled">#888888</color>
     <color name="text_on_primary">#FFFFFF</color>
 
     <!-- Input -->
@@ -22,12 +27,26 @@
     <color name="input_stroke">#E0E0E0</color>
     <color name="input_stroke_focused">#5B4FCF</color>
 
+    <!--    Point Color -->
+    <color name="point_color1">#534AB7</color>
+    <color name="point_color2">#756EC5</color>
+    <color name="point_color3">#071648</color>
+    <color name="point_color4">#F9F8FF</color>
+
+    <!--    Font Color -->
+    <color name="font_color1">#1A1A1A</color>
+    <color name="font_color1_1">#595959</color>
+    <color name="font_color2">#888888</color>
+    <color name="font_color3">#B4B4B4</color>
+    <color name="font_color4">#CCCCCC</color>
+    <color name="font_color5">#FF0004</color>
+
     <!-- Button -->
-    <color name="btn_primary">#5B4FCF</color>
+    <color name="btn_primary">#534AB7</color>
     <color name="btn_primary_disabled">#D0D0D0</color>
     <color name="btn_text_disabled">#999999</color>
-    <color name="btn_kakao">#FEE500</color>
-    <color name="btn_kakao_text">#191919</color>
+    <color name="btn_kakao">#EEE268</color>
+    <color name="btn_kakao_text">#464642</color>
 
     <!-- Bottom Nav -->
     <color name="nav_active">#5B4FCF</color>
@@ -41,8 +60,29 @@
     <!-- Divider -->
     <color name="divider">#EEEEEE</color>
 
+    <!-- Notice Category Chip -->
+    <color name="category_normal_bg">#FBEDFC</color>
+    <color name="category_normal_text">#5E3770</color>
+    <color name="category_academic_bg">#EEEDFC</color>
+    <color name="category_academic_text">#3F3988</color>
+    <color name="category_overseas_bg">#FCEDED</color>
+    <color name="category_overseas_text">#88393A</color>
+    <color name="category_contest_bg">#F6EEDC</color>
+    <color name="category_contest_text">#5E3A14</color>
+    <color name="category_activity_bg">#E7F4EE</color>
+    <color name="category_activity_text">#484F42</color>
+    <color name="category_career_bg">#EAF8FA</color>
+    <color name="category_career_text">#1D4067</color>
+    <color name="category_scholarship_bg">#F6DCE3</color>
+    <color name="category_scholarship_text">#5E1415</color>
+    <color name="category_career_simple_bg">#E0F2FF</color>
+    <color name="category_career_simple_text">#0369A1</color>
+    <color name="category_scholarship_simple_bg">#F0FDF4</color>
+    <color name="category_scholarship_simple_text">#15803D</color>
+
     <!-- Etc -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="box_border">#F4F4F4</color>
 </resources>

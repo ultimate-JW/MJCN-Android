@@ -8,12 +8,12 @@ import androidx.room.TypeConverters
 import com.ultimatejw.mjcn.data.local.dao.ChatDao
 import com.ultimatejw.mjcn.data.local.dao.NoticeDao
 import com.ultimatejw.mjcn.data.local.dao.UserDao
-import com.ultimatejw.mjcn.data.model.ChatSession
-import com.ultimatejw.mjcn.data.model.Notice
-import com.ultimatejw.mjcn.data.model.User
+import com.ultimatejw.mjcn.data.local.entity.ChatSessionEntity
+import com.ultimatejw.mjcn.data.local.entity.NoticeEntity
+import com.ultimatejw.mjcn.data.local.entity.UserEntity
 
 @Database(
-    entities = [User::class, Notice::class, ChatSession::class],
+    entities = [UserEntity::class, NoticeEntity::class, ChatSessionEntity::class],
     version = 1,
     exportSchema = false
 )

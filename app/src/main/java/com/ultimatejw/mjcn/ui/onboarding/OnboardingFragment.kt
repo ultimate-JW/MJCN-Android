@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.onboarding
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +11,7 @@ import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentOnboardingBinding
 import com.ultimatejw.mjcn.ui.main.MainActivity
 
+@AndroidEntryPoint
 class OnboardingFragment : Fragment() {
 
     private var _binding: FragmentOnboardingBinding? = null

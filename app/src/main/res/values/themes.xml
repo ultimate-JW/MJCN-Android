@@ -29,7 +29,7 @@
 
     <style name="Widget.MJCN.Button.Kakao" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/btn_kakao_text</item>
-        <item name="backgroundTint">@color/btn_kakao</item>
+        <item name="android:background">@drawable/bg_btn_kakao</item>
         <item name="cornerRadius">100dp</item>
         <item name="android:textSize">16sp</item>
         <item name="android:letterSpacing">0</item>
@@ -45,6 +45,25 @@
         <item name="boxCornerRadiusBottomStart">100dp</item>
         <item name="boxCornerRadiusBottomEnd">100dp</item>
         <item name="hintEnabled">false</item>
+    </style>
+
+    <!-- 바텀시트 둥근 모서리 스타일 -->
+    <style name="Theme.MJCN.BottomSheet" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MJCN.BottomSheet</item>
+        <item name="colorPrimary">@color/primary</item>
+    </style>
+
+    <style name="Widget.MJCN.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MJCN.BottomSheet</item>
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <style name="ShapeAppearance.MJCN.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
     <!-- Card Style -->

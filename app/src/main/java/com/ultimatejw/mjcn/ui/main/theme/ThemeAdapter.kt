@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.ultimatejw.mjcn.data.model.Theme
+import com.ultimatejw.mjcn.domain.model.Theme
 import com.ultimatejw.mjcn.databinding.ItemThemeBinding
 
 class ThemeAdapter(
@@ -28,7 +28,7 @@ class ThemeAdapter(
         fun bind(theme: Theme) {
             binding.tvTitle.text = theme.title
             binding.tvSubtitle.text = theme.subtitle
-            binding.ivIcon.setImageResource(theme.iconRes)
+            //binding.ivIcon.setImageResource(theme.iconRes)
             binding.root.setOnClickListener { onItemClick(theme) }
         }
     }

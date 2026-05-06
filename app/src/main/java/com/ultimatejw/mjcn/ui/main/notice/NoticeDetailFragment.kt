@@ -1,4 +1,5 @@
 package com.ultimatejw.mjcn.ui.main.notice
+import dagger.hilt.android.AndroidEntryPoint
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.ultimatejw.mjcn.databinding.FragmentNoticeDetailBinding
 
+@AndroidEntryPoint
 class NoticeDetailFragment : Fragment() {
 
     private var _binding: FragmentNoticeDetailBinding? = null
