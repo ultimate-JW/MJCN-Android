@@ -40,11 +40,13 @@ class ThemeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+//        adapter = ThemeAdapter { theme ->
+//            findNavController().navigate(
+//                R.id.action_theme_to_detail,
+//                bundleOf("themeId" to theme.id)
+//            )
+//        }
         adapter = ThemeAdapter { theme ->
-            findNavController().navigate(
-                R.id.action_theme_to_detail,
-                bundleOf("themeId" to theme.id)
-            )
         }
         binding.rvThemes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvThemes.adapter = adapter
