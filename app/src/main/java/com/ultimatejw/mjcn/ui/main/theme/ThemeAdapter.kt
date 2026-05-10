@@ -1,5 +1,7 @@
 package com.ultimatejw.mjcn.ui.main.theme
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -39,7 +41,15 @@ class ThemeAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ThemeViewHolder) holder.bind(getItem(position))
+        if (holder is ThemeViewHolder) {
+            holder.bind(getItem(position))
+            val lp = holder.itemView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (lp != null) {
+                val topMarginDp = if (position == 0) 18 else 4
+                lp.topMargin = (topMarginDp * holder.itemView.resources.displayMetrics.density).toInt()
+                holder.itemView.layoutParams = lp
+            }
+        }
     }
 
     inner class ThemeViewHolder(
@@ -48,6 +58,9 @@ class ThemeAdapter(
         fun bind(theme: Theme) {
             binding.tvTitle.text = theme.title
             binding.tvSubtitle.text = theme.subtitle
+            binding.ivIcon.setImageResource(theme.iconRes)
+            binding.layoutThemeIcon.backgroundTintList =
+                ColorStateList.valueOf(Color.parseColor(theme.iconBgColor))
             binding.root.setOnClickListener { onItemClick(theme) }
         }
     }
