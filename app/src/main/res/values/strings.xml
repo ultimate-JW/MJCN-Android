@@ -48,6 +48,13 @@
     <string name="prev">이전</string>
     <string name="no_selection">선택 안 함</string>
 
+    <!-- SignUp Step4: 수강 이력 -->
+    <string name="signup_course_title">수강 이력</string>
+    <string name="signup_course_desc">기존에 수강한 과목들을 선택해주세요.\n추후 설정에서 수정 가능합니다.</string>
+    <string name="signup_course_search_hint">전체 과목 이름으로 검색</string>
+    <string name="signup_course_grade_hint">성적(선택)</string>
+    <string name="picker_grade_select">성적 선택</string>
+
     <!-- Bottom Nav -->
     <string name="nav_home">홈</string>
     <string name="nav_theme">테마</string>

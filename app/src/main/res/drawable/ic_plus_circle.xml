@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- primary 색 원 -->
+    <path
+        android:fillColor="#534AB7"
+        android:pathData="M12,12m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0" />
+    <!-- 가로 막대 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6.5,11h11a1,1 0,0 1,1 1v0a1,1 0,0 1,-1 1h-11a1,1 0,0 1,-1 -1v0a1,1 0,0 1,1 -1z" />
+    <!-- 세로 막대 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11,6.5h2a1,1 0,0 1,1 1v9a1,1 0,0 1,-1 1h-2a1,1 0,0 1,-1 -1v-9a1,1 0,0 1,1 -1z" />
+</vector>

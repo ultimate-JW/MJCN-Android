@@ -7,8 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
         android:paddingTop="60dp"
         android:paddingBottom="24dp">
 
@@ -302,10 +302,10 @@
             android:id="@+id/btn_next"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:background="@drawable/bg_btn_primary"
+            android:background="@drawable/bg_btn_disabled"
             android:enabled="false"
             android:text="@string/next"
-            android:textColor="@color/white"
+            android:textColor="@color/text_disabled"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintHorizontal_weight="2"
