@@ -35,12 +35,12 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- 검색바 -->
+        <!-- 검색바: 설명에서 24dp, 높이 58dp -->
         <FrameLayout
             android:id="@+id/search_container"
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="32dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="24dp"
             android:background="@drawable/bg_search_field"
             app:layout_constraintTop_toBottomOf="@id/tv_desc"
             app:layout_constraintStart_toStartOf="parent"

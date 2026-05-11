@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 검색바 아래 가로 스크롤되는 선택 과목 칩 -->
+<!-- 검색바 아래 가로 스크롤되는 선택 과목 칩:
+     - 높이 41dp 고정, 폭은 과목명 길이에 맞춰 wrap_content.
+     - 글씨 14sp primary, 테두리 없고 둥근 모서리(100dp), 배경 #F9F8FF.
+     - X 버튼: 16x16, 검정. 칩 오른쪽 모서리에서 12dp, 위/아래로 12.5dp 떨어진 위치 (41 = 12.5 + 16 + 12.5). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="41dp"
     android:layout_marginEnd="8dp"
     android:background="@drawable/bg_chip_course_selected"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="14dp"
-    android:paddingEnd="12dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp">
 
     <TextView
         android:id="@+id/tv_chip_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/primary"
-        android:textSize="13sp" />
+        android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/btn_chip_remove"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginStart="6dp"
         android:contentDescription="@null"
         android:src="@drawable/ic_close_small" />

@@ -57,8 +57,12 @@ class CourseAdapter(
             if (grade.isNullOrEmpty()) {
                 holder.tvGrade.text = ""
                 holder.tvGrade.hint = holder.itemView.context.getString(R.string.signup_course_grade_hint)
+                // 선택 전: 힌트 글씨 색과 동일한 #CCCCCC 테두리 (검색바와 같은 스타일)
+                holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
             } else {
                 holder.tvGrade.text = grade
+                // 선택 후: primary 테두리
+                holder.tvGrade.setBackgroundResource(R.drawable.bg_grade_select)
             }
             holder.tvGrade.setOnClickListener { onGradeClick(course) }
         } else {
