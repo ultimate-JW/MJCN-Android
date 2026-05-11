@@ -11,7 +11,6 @@
         android:paddingTop="60dp"
         android:paddingBottom="24dp">
 
-        <!-- 제목 (step1~3 과 동일한 디자인) -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
@@ -23,7 +22,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- 설명 (step1~3 과 동일한 디자인) -->
         <TextView
             android:id="@+id/tv_desc"
             android:layout_width="wrap_content"
@@ -35,7 +33,6 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- 검색바: 설명에서 24dp, 높이 58dp -->
         <FrameLayout
             android:id="@+id/search_container"
             android:layout_width="0dp"

@@ -190,9 +190,6 @@ class SignUpStep3Fragment : Fragment() {
             binding.btnNext.visibility = View.GONE
             root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, 0)
 
-            // Guideline 을 키보드 윗면 - 19dp 위치(부모 기준 거리)로 이동.
-            // 부모(root)의 화면 Y 는 키보드 영향을 받지 않아 안정적이라
-            // setCompactMode 로 칩이 움직여도 영향 없음.
             val rootLoc = IntArray(2)
             root.getLocationOnScreen(rootLoc)
             val rootTopScreenY = rootLoc[1]
@@ -205,9 +202,6 @@ class SignUpStep3Fragment : Fragment() {
             guideParams.guidePercent = -1f
             binding.guideInputBottom.layoutParams = guideParams
 
-            // EditText 하단을 Guideline 으로 전환. 높이는 다시 ConstraintLayout 제약 기반(0dp)으로
-            // 두면 라이브 칩 위치를 사용해 자동 계산됨. XML 의 layout_constraintHeight_max="285dp"
-            // 와 bias="0.0" 로 285dp 캡 + 상단 정렬이 그대로 적용됨.
             params.bottomToTop = binding.guideInputBottom.id
             params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
             params.bottomMargin = 0

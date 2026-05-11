@@ -14,13 +14,6 @@ import com.ultimatejw.mjcn.databinding.FragmentSignupStep4Binding
 import com.ultimatejw.mjcn.ui.common.ListPickerBottomSheet
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * 회원가입 Step4 - 수강 이력 선택 화면.
- * - 제목/설명/검색바/선택 칩은 상단 고정, 과목 리스트만 세로 스크롤, 이전/다음 버튼은 하단 고정.
- * - 과목 + 버튼 클릭 시 선택 상태로 전환되어 카드 테두리/성적 선택칸이 노출되고, 상단 칩이 추가된다.
- * - 칩의 x 또는 + 재클릭으로 선택을 해제한다.
- * - 성적 선택칸 클릭 시 공통 ListPickerBottomSheet 로 A+~D0/F/P 선택.
- */
 @AndroidEntryPoint
 class SignUpStep4Fragment : Fragment() {
 
