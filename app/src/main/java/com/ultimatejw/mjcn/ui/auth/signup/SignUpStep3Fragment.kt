@@ -37,8 +37,10 @@ class SignUpStep3Fragment : Fragment() {
 
     private val viewModel: SignUpViewModel by activityViewModels()
 
-    private val chipViews: List<TextView> by lazy {
-        listOf(
+    // step4 → step3 복귀처럼 뷰가 재생성될 때 by lazy 가 옛 binding 의 칩 참조를 그대로
+    // 들고 있는 문제를 방지하기 위해 매번 현재 binding 에서 새로 만든다.
+    private val chipViews: List<TextView>
+        get() = listOf(
             binding.chipIt,
             binding.chipDesign,
             binding.chipMarketing,
@@ -52,7 +54,6 @@ class SignUpStep3Fragment : Fragment() {
             binding.chipResearch,
             binding.chipOther
         )
-    }
 
     private val otherLabel = "기타(직접 입력)"
 
@@ -189,9 +190,6 @@ class SignUpStep3Fragment : Fragment() {
             binding.btnNext.visibility = View.GONE
             root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, 0)
 
-            // Guideline 을 키보드 윗면 - 19dp 위치(부모 기준 거리)로 이동.
-            // 부모(root)의 화면 Y 는 키보드 영향을 받지 않아 안정적이라
-            // setCompactMode 로 칩이 움직여도 영향 없음.
             val rootLoc = IntArray(2)
             root.getLocationOnScreen(rootLoc)
             val rootTopScreenY = rootLoc[1]
@@ -204,9 +202,6 @@ class SignUpStep3Fragment : Fragment() {
             guideParams.guidePercent = -1f
             binding.guideInputBottom.layoutParams = guideParams
 
-            // EditText 하단을 Guideline 으로 전환. 높이는 다시 ConstraintLayout 제약 기반(0dp)으로
-            // 두면 라이브 칩 위치를 사용해 자동 계산됨. XML 의 layout_constraintHeight_max="285dp"
-            // 와 bias="0.0" 로 285dp 캡 + 상단 정렬이 그대로 적용됨.
             params.bottomToTop = binding.guideInputBottom.id
             params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
             params.bottomMargin = 0
@@ -316,8 +311,15 @@ class SignUpStep3Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.step3Valid.collect { valid ->
+                    // step2 와 동일한 토글 패턴: 배경/글씨색을 함께 스왑
                     binding.btnNext.isEnabled = valid
-                    binding.btnNext.alpha = if (valid) 1f else 0.6f
+                    if (valid) {
+                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
+                        binding.btnNext.setTextColor(requireContext().getColor(R.color.white))
+                    } else {
+                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_disabled)
+                        binding.btnNext.setTextColor(requireContext().getColor(R.color.text_disabled))
+                    }
                 }
             }
         }
@@ -352,7 +354,7 @@ class SignUpStep3Fragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.btnNext.setOnClickListener {
-            findNavController().navigate(R.id.action_step3_to_onboarding)
+            findNavController().navigate(R.id.action_step3_to_step4)
         }
     }
 
@@ -361,6 +363,10 @@ class SignUpStep3Fragment : Fragment() {
             activity?.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(listener)
         }
         keyboardLayoutListener = null
+        // 뷰 캐시도 함께 리셋: 옛 binding 의 칩 참조가 남아 다음 onViewCreated 의 캐싱과 충돌하는 것을 방지.
+        sameRowChips = null
+        lastImeVisible = null
+        lastKeyboardTopY = -1
         super.onDestroyView()
         _binding = null
     }

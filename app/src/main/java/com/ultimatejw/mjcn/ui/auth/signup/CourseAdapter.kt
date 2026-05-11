@@ -1,0 +1,77 @@
+package com.ultimatejw.mjcn.ui.auth.signup
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.ultimatejw.mjcn.R
+
+/**
+ * 수강 이력 과목 리스트 어댑터.
+ * - 카드 형태, 선택 시 primary 테두리 + 성적 선택칸 노출.
+ * - 선택 상태는 외부(selectionProvider)에서 읽으므로 변경 시 notifyDataSetChanged 로 재바인딩한다.
+ */
+class CourseAdapter(
+    private val onAddClick: (Course) -> Unit,
+    private val onGradeClick: (Course) -> Unit,
+    private val selectionProvider: (String) -> SelectedCourse?
+) : RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
+
+    private val items = mutableListOf<Course>()
+
+    fun submit(list: List<Course>) {
+        items.clear()
+        items.addAll(list)
+        notifyDataSetChanged()
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val card: ConstraintLayout = itemView as ConstraintLayout
+        val tvName: TextView = itemView.findViewById(R.id.tv_course_name)
+        val tvMeta: TextView = itemView.findViewById(R.id.tv_course_meta)
+        val btnAdd: ImageView = itemView.findViewById(R.id.btn_add_course)
+        val tvGrade: TextView = itemView.findViewById(R.id.tv_grade_select)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_course, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val course = items[position]
+        holder.tvName.text = course.name
+        holder.tvMeta.text = course.meta
+
+        val selection = selectionProvider(course.name)
+        val isSelected = selection != null
+        holder.card.isSelected = isSelected
+
+        if (isSelected) {
+            holder.tvGrade.visibility = View.VISIBLE
+            val grade = selection?.grade
+            if (grade.isNullOrEmpty()) {
+                holder.tvGrade.text = ""
+                holder.tvGrade.hint = holder.itemView.context.getString(R.string.signup_course_grade_hint)
+                // 선택 전: 힌트 글씨 색과 동일한 #CCCCCC 테두리 (검색바와 같은 스타일)
+                holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
+            } else {
+                holder.tvGrade.text = grade
+                // 선택 후: primary 테두리
+                holder.tvGrade.setBackgroundResource(R.drawable.bg_grade_select)
+            }
+            holder.tvGrade.setOnClickListener { onGradeClick(course) }
+        } else {
+            holder.tvGrade.visibility = View.GONE
+            holder.tvGrade.setOnClickListener(null)
+        }
+
+        holder.btnAdd.setOnClickListener { onAddClick(course) }
+    }
+
+    override fun getItemCount(): Int = items.size
+}
