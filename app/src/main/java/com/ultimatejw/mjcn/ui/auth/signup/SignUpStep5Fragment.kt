@@ -10,14 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ultimatejw.mjcn.databinding.FragmentSignupStep4Binding
-import com.ultimatejw.mjcn.ui.common.ListPickerBottomSheet
+import com.ultimatejw.mjcn.R
+import com.ultimatejw.mjcn.databinding.FragmentSignupStep5Binding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SignUpStep4Fragment : Fragment() {
+class SignUpStep5Fragment : Fragment() {
 
-    private var _binding: FragmentSignupStep4Binding? = null
+    private var _binding: FragmentSignupStep5Binding? = null
     private val binding get() = _binding!!
 
     private val viewModel: SignUpViewModel by activityViewModels()
@@ -25,7 +25,6 @@ class SignUpStep4Fragment : Fragment() {
     private lateinit var courseAdapter: CourseAdapter
     private lateinit var chipAdapter: SelectedCourseAdapter
 
-    // 전체 과목 데이터 (디자인 기준 샘플)
     private val allCourses: List<Course> by lazy { buildCourseData() }
 
     override fun onCreateView(
@@ -33,7 +32,7 @@ class SignUpStep4Fragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSignupStep4Binding.inflate(inflater, container, false)
+        _binding = FragmentSignupStep5Binding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,8 +47,8 @@ class SignUpStep4Fragment : Fragment() {
     private fun setupRecyclers() {
         courseAdapter = CourseAdapter(
             onAddClick = { course -> toggleCourse(course) },
-            onGradeClick = { course -> showGradePicker(course) },
-            selectionProvider = { name -> viewModel.findSelectedCourse(name) }
+            selectionProvider = { name -> viewModel.findCurrentCourse(name) },
+            showGradeOnSelect = false
         )
         binding.rvCourses.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCourses.adapter = courseAdapter
@@ -77,36 +76,22 @@ class SignUpStep4Fragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.btnNext.setOnClickListener {
-            findNavController().navigate(com.ultimatejw.mjcn.R.id.action_step4_to_step5)
+            findNavController().navigate(R.id.action_step5_to_complete)
         }
     }
 
-    /** + 버튼 클릭 시: 미선택이면 추가, 선택 상태면 해제 */
     private fun toggleCourse(course: Course) {
-        if (viewModel.findSelectedCourse(course.name) == null) {
-            viewModel.addSelectedCourse(course.name)
+        if (viewModel.findCurrentCourse(course.name) == null) {
+            viewModel.addCurrentCourse(course.name)
         } else {
-            viewModel.removeSelectedCourse(course.name)
+            viewModel.removeCurrentCourse(course.name)
         }
         refreshLists()
     }
 
     private fun removeCourse(name: String) {
-        viewModel.removeSelectedCourse(name)
+        viewModel.removeCurrentCourse(name)
         refreshLists()
-    }
-
-    private fun showGradePicker(course: Course) {
-        val grades = listOf("A+", "A0", "B+", "B0", "C+", "C0", "D+", "D0", "F", "P")
-        val currentGrade = viewModel.findSelectedCourse(course.name)?.grade
-        ListPickerBottomSheet.newInstance(
-            title = getString(com.ultimatejw.mjcn.R.string.picker_grade_select),
-            items = grades,
-            selectedItem = currentGrade
-        ) { selected ->
-            viewModel.setCourseGrade(course.name, selected)
-            refreshCourseList()
-        }.show(childFragmentManager, "grade_picker")
     }
 
     private fun refreshLists() {
@@ -115,7 +100,7 @@ class SignUpStep4Fragment : Fragment() {
     }
 
     private fun refreshChipList() {
-        val chips = viewModel.selectedCourses.toList()
+        val chips = viewModel.selectedCurrentCourses.toList()
         binding.rvSelectedCourses.visibility = if (chips.isEmpty()) View.GONE else View.VISIBLE
         chipAdapter.submit(chips)
     }
@@ -132,24 +117,20 @@ class SignUpStep4Fragment : Fragment() {
 
     private fun buildCourseData(): List<Course> {
         val majorMeta = "반도체 ICT대학 · 컴퓨터정보통신공학부 · 컴퓨터공학과"
-        val liberalArtsMeta = "자연캠퍼스 교양"
+        val code = "0727"
         return listOf(
-            Course("4차산업혁명과기업가정신", majorMeta),
-            Course("AI프로그래밍", majorMeta),
-            Course("객체지향프로그래밍2", majorMeta),
-            Course("공개SW실무", majorMeta),
-            Course("그래프신경망과빅데이터", majorMeta),
-            Course("기계학습", majorMeta),
-            Course("데이터베이스", majorMeta),
-            Course("데이터베이스설계", majorMeta),
-            Course("딥러닝", majorMeta),
-            Course("모바일프로그래밍", majorMeta),
-            Course("블록체인", majorMeta),
-            Course("소프트웨어공학", majorMeta),
-            Course("영어 1", liberalArtsMeta),
-            Course("영어 2", liberalArtsMeta),
-            Course("영어회화 1", liberalArtsMeta),
-            Course("영어회화 2", liberalArtsMeta)
+            Course("4차산업혁명과기업가정신", majorMeta, code),
+            Course("AI프로그래밍", majorMeta, code),
+            Course("객체지향프로그래밍2", majorMeta, code),
+            Course("공개SW실무", majorMeta, code),
+            Course("그래프신경망과빅데이터", majorMeta, code),
+            Course("기계학습", majorMeta, code),
+            Course("데이터베이스", majorMeta, code),
+            Course("데이터베이스설계", majorMeta, code),
+            Course("딥러닝", majorMeta, code),
+            Course("모바일프로그래밍", majorMeta, code),
+            Course("블록체인", majorMeta, code),
+            Course("소프트웨어공학", majorMeta, code)
         )
     }
 

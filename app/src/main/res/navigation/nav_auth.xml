@@ -66,9 +66,23 @@
         android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep4Fragment"
         android:label="SignUpStep4Fragment">
         <action
-            android:id="@+id/action_step4_to_onboarding"
-            app:destination="@id/onboardingFragment" />
+            android:id="@+id/action_step4_to_step5"
+            app:destination="@id/signUpStep5Fragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep5Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep5Fragment"
+        android:label="SignUpStep5Fragment">
+        <action
+            android:id="@+id/action_step5_to_complete"
+            app:destination="@id/signUpCompleteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpCompleteFragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpCompleteFragment"
+        android:label="SignUpCompleteFragment" />
 
     <fragment
         android:id="@+id/onboardingFragment"

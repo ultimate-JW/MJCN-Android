@@ -52,6 +52,22 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         findSelectedCourse(name)?.grade = grade
     }
 
+    // Step 5 - 현재 수강 과목
+    val selectedCurrentCourses = mutableListOf<SelectedCourse>()
+
+    fun findCurrentCourse(name: String): SelectedCourse? =
+        selectedCurrentCourses.firstOrNull { it.name == name }
+
+    fun addCurrentCourse(name: String) {
+        if (findCurrentCourse(name) == null) {
+            selectedCurrentCourses.add(SelectedCourse(name))
+        }
+    }
+
+    fun removeCurrentCourse(name: String) {
+        selectedCurrentCourses.removeAll { it.name == name }
+    }
+
     private val _step1Valid = MutableStateFlow(false)
     val step1Valid: StateFlow<Boolean> = _step1Valid.asStateFlow()
 

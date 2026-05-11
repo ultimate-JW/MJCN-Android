@@ -10,14 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ultimatejw.mjcn.R
 
 /**
- * 수강 이력 과목 리스트 어댑터.
- * - 카드 형태, 선택 시 primary 테두리 + 성적 선택칸 노출.
- * - 선택 상태는 외부(selectionProvider)에서 읽으므로 변경 시 notifyDataSetChanged 로 재바인딩한다.
+ * 수강 이력 / 현재 수강 과목 리스트 어댑터.
+ * - 카드 형태. 선택 시 primary 테두리.
+ * - [showGradeOnSelect] true → 선택 시 성적 선택칸도 노출 (step4).
+ *                       false → 테두리만 변경, 성적칸 미노출 (step5).
  */
 class CourseAdapter(
     private val onAddClick: (Course) -> Unit,
-    private val onGradeClick: (Course) -> Unit,
-    private val selectionProvider: (String) -> SelectedCourse?
+    private val onGradeClick: (Course) -> Unit = {},
+    private val selectionProvider: (String) -> SelectedCourse?,
+    private val showGradeOnSelect: Boolean = true
 ) : RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
 
     private val items = mutableListOf<Course>()
@@ -44,24 +46,23 @@ class CourseAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val course = items[position]
-        holder.tvName.text = course.name
+        // 학수번호가 있으면 "코드 과목명" 형태로, 없으면 과목명만 표시
+        holder.tvName.text = if (course.code.isEmpty()) course.name else "${course.code} ${course.name}"
         holder.tvMeta.text = course.meta
 
         val selection = selectionProvider(course.name)
         val isSelected = selection != null
         holder.card.isSelected = isSelected
 
-        if (isSelected) {
+        if (isSelected && showGradeOnSelect) {
             holder.tvGrade.visibility = View.VISIBLE
             val grade = selection?.grade
             if (grade.isNullOrEmpty()) {
                 holder.tvGrade.text = ""
                 holder.tvGrade.hint = holder.itemView.context.getString(R.string.signup_course_grade_hint)
-                // 선택 전: 힌트 글씨 색과 동일한 #CCCCCC 테두리 (검색바와 같은 스타일)
                 holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
             } else {
                 holder.tvGrade.text = grade
-                // 선택 후: primary 테두리
                 holder.tvGrade.setBackgroundResource(R.drawable.bg_grade_select)
             }
             holder.tvGrade.setOnClickListener { onGradeClick(course) }

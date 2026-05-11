@@ -55,6 +55,15 @@
     <string name="signup_course_grade_hint">성적(선택)</string>
     <string name="picker_grade_select">성적 선택</string>
 
+    <!-- SignUp Step5: 현재 수강 과목 -->
+    <string name="signup_current_title">현재 수강 과목</string>
+    <string name="signup_current_desc">현재 수강 중인 과목을 선택해주세요.\n추후 설정에서 수정 가능합니다.</string>
+
+    <!-- SignUp 완료 화면 -->
+    <string name="signup_complete_title">회원가입이 완료되었습니다!</string>
+    <string name="signup_complete_desc">MJCN과 함께 대학 생활을\n더 스마트하게 시작해보세요.</string>
+    <string name="signup_complete_start">시작하기</string>
+
     <!-- Bottom Nav -->
     <string name="nav_home">홈</string>
     <string name="nav_theme">테마</string>
