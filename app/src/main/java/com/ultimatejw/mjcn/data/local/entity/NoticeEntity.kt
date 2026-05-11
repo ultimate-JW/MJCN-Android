@@ -8,35 +8,26 @@ import com.ultimatejw.mjcn.domain.model.Notice
 data class NoticeEntity(
     @PrimaryKey val id: String,
     val title: String,
-    val summary: String,
-    val content: String,
     val category: String,
-    val source: String,
+    val team: String,
     val date: String,
-    val isBookmarked: Boolean = false,
-    val hasSummary: Boolean = false
+    val isBookmarked: Boolean = false
 ) {
     fun toDomain() = Notice(
         id = id,
         title = title,
-        summary = summary,
-        content = content,
         category = category,
-        source = source,
+        team = team,
         date = date,
-        isBookmarked = isBookmarked,
-        hasSummary = hasSummary
+        isBookmarked = isBookmarked
     )
 }
 
 fun Notice.toEntity() = NoticeEntity(
     id = id,
     title = title,
-    summary = summary,
-    content = content,
     category = category,
-    source = source,
+    team = team,
     date = date,
-    isBookmarked = isBookmarked,
-    hasSummary = hasSummary
+    isBookmarked = isBookmarked
 )

@@ -22,7 +22,7 @@
             android:background="@drawable/bg_point_color2_radius12" >
 
             <ImageView
-                android:id="@+id/iv_icon"
+                android:id="@id/iv_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
