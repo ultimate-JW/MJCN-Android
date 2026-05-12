@@ -33,6 +33,8 @@
             android:background="@color/background"
             app:itemIconTint="@color/nav_selector"
             app:itemTextColor="@color/nav_selector"
+            app:itemTextAppearanceActive="@style/TextAppearance.MJCN.BottomNav.Active"
+            app:itemTextAppearanceInactive="@style/TextAppearance.MJCN.BottomNav.Inactive"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
 
