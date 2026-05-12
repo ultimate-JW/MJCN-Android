@@ -66,6 +66,12 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <!-- Input Pill Shape -->
+    <style name="ShapeAppearance.MJCN.InputPill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Bottom Nav Text Appearance -->
     <style name="TextAppearance.MJCN.BottomNav.Active" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textStyle">bold</item>

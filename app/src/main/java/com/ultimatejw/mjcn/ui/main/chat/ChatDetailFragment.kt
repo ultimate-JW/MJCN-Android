@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.databinding.FragmentChatDetailBinding
 
 @AndroidEntryPoint
@@ -26,11 +27,14 @@ class ChatDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sessionId = arguments?.getString("sessionId") ?: ""
-        // TODO: sessionId로 기존 대화 불러오기, 새 대화면 빈 화면
-        setupSendButton()
+        binding.tvTitle.text = if (sessionId.isBlank()) "새 대화" else "AI 채팅"
+        setupListeners()
     }
 
-    private fun setupSendButton() {
+    private fun setupListeners() {
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
         binding.btnSend.setOnClickListener {
             val message = binding.etMessage.text.toString()
             if (message.isBlank()) return@setOnClickListener
