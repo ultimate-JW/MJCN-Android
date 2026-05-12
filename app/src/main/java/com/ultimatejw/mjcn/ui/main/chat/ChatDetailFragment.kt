@@ -4,14 +4,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.ultimatejw.mjcn.databinding.DialogDeleteConfirmBinding
 import com.ultimatejw.mjcn.databinding.FragmentChatDetailBinding
 import com.ultimatejw.mjcn.databinding.PopupCategoryChangeBinding
@@ -129,6 +133,7 @@ class ChatDetailFragment : Fragment() {
             chip.setOnClickListener {
                 // TODO: 카테고리 변경 저장
                 popup.dismiss()
+                showToast("카테고리가 변경되었습니다.")
             }
         }
 
@@ -149,6 +154,7 @@ class ChatDetailFragment : Fragment() {
 
         dialogBinding.btnDeleteConfirm.setOnClickListener {
             dialog.dismiss()
+            showToast("채팅 내용을 삭제했습니다.")
             findNavController().popBackStack()
         }
         dialogBinding.btnCancel.setOnClickListener {
@@ -156,6 +162,29 @@ class ChatDetailFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun showToast(message: String) {
+        val snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
+        val snackbarView = snackbar.view
+
+        snackbarView.background = GradientDrawable().apply {
+            setColor(Color.parseColor("#CC000000"))
+            cornerRadius = 100f
+        }
+        snackbarView.setPadding(48, 0, 48, 0)
+
+        val tv = snackbarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        tv.setTextColor(Color.WHITE)
+        tv.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        val params = snackbarView.layoutParams as FrameLayout.LayoutParams
+        params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+        params.width = FrameLayout.LayoutParams.WRAP_CONTENT
+        params.bottomMargin = (80 * resources.displayMetrics.density).toInt()
+        snackbarView.layoutParams = params
+
+        snackbar.show()
     }
 
     override fun onDestroyView() {
