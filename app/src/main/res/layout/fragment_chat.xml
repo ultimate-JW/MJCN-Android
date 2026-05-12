@@ -249,25 +249,31 @@
                             style="@style/Widget.MJCN.ChatCategoryChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="수강신청" />
+                            android:text="학사공지" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MJCN.ChatCategoryChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="학교생활" />
+                            android:text="수강·졸업" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MJCN.ChatCategoryChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="취업·진로" />
+                            android:text="장학·등록금" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MJCN.ChatCategoryChip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="공모전" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/Widget.MJCN.ChatCategoryChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="취업·진로" />
                     </com.google.android.material.chip.ChipGroup>
                 </HorizontalScrollView>
 
