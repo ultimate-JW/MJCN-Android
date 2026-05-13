@@ -30,6 +30,43 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     // Step 3
     val selectedInterests = mutableListOf<String>()
+    var otherInterestText: String = ""
+
+    // Step 4 - 수강 이력
+    val selectedCourses = mutableListOf<SelectedCourse>()
+
+    fun findSelectedCourse(name: String): SelectedCourse? =
+        selectedCourses.firstOrNull { it.name == name }
+
+    fun addSelectedCourse(name: String) {
+        if (findSelectedCourse(name) == null) {
+            selectedCourses.add(SelectedCourse(name))
+        }
+    }
+
+    fun removeSelectedCourse(name: String) {
+        selectedCourses.removeAll { it.name == name }
+    }
+
+    fun setCourseGrade(name: String, grade: String) {
+        findSelectedCourse(name)?.grade = grade
+    }
+
+    // Step 5 - 현재 수강 과목
+    val selectedCurrentCourses = mutableListOf<SelectedCourse>()
+
+    fun findCurrentCourse(name: String): SelectedCourse? =
+        selectedCurrentCourses.firstOrNull { it.name == name }
+
+    fun addCurrentCourse(name: String) {
+        if (findCurrentCourse(name) == null) {
+            selectedCurrentCourses.add(SelectedCourse(name))
+        }
+    }
+
+    fun removeCurrentCourse(name: String) {
+        selectedCurrentCourses.removeAll { it.name == name }
+    }
 
     private val _step1Valid = MutableStateFlow(false)
     val step1Valid: StateFlow<Boolean> = _step1Valid.asStateFlow()
@@ -45,6 +82,9 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         private val NAME_REGEX = Regex("^[가-힣a-zA-Z]{2,10}$")
+        const val OTHER_INTEREST_LABEL = "기타(직접 입력)"
+        const val OTHER_INTEREST_MIN_LENGTH = 2
+        const val OTHER_INTEREST_MAX_LENGTH = 100
     }
 
     fun onStep1Changed(name: String, grade: Int, semester: Int, entranceYear: Int = 0) {
@@ -78,6 +118,21 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         } else {
             selectedInterests.remove(interest)
         }
-        _step3Valid.value = selectedInterests.isNotEmpty()
+        refreshStep3Valid()
+    }
+
+    /** 기타 직접 입력 텍스트 변경 시 유효성 재평가 */
+    fun onOtherInterestTextChanged(text: String) {
+        otherInterestText = text
+        refreshStep3Valid()
+    }
+
+    private fun refreshStep3Valid() {
+        val hasSelection = selectedInterests.isNotEmpty()
+        val otherSelected = selectedInterests.contains(OTHER_INTEREST_LABEL)
+        val otherTextLen = otherInterestText.trim().length
+        val otherTextValid = otherTextLen in OTHER_INTEREST_MIN_LENGTH..OTHER_INTEREST_MAX_LENGTH
+        // 기타가 선택된 경우 다른 칩 동반 여부와 무관하게 입력 텍스트가 2~100자여야 함
+        _step3Valid.value = hasSelection && (!otherSelected || otherTextValid)
     }
 }
