@@ -1,8 +1,10 @@
 package com.ultimatejw.mjcn.ui.main.chat
 import dagger.hilt.android.AndroidEntryPoint
 
+import android.animation.ValueAnimator
 import android.app.Dialog
 import android.graphics.Color
+import android.graphics.RectF
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -10,11 +12,15 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.snackbar.Snackbar
 import com.ultimatejw.mjcn.databinding.DialogDeleteConfirmBinding
 import com.ultimatejw.mjcn.databinding.FragmentChatDetailBinding
@@ -26,6 +32,9 @@ class ChatDetailFragment : Fragment() {
 
     private var _binding: FragmentChatDetailBinding? = null
     private val binding get() = _binding!!
+
+    private var isKeyboardVisible = false
+    private var keyboardAnimator: ValueAnimator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +50,64 @@ class ChatDetailFragment : Fragment() {
         val sessionId = arguments?.getString("sessionId") ?: ""
         binding.tvTitle.text = if (sessionId.isBlank()) "새 대화" else "AI 채팅"
         setupListeners()
+        setupKeyboardAnimation()
     }
+
+    private fun setupKeyboardAnimation() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            val bottomPadding = maxOf(imeBottom, navBottom)
+            val imeVisible = imeBottom > navBottom
+
+            binding.root.setPadding(0, 0, 0, bottomPadding)
+
+            if (imeVisible != isKeyboardVisible) {
+                isKeyboardVisible = imeVisible
+                animateForKeyboard(imeVisible)
+            }
+            insets
+        }
+    }
+
+    private fun animateForKeyboard(keyboardVisible: Boolean) {
+        val card = binding.cardInput
+        val inputLayout = binding.layoutInput
+        val density = resources.displayMetrics.density
+
+        inputLayout.setPadding(
+            inputLayout.paddingLeft,
+            inputLayout.paddingTop,
+            inputLayout.paddingRight,
+            if (keyboardVisible) 0 else (20 * density).toInt()
+        )
+
+        val startPaddingH = inputLayout.paddingLeft.toFloat()
+        val endPaddingH = if (keyboardVisible) 0f else 16 * density
+        val startElevation = card.cardElevation
+        val endElevation = 10 * density
+        val bounds = RectF(0f, 0f, card.width.toFloat(), card.height.toFloat())
+        val startRadius = card.shapeAppearanceModel.topLeftCornerSize.getCornerSize(bounds)
+        val endRadius = if (keyboardVisible) 0f else 28 * density
+
+        keyboardAnimator?.cancel()
+        keyboardAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 200
+            interpolator = DecelerateInterpolator()
+            addUpdateListener { anim ->
+                val f = anim.animatedFraction
+                val h = lerp(startPaddingH, endPaddingH, f).toInt()
+                inputLayout.setPadding(h, inputLayout.paddingTop, h, inputLayout.paddingBottom)
+                card.cardElevation = lerp(startElevation, endElevation, f)
+                card.shapeAppearanceModel = card.shapeAppearanceModel.toBuilder()
+                    .setAllCornerSizes(AbsoluteCornerSize(lerp(startRadius, endRadius, f)))
+                    .build()
+            }
+            start()
+        }
+    }
+
+    private fun lerp(start: Float, end: Float, fraction: Float) = start + (end - start) * fraction
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
@@ -189,6 +255,7 @@ class ChatDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        keyboardAnimator?.cancel()
         _binding = null
     }
 }

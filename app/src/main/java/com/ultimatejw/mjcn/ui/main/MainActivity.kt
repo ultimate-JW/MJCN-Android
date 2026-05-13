@@ -31,16 +31,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNav.setupWithNavController(navController)
 
-        binding.btnTempLogout.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.logout()
-                val intent = Intent(this@MainActivity, AuthActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            }
-        }
+        // binding.btnTempLogout.setOnClickListener {
+        //     lifecycleScope.launch {
+        //         viewModel.logout()
+        //         val intent = Intent(this@MainActivity, AuthActivity::class.java)
+        //         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        //         startActivity(intent)
+        //     }
+        // }
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.themeDetailFragment,
                 R.id.chatDetailFragment,

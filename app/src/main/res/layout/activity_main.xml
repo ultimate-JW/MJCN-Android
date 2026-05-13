@@ -17,6 +17,7 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_main" />
 
+        <!--
         <Button
             android:id="@+id/btn_temp_logout"
             android:layout_width="wrap_content"
@@ -25,8 +26,9 @@
             android:layout_marginEnd="8dp"
             android:text="[임시] 로그아웃"
             android:textSize="11sp" />
+        -->
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+<com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
