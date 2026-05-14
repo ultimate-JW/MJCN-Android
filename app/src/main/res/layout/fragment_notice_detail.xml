@@ -5,9 +5,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_sheet"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+        android:background="@color/bg_sheet">
 
         <!-- 상단바 -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,8 +69,6 @@
             android:id="@+id/scroll_content"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:overScrollMode="never"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,8 +78,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipChildren="false"
-                android:clipToPadding="false"
                 android:orientation="vertical"
                 android:paddingHorizontal="18dp"
                 android:paddingTop="18dp"
@@ -202,8 +196,6 @@
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_input_card_glow"
                     android:clickable="true"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
                     android:focusable="true"
                     android:padding="12dp">
 
@@ -281,8 +273,6 @@
             android:id="@+id/floating_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:paddingHorizontal="16dp"
             android:paddingTop="10dp"
             android:paddingBottom="20dp"
@@ -295,8 +285,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_input_card_glow"
-                android:clipChildren="false"
-                android:clipToPadding="false"
                 android:padding="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
