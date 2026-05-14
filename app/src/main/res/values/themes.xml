@@ -66,6 +66,40 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <!-- Input Pill Shape -->
+    <style name="ShapeAppearance.MJCN.InputPill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Bottom Nav Text Appearance -->
+    <style name="TextAppearance.MJCN.BottomNav.Active" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+    </style>
+
+    <style name="TextAppearance.MJCN.BottomNav.Inactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+    </style>
+
+    <!-- Chat Category Chip Style -->
+    <style name="Widget.MJCN.ChatCategoryChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chip_bg_selector</item>
+        <item name="chipStrokeColor">@color/chip_stroke_selector</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/chip_text_selector</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="chipStartPadding">18dp</item>
+        <item name="chipEndPadding">18dp</item>
+        <item name="textStartPadding">0dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="chipMinHeight">42dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="rippleColor">@color/point_color1</item>
+    </style>
+
     <!-- Card Style -->
     <style name="Widget.MJCN.Card" parent="Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">16dp</item>

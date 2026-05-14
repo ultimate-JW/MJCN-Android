@@ -85,9 +85,10 @@
     <!-- Chat -->
     <string name="chat_title">AI 채팅</string>
     <string name="chat_subtitle">AI 비서 땡뚱이에게 다 물어보세요!</string>
-    <string name="chat_ask_hint">땡뚱이에게 물어보기</string>
+    <string name="chat_ask_hint">띵똥이에게 물어보기</string>
     <string name="chat_welcome">무엇을 알려드릴까요?</string>
     <string name="chat_history">이전 대화</string>
+    <string name="chat_empty">아직 대화가 없습니다. 띵똥이와 대화를 시작해 보세요!</string>
 
     <!-- Notice -->
     <string name="notice_title">공지</string>

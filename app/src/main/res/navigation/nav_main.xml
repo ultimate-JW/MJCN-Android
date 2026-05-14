@@ -15,7 +15,11 @@
         android:label="ThemeFragment">
         <action
             android:id="@+id/action_theme_to_detail"
-            app:destination="@id/themeDetailFragment" />
+            app:destination="@id/themeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -33,7 +37,11 @@
         android:label="ChatFragment">
         <action
             android:id="@+id/action_chat_to_detail"
-            app:destination="@id/chatDetailFragment" />
+            app:destination="@id/chatDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
