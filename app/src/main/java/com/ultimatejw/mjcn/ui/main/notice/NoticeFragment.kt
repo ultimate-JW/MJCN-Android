@@ -6,8 +6,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentNoticeBinding
@@ -107,11 +109,23 @@ class NoticeFragment : Fragment() {
 
     private fun setupNoticeList() {
         noticeAdapter = NoticeListAdapter(
-            onItemClick = { /* TODO: 상세 화면 이동 */ },
+            onItemClick = { notice -> openDetail(notice) },
             onBookmarkClick = { /* TODO: 북마크 토글 */ }
         )
         binding.rvNotices.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNotices.adapter = noticeAdapter
+    }
+
+    private fun openDetail(notice: Notice) {
+        val args = bundleOf(
+            "noticeId" to notice.id,
+            "noticeCategory" to notice.category,
+            "noticeTitle" to notice.title,
+            "noticeTeam" to notice.team,
+            "noticeDate" to notice.date,
+            "noticeSummary" to ""
+        )
+        findNavController().navigate(R.id.action_notice_to_detail, args)
     }
 
     private fun applyFilter() {

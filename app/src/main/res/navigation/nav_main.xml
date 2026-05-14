@@ -60,7 +60,11 @@
         android:label="NoticeFragment">
         <action
             android:id="@+id/action_notice_to_detail"
-            app:destination="@id/noticeDetailFragment" />
+            app:destination="@id/noticeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -69,7 +73,28 @@
         android:label="NoticeDetailFragment">
         <argument
             android:name="noticeId"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeCategory"
+            app:argType="string"
+            android:defaultValue="학사" />
+        <argument
+            android:name="noticeTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeTeam"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeSummary"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment
