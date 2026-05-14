@@ -1,6 +1,8 @@
 package com.ultimatejw.mjcn.ui.main.notice
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +25,10 @@ class NoticeFragment : Fragment() {
     private lateinit var noticeAdapter: NoticeListAdapter
     private lateinit var chipAdapter: NoticeCategoryChipAdapter
 
+    private var isCustomTab = true
+    private var selectedCategory = "전체"
+    private var searchQuery = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,6 +45,7 @@ class NoticeFragment : Fragment() {
 
         setupNoticeList()
         setupCategoryChips()
+        setupSearch()
         setupTabs()
     }
 
@@ -49,6 +56,7 @@ class NoticeFragment : Fragment() {
     }
 
     private fun selectTab(custom: Boolean) {
+        isCustomTab = custom
         val primary = requireContext().getColor(R.color.point_color1)
         val muted = requireContext().getColor(R.color.font_color2)
 
@@ -69,19 +77,32 @@ class NoticeFragment : Fragment() {
         binding.indicatorCustom.visibility = if (custom) View.VISIBLE else View.INVISIBLE
         binding.indicatorAll.visibility = if (custom) View.INVISIBLE else View.VISIBLE
 
-        // TODO: API 연결 시 ViewModel.uiState 관찰로 교체
-        val list = if (custom) buildCustomNotices() else buildAllNotices()
-        noticeAdapter.submitList(list)
+        applyFilter()
     }
 
     private fun setupCategoryChips() {
-        val categories = listOf("전체", "일반", "학사", "공모전", "학생활동", "기타")
+        val categories = listOf(
+            "전체", "일반", "학사", "공모전/대외활동",
+            "장학/학자금", "취업", "해외", "지원사업"
+        )
         chipAdapter = NoticeCategoryChipAdapter(categories) { selected ->
-            // TODO: API 연결 시 카테고리 필터 적용
+            selectedCategory = selected
+            applyFilter()
         }
         binding.rvCategories.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvCategories.adapter = chipAdapter
+    }
+
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchQuery = s?.toString().orEmpty().trim()
+                applyFilter()
+            }
+        })
     }
 
     private fun setupNoticeList() {
@@ -91,7 +112,26 @@ class NoticeFragment : Fragment() {
         )
         binding.rvNotices.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNotices.adapter = noticeAdapter
-        binding.tvTotalCount.text = getString(R.string.notice_total_count_format, 238)
+    }
+
+    private fun applyFilter() {
+        val source = if (isCustomTab) buildCustomNotices() else buildAllNotices()
+        val filtered = source
+            .filter { matchCategory(it.category, selectedCategory) }
+            .filter { searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) }
+        noticeAdapter.submitList(filtered)
+        binding.tvTotalCount.text = getString(R.string.notice_total_count_format, filtered.size)
+    }
+
+    // 칩 라벨에 "/"가 있으면 부분 중 하나라도 일치하면 통과. 양방향 substring 비교로 부분 일치도 매칭.
+    private fun matchCategory(itemCategory: String, chipLabel: String): Boolean {
+        if (chipLabel == "전체") return true
+        val parts = chipLabel.split("/").map { it.trim() }.filter { it.isNotEmpty() }
+        return parts.any { part ->
+            itemCategory == part ||
+                itemCategory.contains(part) ||
+                part.contains(itemCategory)
+        }
     }
 
     // TODO: API 연결 시 ViewModel.uiState로 교체
