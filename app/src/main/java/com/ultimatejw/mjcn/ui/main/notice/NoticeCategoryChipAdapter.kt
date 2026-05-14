@@ -9,10 +9,11 @@ import com.ultimatejw.mjcn.databinding.ItemNoticeChipBinding
 
 class NoticeCategoryChipAdapter(
     private val categories: List<String>,
+    initialSelectedIndex: Int = 0,
     private val onSelected: (String) -> Unit = {}
 ) : RecyclerView.Adapter<NoticeCategoryChipAdapter.ViewHolder>() {
 
-    private var selectedIndex = 0
+    private var selectedIndex = initialSelectedIndex.coerceIn(0, categories.lastIndex)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemNoticeChipBinding.inflate(LayoutInflater.from(parent.context), parent, false)

@@ -1,10 +1,13 @@
 package com.ultimatejw.mjcn.ui.main.notice
 
+import android.animation.ValueAnimator
+import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -12,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.shape.AbsoluteCornerSize
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentNoticeDetailBinding
 import com.ultimatejw.mjcn.domain.model.NoticeCategory
@@ -22,6 +26,9 @@ class NoticeDetailFragment : Fragment() {
 
     private var _binding: FragmentNoticeDetailBinding? = null
     private val binding get() = _binding!!
+
+    private var isKeyboardVisible = false
+    private var keyboardAnimator: ValueAnimator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,28 +52,82 @@ class NoticeDetailFragment : Fragment() {
     }
 
     /**
-     * inline 질문바를 클릭하면 화면 하단(키보드 위)에 떠 있는 floating 질문바로 전환되어
-     * 사용자가 입력하는 동안 텍스트가 가려지지 않도록 한다. 키보드가 내려가면 다시 inline 으로 복귀.
+     * inline 질문바를 클릭하면 floating 으로 전환 + 키보드 올림.
+     * 키보드 가시성 변화를 IME inset 으로 감지해서, ChatDetailFragment 와 같은 방식으로
+     * floating 카드를 (가로 패딩 0 + 코너 0) 직사각형으로 morph. 키보드 내려가면 inline 복귀.
      */
     private fun setupQuestionBarToggle() {
         binding.inlineInput.setOnClickListener { showFloating() }
+        setupKeyboardAnimation()
+    }
 
-        // 키보드(IME) 가시성 변화를 감지해서 닫히면 inline 으로 복귀
+    private fun setupKeyboardAnimation() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            if (!imeVisible && binding.floatingInput.visibility == View.VISIBLE) {
-                hideFloating()
+            val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            val bottomPadding = maxOf(imeBottom, navBottom)
+            val imeVisible = imeBottom > navBottom
+
+            binding.root.setPadding(0, 0, 0, bottomPadding)
+
+            if (imeVisible != isKeyboardVisible) {
+                isKeyboardVisible = imeVisible
+                animateForKeyboard(imeVisible)
+                if (!imeVisible && binding.floatingInput.visibility == View.VISIBLE) {
+                    binding.root.postDelayed({
+                        if (!isKeyboardVisible) hideFloating()
+                    }, 200L)
+                }
             }
             insets
         }
     }
 
+    private fun animateForKeyboard(keyboardVisible: Boolean) {
+        val card = binding.cardInput
+        val inputLayout = binding.floatingInput
+        val density = resources.displayMetrics.density
+
+        inputLayout.setPadding(
+            inputLayout.paddingLeft,
+            inputLayout.paddingTop,
+            inputLayout.paddingRight,
+            if (keyboardVisible) 0 else (20 * density).toInt()
+        )
+
+        val startPaddingH = inputLayout.paddingLeft.toFloat()
+        val endPaddingH = if (keyboardVisible) 0f else 16 * density
+        val startElevation = card.cardElevation
+        val endElevation = 10 * density
+        val bounds = RectF(0f, 0f, card.width.toFloat(), card.height.toFloat())
+        val startRadius = card.shapeAppearanceModel.topLeftCornerSize.getCornerSize(bounds)
+        val endRadius = if (keyboardVisible) 0f else 32 * density
+
+        keyboardAnimator?.cancel()
+        keyboardAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 200
+            interpolator = DecelerateInterpolator()
+            addUpdateListener { anim ->
+                val f = anim.animatedFraction
+                val h = lerp(startPaddingH, endPaddingH, f).toInt()
+                inputLayout.setPadding(h, inputLayout.paddingTop, h, inputLayout.paddingBottom)
+                card.cardElevation = lerp(startElevation, endElevation, f)
+                card.shapeAppearanceModel = card.shapeAppearanceModel.toBuilder()
+                    .setAllCornerSizes(AbsoluteCornerSize(lerp(startRadius, endRadius, f)))
+                    .build()
+            }
+            start()
+        }
+    }
+
+    private fun lerp(start: Float, end: Float, fraction: Float) =
+        start + (end - start) * fraction
+
     private fun showFloating() {
         binding.inlineInput.visibility = View.INVISIBLE
         binding.floatingInput.visibility = View.VISIBLE
         binding.etMessage.requestFocus()
-        val imm = requireContext()
-            .getSystemService(InputMethodManager::class.java)
+        val imm = requireContext().getSystemService(InputMethodManager::class.java)
         imm?.showSoftInput(binding.etMessage, InputMethodManager.SHOW_IMPLICIT)
     }
 
@@ -138,6 +199,7 @@ class NoticeDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        keyboardAnimator?.cancel()
         _binding = null
     }
 

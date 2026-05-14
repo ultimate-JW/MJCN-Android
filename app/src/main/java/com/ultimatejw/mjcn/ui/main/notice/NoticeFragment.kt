@@ -54,7 +54,8 @@ class NoticeFragment : Fragment() {
     private fun setupTabs() {
         binding.tabCustom.setOnClickListener { selectTab(custom = true) }
         binding.tabAll.setOnClickListener { selectTab(custom = false) }
-        selectTab(custom = true)
+        // 상세 페이지에서 돌아왔을 때 이전 탭 상태 유지
+        selectTab(custom = isCustomTab)
     }
 
     private fun selectTab(custom: Boolean) {
@@ -87,7 +88,9 @@ class NoticeFragment : Fragment() {
             "전체", "일반", "학사", "공모전/대외활동",
             "장학/학자금", "취업", "해외", "지원사업"
         )
-        chipAdapter = NoticeCategoryChipAdapter(categories) { selected ->
+        // 상세 페이지에서 돌아왔을 때 이전 카테고리 선택 유지
+        val initialIdx = categories.indexOf(selectedCategory).coerceAtLeast(0)
+        chipAdapter = NoticeCategoryChipAdapter(categories, initialIdx) { selected ->
             selectedCategory = selected
             applyFilter()
         }
@@ -97,6 +100,8 @@ class NoticeFragment : Fragment() {
     }
 
     private fun setupSearch() {
+        // 상세 페이지에서 돌아왔을 때 이전 검색어 유지
+        if (searchQuery.isNotEmpty()) binding.etSearch.setText(searchQuery)
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
