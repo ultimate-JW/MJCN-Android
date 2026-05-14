@@ -31,15 +31,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNav.setupWithNavController(navController)
 
-        binding.btnTempLogout.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.logout()
-                val intent = Intent(this@MainActivity, AuthActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-        }
+//        binding.btnTempLogout.setOnClickListener {
+//            lifecycleScope.launch {
+//                viewModel.logout()
+//                val intent = Intent(this@MainActivity, AuthActivity::class.java)
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                startActivity(intent)
+//                finish()
+//            }
+//        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
