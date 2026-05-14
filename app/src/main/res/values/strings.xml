@@ -92,7 +92,11 @@
 
     <!-- Notice -->
     <string name="notice_title">공지</string>
-    <string name="notice_subtitle">맞춤 공지사항을 모아드려요!</string>
+    <string name="notice_subtitle">교내 모든 공지사항과 활동정보를 한 번에</string>
+    <string name="notice_tab_custom">맞춤형</string>
+    <string name="notice_tab_all">전체</string>
+    <string name="notice_search_hint">검색할 내용을 입력해 주세요.</string>
+    <string name="notice_total_count_format">총 %d건</string>
 
     <!-- Info -->
     <string name="info_title">정보</string>
