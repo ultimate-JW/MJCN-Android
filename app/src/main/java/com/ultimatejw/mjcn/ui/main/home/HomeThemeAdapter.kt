@@ -1,5 +1,7 @@
 package com.ultimatejw.mjcn.ui.main.home
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -25,9 +27,11 @@ class HomeThemeAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Theme) {
-//            binding.ivIcon.image = item.category
             binding.tvTitle.text = item.title
             binding.tvSubtitle.text = item.subtitle
+            binding.ivIcon.setImageResource(item.iconRes)
+            binding.layoutThemeIcon.backgroundTintList =
+                ColorStateList.valueOf(Color.parseColor(item.iconBgColor))
             binding.root.setOnClickListener { onItemClick(item) }
         }
     }

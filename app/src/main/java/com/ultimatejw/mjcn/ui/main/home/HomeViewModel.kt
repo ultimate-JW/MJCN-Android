@@ -12,6 +12,7 @@ import com.ultimatejw.mjcn.domain.model.TodayClass
 import com.ultimatejw.mjcn.domain.model.User
 import com.ultimatejw.mjcn.domain.usecase.notice.GetAllNoticesUseCase
 import com.ultimatejw.mjcn.domain.usecase.user.ObserveCurrentUserUseCase
+import com.ultimatejw.mjcn.ui.common.CurrentUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -89,12 +90,12 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadThemeList() {
-        // TODO: 실제 API 연동
+        // ThemeViewModel 과 동일한 아이콘/배경색 사용 (같은 제목은 같은 비주얼)
         _uiState.value = _uiState.value!!.copy(
             themeList = listOf(
-                Theme("1", "3학년 1학기 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", R.drawable.ic_theme, "#E8F5E9"),
-                Theme("2", "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", R.drawable.ic_info, "#E3F2FD"),
-                Theme("3", "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", R.drawable.ic_notice, "#FFF8E1"),
+                Theme("1", "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", R.drawable.ic_hat, "#E1F5EE"),
+                Theme("2", "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", R.drawable.ic_bag, "#E6F1FB"),
+                Theme("3", "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", R.drawable.ic_plane, "#EAF3DE"),
             )
         )
     }
