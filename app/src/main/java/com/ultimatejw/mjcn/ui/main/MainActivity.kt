@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.themeDetailFragment,
+                R.id.themeDetail1Fragment,
+                R.id.themeDetail2Fragment,
+                R.id.themeDetail3Fragment,
+                R.id.themeDetail4Fragment,
                 R.id.chatDetailFragment,
                 R.id.noticeDetailFragment -> binding.bottomNav.visibility = View.GONE
                 else -> binding.bottomNav.visibility = View.VISIBLE
