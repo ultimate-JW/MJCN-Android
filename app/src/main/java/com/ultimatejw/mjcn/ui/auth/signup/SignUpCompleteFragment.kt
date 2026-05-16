@@ -1,11 +1,13 @@
 package com.ultimatejw.mjcn.ui.auth.signup
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.ultimatejw.mjcn.databinding.FragmentSignupCompleteBinding
+import com.ultimatejw.mjcn.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -29,7 +31,11 @@ class SignUpCompleteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnStart.setOnClickListener {
-            // TODO: 메인 화면 진입 등 후속 동작 연결.
+            val intent = Intent(requireContext(), MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            activity?.finish()
         }
     }
 
