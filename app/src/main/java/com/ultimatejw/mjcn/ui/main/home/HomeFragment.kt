@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentHomeBinding
-import com.ultimatejw.mjcn.ui.main.theme.ThemeAdapter
+import com.ultimatejw.mjcn.domain.model.Notice
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +24,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
 
     private val todayClassAdapter = TodayClassAdapter()
-    private val noticeAdapter = HomeNoticeAdapter()
+    private val noticeAdapter = HomeNoticeAdapter { notice -> openNoticeDetail(notice) }
     private val infoAdapter = HomeInfoAdapter()
     private val themeAdapter = HomeThemeAdapter()
 
@@ -38,6 +42,7 @@ class HomeFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerViews()
+        setupNavigation()
         observeViewModel()
     }
 
@@ -53,6 +58,57 @@ class HomeFragment : Fragment() {
 
         binding.rvTheme.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTheme.adapter = themeAdapter
+    }
+
+    private fun setupNavigation() {
+        // AI 가이드 카드의 두 버튼
+        binding.btnCheckNotice.setOnClickListener {
+            // 더미: 첫 번째 공지 mockup 으로 이동
+            openNoticeDetailWithDummy("c1")
+        }
+        binding.btnAskAi.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_home_to_chatDetail,
+                bundleOf("sessionId" to "")
+            )
+        }
+
+        // 공지/테마 더보기는 BottomNav 의 탭 전환과 동일한 동작이 되도록
+        // selectedItemId 를 직접 변경해서 NavigationUI 가 popUpTo/launchSingleTop 처리하도록 위임.
+        // 그래야 다른 탭에서 홈 아이콘을 눌렀을 때도 일관되게 홈으로 복귀한다.
+        binding.tvNoticeShowall.setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav)
+                ?.let { it.selectedItemId = R.id.noticeFragment }
+        }
+
+        binding.tvThemeShowall.setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav)
+                ?.let { it.selectedItemId = R.id.themeFragment }
+        }
+    }
+
+    private fun openNoticeDetail(notice: Notice) {
+        val args = bundleOf(
+            "noticeId" to notice.id,
+            "noticeCategory" to notice.category,
+            "noticeTitle" to notice.title,
+            "noticeTeam" to notice.team,
+            "noticeDate" to notice.date,
+            "noticeSummary" to ""
+        )
+        findNavController().navigate(R.id.action_home_to_noticeDetail, args)
+    }
+
+    private fun openNoticeDetailWithDummy(mockupId: String) {
+        val args = bundleOf(
+            "noticeId" to mockupId,
+            "noticeCategory" to "",
+            "noticeTitle" to "",
+            "noticeTeam" to "",
+            "noticeDate" to "",
+            "noticeSummary" to ""
+        )
+        findNavController().navigate(R.id.action_home_to_noticeDetail, args)
     }
 
     private fun observeViewModel() {
