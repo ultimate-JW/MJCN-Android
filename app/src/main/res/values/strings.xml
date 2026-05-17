@@ -103,7 +103,11 @@
 
     <!-- Info -->
     <string name="info_title">정보</string>
-    <string name="info_subtitle">맞춤 공지사항을 모아드려요!</string>
+    <string name="info_subtitle">다양한 교외 정보를 알려드릴게요.</string>
+    <string name="info_tab_custom">맞춤형</string>
+    <string name="info_tab_all">전체</string>
+    <string name="info_search_hint">검색할 내용을 입력해 주세요.</string>
+    <string name="info_total_count_format">총 %d건</string>
 
     <!-- Settings -->
     <string name="settings_title">설정</string>

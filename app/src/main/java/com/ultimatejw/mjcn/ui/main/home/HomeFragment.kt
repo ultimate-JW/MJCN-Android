@@ -90,6 +90,11 @@ class HomeFragment : Fragment() {
                 ?.let { it.selectedItemId = R.id.noticeFragment }
         }
 
+        binding.tvInfoShowall.setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav)
+                ?.let { it.selectedItemId = R.id.infoFragment }
+        }
+
         binding.tvThemeShowall.setOnClickListener {
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav)
                 ?.let { it.selectedItemId = R.id.themeFragment }
