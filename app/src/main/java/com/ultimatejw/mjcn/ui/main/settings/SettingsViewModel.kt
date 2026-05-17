@@ -1,9 +1,13 @@
 package com.ultimatejw.mjcn.ui.main.settings
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.ultimatejw.mjcn.domain.repository.NotificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SettingsUiState(
@@ -14,32 +18,32 @@ data class SettingsUiState(
 )
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val notificationRepository: NotificationRepository
+) : ViewModel() {
 
-    private val _uiState = MutableLiveData(SettingsUiState())
-    val uiState: LiveData<SettingsUiState> = _uiState
+    val uiState: LiveData<SettingsUiState> = combine(
+        notificationRepository.notifAll,
+        notificationRepository.notifChat,
+        notificationRepository.notifNotice,
+        notificationRepository.notifContest
+    ) { all, chat, notice, contest ->
+        SettingsUiState(all, chat, notice, contest)
+    }.asLiveData()
 
     fun toggleAll(enabled: Boolean) {
-        _uiState.value = _uiState.value!!.copy(
-            notifAll = enabled,
-            notifChat = enabled,
-            notifNotice = enabled,
-            notifContest = enabled
-        )
+        viewModelScope.launch { notificationRepository.setNotifAll(enabled) }
     }
 
     fun toggleChat(enabled: Boolean) {
-        val new = _uiState.value!!.copy(notifChat = enabled)
-        _uiState.value = new.copy(notifAll = new.notifChat && new.notifNotice && new.notifContest)
+        viewModelScope.launch { notificationRepository.setNotifChat(enabled) }
     }
 
     fun toggleNotice(enabled: Boolean) {
-        val new = _uiState.value!!.copy(notifNotice = enabled)
-        _uiState.value = new.copy(notifAll = new.notifChat && new.notifNotice && new.notifContest)
+        viewModelScope.launch { notificationRepository.setNotifNotice(enabled) }
     }
 
     fun toggleContest(enabled: Boolean) {
-        val new = _uiState.value!!.copy(notifContest = enabled)
-        _uiState.value = new.copy(notifAll = new.notifChat && new.notifNotice && new.notifContest)
+        viewModelScope.launch { notificationRepository.setNotifContest(enabled) }
     }
 }
