@@ -61,6 +61,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupNavigation() {
+        binding.ivProfile.setOnClickListener {
+            findNavController().navigate(R.id.action_home_to_settings)
+        }
+
         // AI 가이드 카드의 두 버튼
         binding.btnCheckNotice.setOnClickListener {
             // 더미: 첫 번째 공지 mockup 으로 이동
