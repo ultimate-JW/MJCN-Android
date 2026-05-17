@@ -36,7 +36,7 @@ class InfoBookmarkFragment : Fragment() {
     }
 
     private fun setupList() {
-        infoAdapter = InfoListAdapter(onBookmarkClick = {})
+        infoAdapter = InfoListAdapter(onBookmarkClick = { info -> viewModel.toggleBookmark(info) })
         binding.rvInfo.layoutManager = LinearLayoutManager(requireContext())
         binding.rvInfo.adapter = infoAdapter
     }

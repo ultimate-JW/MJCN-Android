@@ -41,7 +41,7 @@ class NoticeBookmarkFragment : Fragment() {
     private fun setupList() {
         noticeAdapter = NoticeListAdapter(
             onItemClick = { notice -> openDetail(notice) },
-            onBookmarkClick = {}
+            onBookmarkClick = { notice -> viewModel.toggleBookmark(notice) }
         )
         binding.rvNotices.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNotices.adapter = noticeAdapter

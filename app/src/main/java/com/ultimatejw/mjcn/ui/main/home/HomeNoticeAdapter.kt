@@ -13,7 +13,8 @@ import com.ultimatejw.mjcn.domain.model.Notice
 import com.ultimatejw.mjcn.domain.model.NoticeCategory
 
 class HomeNoticeAdapter(
-    private val onItemClick: (Notice) -> Unit = {}
+    private val onItemClick: (Notice) -> Unit = {},
+    private val onBookmarkClick: (Notice) -> Unit = {}
 ) : ListAdapter<Notice, HomeNoticeAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,7 +33,11 @@ class HomeNoticeAdapter(
             binding.tvCategory.text = item.category
             binding.tvTitle.text = item.title
             binding.tvDate.text = item.date
+            binding.btnBookmark.setBackgroundResource(
+                if (item.isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
+            )
             binding.root.setOnClickListener { onItemClick(item) }
+            binding.btnBookmark.setOnClickListener { onBookmarkClick(item) }
             applyCategoryChip(item.category)
         }
 

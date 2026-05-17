@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.domain.model.Notice
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ObserveNoticeBookmarksUseCase
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ToggleNoticeBookmarkUseCase
 import com.ultimatejw.mjcn.domain.usecase.notice.GetAllNoticesUseCase
 import com.ultimatejw.mjcn.domain.usecase.notice.GetNoticesByCategoryUseCase
 import com.ultimatejw.mjcn.domain.usecase.notice.ToggleBookmarkUseCase
@@ -15,6 +17,7 @@ import javax.inject.Inject
 data class NoticeUiState(
     val notices: List<Notice> = emptyList(),
     val selectedCategory: String = "전체",
+    val bookmarkedNoticeIds: Set<String> = emptySet(),
 )
 
 @HiltViewModel
@@ -22,6 +25,8 @@ class NoticeViewModel @Inject constructor(
     private val getAllNotices: GetAllNoticesUseCase,
     private val getNoticesByCategory: GetNoticesByCategoryUseCase,
     private val toggleBookmark: ToggleBookmarkUseCase,
+    private val toggleNoticeBookmark: ToggleNoticeBookmarkUseCase,
+    private val observeNoticeBookmarks: ObserveNoticeBookmarksUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(NoticeUiState())
@@ -29,6 +34,21 @@ class NoticeViewModel @Inject constructor(
 
     init {
         observeNotices()
+        observeBookmarkIds()
+    }
+
+    private fun observeBookmarkIds() {
+        viewModelScope.launch {
+            observeNoticeBookmarks().collect { bookmarked ->
+                _uiState.postValue(
+                    _uiState.value!!.copy(bookmarkedNoticeIds = bookmarked.map { it.id }.toSet())
+                )
+            }
+        }
+    }
+
+    fun toggleBookmarkForNotice(notice: Notice) {
+        viewModelScope.launch { toggleNoticeBookmark(notice) }
     }
 
     private fun observeNotices() {

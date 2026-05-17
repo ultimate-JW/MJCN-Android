@@ -24,8 +24,13 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
 
     private val todayClassAdapter = TodayClassAdapter()
-    private val noticeAdapter = HomeNoticeAdapter { notice -> openNoticeDetail(notice) }
-    private val infoAdapter = HomeInfoAdapter()
+    private val noticeAdapter = HomeNoticeAdapter(
+        onItemClick = { notice -> openNoticeDetail(notice) },
+        onBookmarkClick = { notice -> viewModel.toggleNoticeBookmark(notice) }
+    )
+    private val infoAdapter = HomeInfoAdapter(
+        onBookmarkClick = { info -> viewModel.toggleInfoBookmark(info) }
+    )
     private val themeAdapter = HomeThemeAdapter()
 
     override fun onCreateView(

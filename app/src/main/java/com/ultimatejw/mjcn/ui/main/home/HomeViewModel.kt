@@ -10,6 +10,10 @@ import com.ultimatejw.mjcn.domain.model.Notice
 import com.ultimatejw.mjcn.domain.model.Theme
 import com.ultimatejw.mjcn.domain.model.TodayClass
 import com.ultimatejw.mjcn.domain.model.User
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ObserveInfoBookmarksUseCase
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ObserveNoticeBookmarksUseCase
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ToggleInfoBookmarkUseCase
+import com.ultimatejw.mjcn.domain.usecase.bookmark.ToggleNoticeBookmarkUseCase
 import com.ultimatejw.mjcn.domain.usecase.notice.GetAllNoticesUseCase
 import com.ultimatejw.mjcn.domain.usecase.user.ObserveCurrentUserUseCase
 import com.ultimatejw.mjcn.ui.common.CurrentUser
@@ -33,7 +37,14 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,
     private val getAllNotices: GetAllNoticesUseCase,
+    private val toggleNoticeBookmark: ToggleNoticeBookmarkUseCase,
+    private val toggleInfoBookmark: ToggleInfoBookmarkUseCase,
+    private val observeNoticeBookmarks: ObserveNoticeBookmarksUseCase,
+    private val observeInfoBookmarks: ObserveInfoBookmarksUseCase,
 ) : ViewModel() {
+
+    private var rawNoticeList: List<Notice> = emptyList()
+    private var rawInfoList: List<Info> = emptyList()
 
     private val _uiState = MutableLiveData(HomeUiState())
     val uiState: LiveData<HomeUiState> = _uiState
@@ -44,8 +55,39 @@ class HomeViewModel @Inject constructor(
         loadInfoList()
         loadNoticeList()
         loadThemeList()
-        // TODO: 실제 API에서 데이터 불러오기
+        observeBookmarks()
         _uiState.value = _uiState.value!!.copy(courseCount = 3, graduationCredits = 12, dday = "D-42", gradProgress = "87%")
+    }
+
+    private fun observeBookmarks() {
+        viewModelScope.launch {
+            observeNoticeBookmarks().collect { bookmarked ->
+                val ids = bookmarked.map { it.id }.toSet()
+                _uiState.postValue(
+                    _uiState.value!!.copy(
+                        noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in ids) }
+                    )
+                )
+            }
+        }
+        viewModelScope.launch {
+            observeInfoBookmarks().collect { bookmarked ->
+                val ids = bookmarked.map { it.id }.toSet()
+                _uiState.postValue(
+                    _uiState.value!!.copy(
+                        infoList = rawInfoList.map { it.copy(isBookmarked = it.id in ids) }
+                    )
+                )
+            }
+        }
+    }
+
+    fun toggleNoticeBookmark(notice: Notice) {
+        viewModelScope.launch { toggleNoticeBookmark.invoke(notice) }
+    }
+
+    fun toggleInfoBookmark(info: Info) {
+        viewModelScope.launch { toggleInfoBookmark.invoke(info) }
     }
 
     private fun observeUser() {
@@ -69,24 +111,22 @@ class HomeViewModel @Inject constructor(
 
     private fun loadInfoList() {
         // TODO: 실제 API 연동
-        _uiState.value = _uiState.value!!.copy(
-            infoList = listOf(
-                Info("1", "2026학년도 1학기 수강신청 정정 안내", "부트캠프", "과학기술정보통신부", true, 22),
-                Info("2", "졸업요건 확인 방법 총정리", "공모전", "과학기술정보통신부", true, 35),
-                Info("3", "국가근로장학금 2차 모집 안내", "교육/강의", "과학기술정보통신부", false, 45),
-            )
+        rawInfoList = listOf(
+            Info("1", "2026학년도 1학기 수강신청 정정 안내", "부트캠프", "과학기술정보통신부", true, 22),
+            Info("2", "졸업요건 확인 방법 총정리", "공모전", "과학기술정보통신부", true, 35),
+            Info("3", "국가근로장학금 2차 모집 안내", "교육/강의", "과학기술정보통신부", false, 45),
         )
+        _uiState.value = _uiState.value!!.copy(infoList = rawInfoList)
     }
 
     private fun loadNoticeList() {
         // TODO: 실제 API 연동
-        _uiState.value = _uiState.value!!.copy(
-            noticeList = listOf(
-                Notice("1", "2026 선배와의 취업멘토링 참여학생 모집", "진로/취업/창업", "자연취업진로지원팀", "1시간 전", true),
-                Notice("2", "졸업요건 확인 방법 총정리", "학사", "인문지로취업지원팀", "1시간 전", false),
-                Notice("3", "국가근로장학금 2차 모집 안내", "일반", "교육지원팀", "1시간 전", false),
-            )
+        rawNoticeList = listOf(
+            Notice("1", "2026 선배와의 취업멘토링 참여학생 모집", "진로/취업/창업", "자연취업진로지원팀", "1시간 전"),
+            Notice("2", "졸업요건 확인 방법 총정리", "학사", "인문지로취업지원팀", "1시간 전"),
+            Notice("3", "국가근로장학금 2차 모집 안내", "일반", "교육지원팀", "1시간 전"),
         )
+        _uiState.value = _uiState.value!!.copy(noticeList = rawNoticeList)
     }
 
     private fun loadThemeList() {

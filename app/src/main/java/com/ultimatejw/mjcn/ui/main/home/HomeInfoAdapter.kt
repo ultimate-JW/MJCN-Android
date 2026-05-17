@@ -13,7 +13,8 @@ import com.ultimatejw.mjcn.domain.model.Info
 import com.ultimatejw.mjcn.domain.model.InfoCategory
 
 class HomeInfoAdapter(
-    private val onItemClick: (Info) -> Unit = {}
+    private val onItemClick: (Info) -> Unit = {},
+    private val onBookmarkClick: (Info) -> Unit = {}
 ) : ListAdapter<Info, HomeInfoAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,7 +34,11 @@ class HomeInfoAdapter(
             binding.tvTitle.text = item.title
             binding.tvDday.text = "D-${item.dday}"
             binding.tvGroup.text = if (item.isGroup) "팀/개인" else "개인"
+            binding.btnBookmark.setBackgroundResource(
+                if (item.isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
+            )
             binding.root.setOnClickListener { onItemClick(item) }
+            binding.btnBookmark.setOnClickListener { onBookmarkClick(item) }
             applyCategoryChip(item.category)
         }
 
