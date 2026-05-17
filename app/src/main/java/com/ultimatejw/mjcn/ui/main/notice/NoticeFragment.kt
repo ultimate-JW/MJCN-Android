@@ -49,6 +49,11 @@ class NoticeFragment : Fragment() {
         setupCategoryChips()
         setupSearch()
         setupTabs()
+        observeBookmarks()
+    }
+
+    private fun observeBookmarks() {
+        viewModel.uiState.observe(viewLifecycleOwner) { applyFilter() }
     }
 
     private fun setupTabs() {
@@ -115,7 +120,7 @@ class NoticeFragment : Fragment() {
     private fun setupNoticeList() {
         noticeAdapter = NoticeListAdapter(
             onItemClick = { notice -> openDetail(notice) },
-            onBookmarkClick = { /* TODO: 북마크 토글 */ }
+            onBookmarkClick = { notice -> viewModel.toggleBookmarkForNotice(notice) }
         )
         binding.rvNotices.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNotices.adapter = noticeAdapter
@@ -134,7 +139,9 @@ class NoticeFragment : Fragment() {
     }
 
     private fun applyFilter() {
-        val source = if (isCustomTab) buildCustomNotices() else buildAllNotices()
+        val bookmarkedIds = viewModel.uiState.value?.bookmarkedNoticeIds ?: emptySet()
+        val source = (if (isCustomTab) buildCustomNotices() else buildAllNotices())
+            .map { it.copy(isBookmarked = it.id in bookmarkedIds) }
         val filtered = source
             .filter { matchCategory(it.category, selectedCategory) }
             .filter { searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true) }

@@ -1,10 +1,14 @@
 package com.ultimatejw.mjcn.app.di
 
+import com.ultimatejw.mjcn.data.repository.BookmarkRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.ChatRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.NoticeRepositoryImpl
+import com.ultimatejw.mjcn.data.repository.NotificationRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.UserRepositoryImpl
+import com.ultimatejw.mjcn.domain.repository.BookmarkRepository
 import com.ultimatejw.mjcn.domain.repository.ChatRepository
 import com.ultimatejw.mjcn.domain.repository.NoticeRepository
+import com.ultimatejw.mjcn.domain.repository.NotificationRepository
 import com.ultimatejw.mjcn.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -18,6 +22,10 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindBookmarkRepository(impl: BookmarkRepositoryImpl): BookmarkRepository
+
+    @Binds
+    @Singleton
     abstract fun bindNoticeRepository(impl: NoticeRepositoryImpl): NoticeRepository
 
     @Binds
@@ -27,4 +35,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindChatRepository(impl: ChatRepositoryImpl): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
 }

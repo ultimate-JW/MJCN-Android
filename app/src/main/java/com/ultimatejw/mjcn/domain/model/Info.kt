@@ -7,6 +7,7 @@ data class Info(
     val team: String,
     val isGroup: Boolean,
     val dday: Int,
+    val isBookmarked: Boolean = false,
 )
 
 enum class InfoCategory(val label: String) {

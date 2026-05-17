@@ -22,7 +22,52 @@
             app:exitAnim="@anim/stay"
             app:popEnterAnim="@anim/stay"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_settings"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settings_to_noticeBookmark"
+            app:destination="@id/noticeBookmarkFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_infoBookmark"
+            app:destination="@id/infoBookmarkFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noticeBookmarkFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.notice.NoticeBookmarkFragment"
+        android:label="NoticeBookmarkFragment">
+        <action
+            android:id="@+id/action_noticeBookmark_to_noticeDetail"
+            app:destination="@id/noticeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoBookmarkFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.info.InfoBookmarkFragment"
+        android:label="InfoBookmarkFragment" />
 
     <fragment
         android:id="@+id/themeFragment"
