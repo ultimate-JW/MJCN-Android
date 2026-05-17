@@ -31,7 +31,7 @@ class InfoListAdapter(
         fun bind(item: Info) {
             binding.tvCategory.text = item.category
             binding.tvDday.text = "D-${item.dday}"
-            binding.tvGroup.text = "${item.team} · ${if (item.isGroup) "그룹" else "개인"}"
+            binding.tvGroup.text = "${item.team} · ${if (item.isGroup) "팀/개인" else "개인"}"
             binding.tvTitle.text = item.title
             binding.btnBookmark.setBackgroundResource(
                 if (item.isBookmarked) R.drawable.ic_bookmark_filled
