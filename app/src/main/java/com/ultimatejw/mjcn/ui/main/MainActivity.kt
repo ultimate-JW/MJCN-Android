@@ -47,7 +47,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.themeDetail3Fragment,
                 R.id.themeDetail4Fragment,
                 R.id.chatDetailFragment,
-                R.id.noticeDetailFragment -> {
+                R.id.noticeDetailFragment,
+                R.id.noticeBookmarkFragment,
+                R.id.infoBookmarkFragment -> {
                     binding.bottomNav.visibility = View.GONE
                     binding.bottomNav.menu.setGroupCheckable(0, true, true)
                 }

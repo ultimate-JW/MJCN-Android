@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSettingsBinding
 import com.ultimatejw.mjcn.ui.auth.AuthActivity
 import com.ultimatejw.mjcn.ui.main.MainViewModel
@@ -39,6 +41,12 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupToggles()
         observeViewModel()
+        binding.itemNoticeBookmark.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_noticeBookmark)
+        }
+        binding.itemInfoBookmark.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_infoBookmark)
+        }
         binding.tvWithdraw.setOnClickListener {
             lifecycleScope.launch {
                 mainViewModel.logout()
