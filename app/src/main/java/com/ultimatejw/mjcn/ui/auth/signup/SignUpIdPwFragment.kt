@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -25,8 +26,8 @@ class SignUpIdPwFragment : Fragment() {
 
     private val viewModel: SignUpViewModel by activityViewModels()
 
-    // 임시 중복 이메일
-    private val DUPLICATE_EMAIL = "pppp@test.com"
+    // 서버에서 중복 응답 받았을 때 해당 이메일을 기억해두고 즉시 에러 노출
+    private var duplicateEmail: String? = null
 
     private var isPasswordVisible = false
     private var isPasswordConfirmVisible = false
@@ -44,22 +45,67 @@ class SignUpIdPwFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
         setupListeners()
+        setFragmentResultListener(SignupEmailSentDialog.REQUEST_KEY) { _, _ ->
+            findNavController().navigate(R.id.action_signUpIdPw_to_signUpEmailVerify)
+        }
     }
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.step2Valid.collect { valid ->
-                    binding.btnNext.isEnabled = valid
-                    if (valid) {
-                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
-                        binding.btnNext.setTextColor(requireContext().getColor(R.color.white))
-                    } else {
-                        binding.btnNext.setBackgroundResource(R.drawable.bg_btn_disabled)
-                        binding.btnNext.setTextColor(requireContext().getColor(R.color.text_disabled))
+                    updateNextButtonStyle(valid && !viewModel.isSignupLoading.value)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isSignupLoading.collect { loading ->
+                    val canEnable = viewModel.step2Valid.value && !loading
+                    updateNextButtonStyle(canEnable)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.signupResult.collect { result ->
+                    when (result) {
+                        is SignupResult.Success -> {
+                            SignupEmailSentDialog().show(parentFragmentManager, SignupEmailSentDialog.TAG)
+                        }
+                        is SignupResult.EmailError -> {
+                            duplicateEmail = result.rejectedEmail
+                            binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
+                            showEmailError(result.message)
+                        }
+                        is SignupResult.PasswordError -> {
+                            binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
+                            showPasswordError(result.message)
+                        }
+                        is SignupResult.PasswordConfirmError -> {
+                            binding.flPasswordConfirm.setBackgroundResource(R.drawable.bg_input_field_error)
+                            showPasswordConfirmError(result.message)
+                        }
+                        is SignupResult.GeneralError -> {
+                            binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
+                            showEmailError(result.message)
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun updateNextButtonStyle(enabled: Boolean) {
+        binding.btnNext.isEnabled = enabled
+        if (enabled) {
+            binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
+            binding.btnNext.setTextColor(requireContext().getColor(R.color.white))
+        } else {
+            binding.btnNext.setBackgroundResource(R.drawable.bg_btn_disabled)
+            binding.btnNext.setTextColor(requireContext().getColor(R.color.text_disabled))
         }
     }
 
@@ -118,13 +164,13 @@ class SignUpIdPwFragment : Fragment() {
             setPasswordVisibility(binding.etPasswordConfirm, isPasswordConfirmVisible, binding.btnTogglePasswordConfirm)
         }
 
-        // 다음 버튼
+        // 다음 버튼 → 서버에 회원가입 요청 (성공 시 인증코드 발송)
         binding.btnNext.setOnClickListener {
-            if (isFormValid()) {
-                viewModel.email = binding.etEmail.text.toString().trim()
-                viewModel.password = binding.etPassword.text.toString()
-                findNavController().navigate(R.id.action_signUpIdPw_to_signUpEmailVerify)
-            }
+            if (!isFormValid()) return@setOnClickListener
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString()
+            val passwordConfirm = binding.etPasswordConfirm.text.toString()
+            viewModel.requestSignup(email, password, passwordConfirm)
         }
     }
 
@@ -141,7 +187,7 @@ class SignUpIdPwFragment : Fragment() {
                 binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
                 showEmailError("올바른 이메일 형식으로 입력해주세요.")
             }
-            email == DUPLICATE_EMAIL -> {
+            email == duplicateEmail -> {
                 binding.etEmail.setBackgroundResource(R.drawable.bg_input_field_error)
                 showEmailError("이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.")
             }
@@ -153,7 +199,6 @@ class SignUpIdPwFragment : Fragment() {
     }
 
     private fun applyPasswordFieldState() {
-        val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString()
         when {
             password.isEmpty() -> {
@@ -164,12 +209,7 @@ class SignUpIdPwFragment : Fragment() {
                 binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
                 showPasswordError("영문 + 숫자 포함 8자~20자 이내로 입력해주세요.")
             }
-            isPasswordSameAsEmail(password, email) -> {
-                binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_error)
-                showPasswordError("이메일과 동일한 비밀번호는 사용할 수 없습니다.")
-            }
             else -> {
-                // [수정] 정상 입력 → 보라색 테두리 유지
                 binding.flPassword.setBackgroundResource(R.drawable.bg_input_field_active)
                 hidePasswordError()
             }
@@ -201,8 +241,8 @@ class SignUpIdPwFragment : Fragment() {
         val password = binding.etPassword.text.toString()
         val passwordConfirm = binding.etPasswordConfirm.text.toString()
 
-        val emailOk = isEmailFormatValid(email) && email != DUPLICATE_EMAIL
-        val passwordOk = isPasswordFormatValid(password) && !isPasswordSameAsEmail(password, email)
+        val emailOk = isEmailFormatValid(email) && email != duplicateEmail
+        val passwordOk = isPasswordFormatValid(password)
         val confirmOk = password == passwordConfirm && passwordConfirm.isNotEmpty()
 
         viewModel.onStep2Changed(
@@ -216,8 +256,8 @@ class SignUpIdPwFragment : Fragment() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString()
         val passwordConfirm = binding.etPasswordConfirm.text.toString()
-        return isEmailFormatValid(email) && email != DUPLICATE_EMAIL
-                && isPasswordFormatValid(password) && !isPasswordSameAsEmail(password, email)
+        return isEmailFormatValid(email) && email != duplicateEmail
+                && isPasswordFormatValid(password)
                 && password == passwordConfirm && passwordConfirm.isNotEmpty()
     }
 
@@ -229,10 +269,6 @@ class SignUpIdPwFragment : Fragment() {
     private fun isPasswordFormatValid(password: String): Boolean {
         val regex = Regex("^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$")
         return regex.matches(password)
-    }
-
-    private fun isPasswordSameAsEmail(password: String, email: String): Boolean {
-        return email.isNotEmpty() && password.equals(email, ignoreCase = true)
     }
 
     private fun setPasswordVisibility(
