@@ -128,18 +128,25 @@ class HomeFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             val user = state.currentUser
-//            binding.tvTitle.text = if (user != null) "안녕하세요, ${user.name}님" else "안녕하세요!"
-//            binding.tvSubtitle.text = if (user != null) {
-//                "${user.department ?: ""} ${user.grade}학년 · ${user.entranceYear ?: ""}학년도 ${user.semester}학기"
-//            } else ""
-
-            val displayName = state.dashboardUserName.ifBlank { state.currentUser?.name ?: "" }
+            val displayName = state.dashboardUserName.ifBlank { user?.name ?: "" }
             binding.tvTitle.text = if (displayName.isNotBlank()) "안녕하세요, ${displayName}님" else "안녕하세요!"
-            binding.tvSubtitle.text = "컴퓨터공학과 3학년 · 2026학년도 1학기" // TODO: 프로필 API 연동
+            binding.tvSubtitle.text = if (user != null && !user.major.isNullOrBlank()) {
+                val year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+                "${user.major} ${user.grade}학년 · ${year}학년도 ${user.semester}학기"
+            } else ""
 
             todayClassAdapter.submitList(state.todayClasses)
+
             noticeAdapter.submitList(state.noticeList)
+            val noticeEmpty = state.noticeList.isEmpty()
+            binding.tvNoticeEmpty.visibility = if (noticeEmpty) View.VISIBLE else View.GONE
+            binding.rvNotice.visibility = if (noticeEmpty) View.GONE else View.VISIBLE
+
             infoAdapter.submitList(state.infoList)
+            val infoEmpty = state.infoList.isEmpty()
+            binding.tvInfoEmpty.visibility = if (infoEmpty) View.VISIBLE else View.GONE
+            binding.rvInfo.visibility = if (infoEmpty) View.GONE else View.VISIBLE
+
             themeAdapter.submitList(state.themeList)
 
             binding.tvNewNoti.text = state.courseCount.toString()

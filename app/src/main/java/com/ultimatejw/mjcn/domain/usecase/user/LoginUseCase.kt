@@ -4,6 +4,7 @@ import com.ultimatejw.mjcn.data.model.ApiResult
 import com.ultimatejw.mjcn.data.model.runRemote
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
 import com.ultimatejw.mjcn.data.remote.dto.LoginRequestDto
+import com.ultimatejw.mjcn.data.remote.dto.toDomain
 import com.ultimatejw.mjcn.domain.repository.UserRepository
 import org.json.JSONObject
 import javax.inject.Inject
@@ -16,6 +17,10 @@ class LoginUseCase @Inject constructor(
         return when (val result = runRemote { api.login(LoginRequestDto(email, password)) }) {
             is ApiResult.Success -> {
                 userRepository.saveTokens(result.body.access, result.body.refresh)
+                val profileResult = runRemote { api.getProfile() }
+                if (profileResult is ApiResult.Success) {
+                    userRepository.saveUser(profileResult.body.toDomain())
+                }
                 ApiResult.Success(Unit)
             }
             is ApiResult.Error -> ApiResult.Error(
