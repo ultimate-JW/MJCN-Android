@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentLoginBinding
+import com.ultimatejw.mjcn.ui.common.LoadingDialog
 import com.ultimatejw.mjcn.ui.main.MainActivity
 import com.ultimatejw.mjcn.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,11 @@ class LoginFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            if (state.isLoading) {
+                LoadingDialog.show(childFragmentManager)
+            } else {
+                LoadingDialog.hide(childFragmentManager)
+            }
             binding.btnLogin.isEnabled = state.isFormValid && !state.isLoading
             if (state.isFormValid) {
                 binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)

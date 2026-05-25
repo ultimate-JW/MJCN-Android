@@ -133,8 +133,9 @@ class HomeFragment : Fragment() {
 //                "${user.department ?: ""} ${user.grade}학년 · ${user.entranceYear ?: ""}학년도 ${user.semester}학기"
 //            } else ""
 
-            binding.tvTitle.text = "안녕하세요, 김지현님"
-            binding.tvSubtitle.text = "컴퓨터공학과 3학년 · 2026학년도 1학기"
+            val displayName = state.dashboardUserName.ifBlank { state.currentUser?.name ?: "" }
+            binding.tvTitle.text = if (displayName.isNotBlank()) "안녕하세요, ${displayName}님" else "안녕하세요!"
+            binding.tvSubtitle.text = "컴퓨터공학과 3학년 · 2026학년도 1학기" // TODO: 프로필 API 연동
 
             todayClassAdapter.submitList(state.todayClasses)
             noticeAdapter.submitList(state.noticeList)

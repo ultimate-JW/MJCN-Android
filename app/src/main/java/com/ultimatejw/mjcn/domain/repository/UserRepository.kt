@@ -7,6 +7,7 @@ interface UserRepository {
     val isLoggedIn: Flow<Boolean>
     val currentUser: Flow<User?>
     suspend fun saveLoginState(token: String)
+    suspend fun saveTokens(accessToken: String, refreshToken: String)
     suspend fun logout()
     suspend fun saveUser(user: User)
 }
