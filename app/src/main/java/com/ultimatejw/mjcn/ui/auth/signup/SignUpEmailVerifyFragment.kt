@@ -119,6 +119,12 @@ class SignUpEmailVerifyFragment : Fragment() {
                             isTimerExpired = false
                             updateNextButton(false)
                             startTimer()
+                            // dialog_signup_email_sent와 동일한 다이얼로그 표시.
+                            // 확인 버튼은 dismiss만 하면 되므로 결과 리스너는 등록하지 않음.
+                            SignupEmailSentDialog().show(
+                                parentFragmentManager,
+                                SignupEmailSentDialog.TAG
+                            )
                         }
                         is ResendResult.Failure -> {
                             showCodeError(result.message)
