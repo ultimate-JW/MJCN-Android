@@ -19,23 +19,21 @@ class HomeRepositoryImpl @Inject constructor(
 ) : HomeRepository {
 
     override suspend fun getDashboard(): ApiResult<DashboardData> =
-        runRemote { api.getDashboard() }.let { result ->
-            when (result) {
-                is ApiResult.Success -> {
-                    val dto = result.body
-                    ApiResult.Success(
-                        DashboardData(
-                            userName = dto.greeting.userName,
-                            todayClasses = dto.todaySchedule.map { it.toDomain() },
-                            notices = dto.notices.map { it.toDomain() },
-                            infoList = dto.information.map { it.toDomain() },
-                            unreadNotificationCount = dto.unreadNotificationCount ?: 0,
-                            graduationProgressPercent = dto.graduationProgressPercent ?: 0
-                        )
+        when (val result = runRemote { api.getDashboard() }) {
+            is ApiResult.Success -> runCatching {
+                val dto = result.body
+                ApiResult.Success(
+                    DashboardData(
+                        userName = dto.greeting?.userName ?: "",
+                        todayClasses = dto.todaySchedule?.map { it.toDomain() } ?: emptyList(),
+                        notices = dto.notices?.map { it.toDomain() } ?: emptyList(),
+                        infoList = dto.information?.map { it.toDomain() } ?: emptyList(),
+                        unreadNotificationCount = dto.unreadNotificationCount ?: 0,
+                        graduationProgressPercent = dto.graduationProgressPercent ?: 0
                     )
-                }
-                is ApiResult.Error -> result
-            }
+                )
+            }.getOrElse { ApiResult.Error(it.message) }
+            is ApiResult.Error -> result
         }
 }
 
@@ -54,7 +52,9 @@ private fun NoticeListItemDto.toDomain() = Notice(
     title = titleWithoutDept.ifBlank { title },
     category = source.toNoticeCategoryLabel(),
     team = departmentDisplay,
-    date = publishedAt.toRelativeTime()
+    date = publishedAt.toRelativeTime(),
+    url = url,
+    summary = summary ?: ""
 )
 
 private fun InformationListItemDto.toDomain() = Info(
@@ -63,7 +63,10 @@ private fun InformationListItemDto.toDomain() = Info(
     category = categories?.firstOrNull() ?: "",
     team = organizer ?: "",
     isGroup = false,
-    dday = dDay ?: 0
+    dday = dDay ?: 0,
+    url = url,
+    startDate = startDate,
+    endDate = endDate
 )
 
 private fun String.toNoticeCategoryLabel(): String = when (this) {

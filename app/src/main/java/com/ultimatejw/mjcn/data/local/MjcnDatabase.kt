@@ -33,7 +33,7 @@ abstract class MjcnDatabase : RoomDatabase() {
                     context.applicationContext,
                     MjcnDatabase::class.java,
                     "mjcn_database"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
             }
     }
 }

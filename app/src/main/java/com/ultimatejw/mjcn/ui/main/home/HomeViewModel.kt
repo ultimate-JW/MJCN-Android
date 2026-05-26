@@ -1,5 +1,6 @@
 package com.ultimatejw.mjcn.ui.main.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -70,20 +71,21 @@ class HomeViewModel @Inject constructor(
             when (val result = getDashboard()) {
                 is ApiResult.Success -> {
                     val data = result.body
+                    Log.d("HomeViewModel", "dashboard success: notices=${data.notices.size}, info=${data.infoList.size}")
                     rawNoticeList = data.notices
                     rawInfoList = data.infoList
-                    _uiState.postValue(
-                        _uiState.value!!.copy(
-                            dashboardUserName = data.userName,
-                            todayClasses = data.todayClasses,
-                            noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) },
-                            infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) },
-                            courseCount = data.unreadNotificationCount,
-                            gradProgress = "${data.graduationProgressPercent}%"
-                        )
+                    _uiState.value = _uiState.value!!.copy(
+                        dashboardUserName = data.userName,
+                        todayClasses = data.todayClasses,
+                        noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) },
+                        infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) },
+                        courseCount = data.unreadNotificationCount,
+                        gradProgress = "${data.graduationProgressPercent}%"
                     )
                 }
-                is ApiResult.Error -> { /* 기본 빈 상태 유지 */ }
+                is ApiResult.Error -> {
+                    Log.e("HomeViewModel", "dashboard error: code=${result.code}, message=${result.message}")
+                }
             }
         }
     }
@@ -92,20 +94,16 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             observeNoticeBookmarks().collect { bookmarked ->
                 noticeBookmarkedIds = bookmarked.map { it.id }.toSet()
-                _uiState.postValue(
-                    _uiState.value!!.copy(
-                        noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) }
-                    )
+                _uiState.value = _uiState.value!!.copy(
+                    noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) }
                 )
             }
         }
         viewModelScope.launch {
             observeInfoBookmarks().collect { bookmarked ->
                 infoBookmarkedIds = bookmarked.map { it.id }.toSet()
-                _uiState.postValue(
-                    _uiState.value!!.copy(
-                        infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) }
-                    )
+                _uiState.value = _uiState.value!!.copy(
+                    infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) }
                 )
             }
         }
@@ -122,7 +120,7 @@ class HomeViewModel @Inject constructor(
     private fun observeUser() {
         viewModelScope.launch {
             observeCurrentUser().collect { user ->
-                _uiState.postValue(_uiState.value!!.copy(currentUser = user))
+                _uiState.value = _uiState.value!!.copy(currentUser = user)
             }
         }
     }

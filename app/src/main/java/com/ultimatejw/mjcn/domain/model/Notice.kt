@@ -6,6 +6,8 @@ data class Notice(
     val category: String,
     val team: String,
     val date: String,
+    val url: String = "",
+    val summary: String = "",
     val isBookmarked: Boolean = false
 )
 

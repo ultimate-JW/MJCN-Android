@@ -2,6 +2,7 @@ package com.ultimatejw.mjcn.app.di
 
 import com.ultimatejw.mjcn.data.repository.AuthRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.BookmarkRepositoryImpl
+import com.ultimatejw.mjcn.data.repository.HomeRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.ChatRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.CourseHistoryRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.CurrentCourseRepositoryImpl
@@ -12,6 +13,7 @@ import com.ultimatejw.mjcn.data.repository.ProfileRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.UserRepositoryImpl
 import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import com.ultimatejw.mjcn.domain.repository.BookmarkRepository
+import com.ultimatejw.mjcn.domain.repository.HomeRepository
 import com.ultimatejw.mjcn.domain.repository.ChatRepository
 import com.ultimatejw.mjcn.domain.repository.CourseHistoryRepository
 import com.ultimatejw.mjcn.domain.repository.CurrentCourseRepository
@@ -49,6 +51,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHomeRepository(impl: HomeRepositoryImpl): HomeRepository
 
     @Binds
     @Singleton

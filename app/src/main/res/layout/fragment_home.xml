@@ -403,12 +403,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_notice"
+                <LinearLayout
+                    android:id="@+id/ll_notice_items"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
@@ -461,12 +461,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_info_title" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_info"
+                <LinearLayout
+                    android:id="@+id/ll_info_items"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_info_title" />

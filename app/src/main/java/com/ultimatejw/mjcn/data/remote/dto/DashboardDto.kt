@@ -3,11 +3,11 @@ package com.ultimatejw.mjcn.data.remote.dto
 import com.google.gson.annotations.SerializedName
 
 data class DashboardDto(
-    val greeting: GreetingDto,
+    val greeting: GreetingDto?,
     @SerializedName("graduation_progress_percent") val graduationProgressPercent: Int?,
-    @SerializedName("today_schedule") val todaySchedule: List<TodayScheduleDto>,
-    val notices: List<NoticeListItemDto>,
-    val information: List<InformationListItemDto>,
+    @SerializedName("today_schedule") val todaySchedule: List<TodayScheduleDto>?,
+    val notices: List<NoticeListItemDto>?,
+    val information: List<InformationListItemDto>?,
     @SerializedName("unread_notification_count") val unreadNotificationCount: Int?
 )
 

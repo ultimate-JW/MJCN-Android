@@ -2,10 +2,12 @@ package com.ultimatejw.mjcn.ui.main.home
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,8 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentHomeBinding
+import com.ultimatejw.mjcn.databinding.ItemHomeInfoBinding
+import com.ultimatejw.mjcn.databinding.ItemHomeNoticeBinding
 import com.ultimatejw.mjcn.databinding.ItemHomeThemeBinding
+import com.ultimatejw.mjcn.domain.model.Info
+import com.ultimatejw.mjcn.domain.model.InfoCategory
 import com.ultimatejw.mjcn.domain.model.Notice
+import com.ultimatejw.mjcn.domain.model.NoticeCategory
 import com.ultimatejw.mjcn.domain.model.Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,13 +35,6 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
 
     private val todayClassAdapter = TodayClassAdapter()
-    private val noticeAdapter = HomeNoticeAdapter(
-        onItemClick = { notice -> openNoticeDetail(notice) },
-        onBookmarkClick = { notice -> viewModel.toggleNoticeBookmark(notice) }
-    )
-    private val infoAdapter = HomeInfoAdapter(
-        onBookmarkClick = { info -> viewModel.toggleInfoBookmark(info) }
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,12 +57,96 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerViews() {
         binding.rvTodayClass.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTodayClass.adapter = todayClassAdapter
+    }
 
-        binding.rvNotice.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvNotice.adapter = noticeAdapter
+    private fun bindNoticeItems(notices: List<Notice>) {
+        val container = binding.llNoticeItems
+        container.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        val context = requireContext()
+        val radius = context.resources.displayMetrics.density * 22
+        notices.take(3).forEach { notice ->
+            val itemBinding = ItemHomeNoticeBinding.inflate(inflater, container, false)
+            itemBinding.tvCategory.text = notice.category
+            itemBinding.tvTitle.text = notice.title
+            itemBinding.tvDate.text = notice.date
+            itemBinding.btnBookmark.setBackgroundResource(
+                if (notice.isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
+            )
+            itemBinding.root.setOnClickListener { openNoticeDetail(notice) }
+            itemBinding.btnBookmark.setOnClickListener { viewModel.toggleNoticeBookmark(notice) }
+            val category = NoticeCategory.from(notice.category)
+            val bgColor = when (category) {
+                NoticeCategory.NORMAL             -> R.color.category_normal_bg
+                NoticeCategory.ACADEMIC           -> R.color.category_academic_bg
+                NoticeCategory.OVERSEAS           -> R.color.category_overseas_bg
+                NoticeCategory.CONTEST            -> R.color.category_contest_bg
+                NoticeCategory.ACTIVITY           -> R.color.category_activity_bg
+                NoticeCategory.CAREER             -> R.color.category_career_bg
+                NoticeCategory.CAREER_SIMPLE      -> R.color.category_career_simple_bg
+                NoticeCategory.SCHOLARSHIP        -> R.color.category_scholarship_bg
+                NoticeCategory.SCHOLARSHIP_SIMPLE -> R.color.category_scholarship_simple_bg
+            }
+            val textColor = when (category) {
+                NoticeCategory.NORMAL             -> R.color.category_normal_text
+                NoticeCategory.ACADEMIC           -> R.color.category_academic_text
+                NoticeCategory.OVERSEAS           -> R.color.category_overseas_text
+                NoticeCategory.CONTEST            -> R.color.category_contest_text
+                NoticeCategory.ACTIVITY           -> R.color.category_activity_text
+                NoticeCategory.CAREER             -> R.color.category_career_text
+                NoticeCategory.CAREER_SIMPLE      -> R.color.category_career_simple_text
+                NoticeCategory.SCHOLARSHIP        -> R.color.category_scholarship_text
+                NoticeCategory.SCHOLARSHIP_SIMPLE -> R.color.category_scholarship_simple_text
+            }
+            itemBinding.layoutCategoryChip.background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(ContextCompat.getColor(context, bgColor))
+                cornerRadius = radius
+            }
+            itemBinding.tvCategory.setTextColor(ContextCompat.getColor(context, textColor))
+            container.addView(itemBinding.root)
+        }
+    }
 
-        binding.rvInfo.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvInfo.adapter = infoAdapter
+    private fun bindInfoItems(infos: List<Info>) {
+        val container = binding.llInfoItems
+        container.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        val context = requireContext()
+        val radius = context.resources.displayMetrics.density * 22
+        infos.take(3).forEach { info ->
+            val itemBinding = ItemHomeInfoBinding.inflate(inflater, container, false)
+            itemBinding.tvCategory.text = info.category
+            itemBinding.tvTitle.text = info.title
+            itemBinding.tvDday.text = "D-${info.dday}"
+            itemBinding.tvGroup.text = if (info.isGroup) "팀/개인" else "개인"
+            itemBinding.btnBookmark.setBackgroundResource(
+                if (info.isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
+            )
+            itemBinding.btnBookmark.setOnClickListener { viewModel.toggleInfoBookmark(info) }
+            val category = InfoCategory.from(info.category)
+            val bgColor = when (category) {
+                InfoCategory.BOOTCAMP  -> R.color.category_academic_bg
+                InfoCategory.CONTEST   -> R.color.category_contest_bg
+                InfoCategory.SUPPORT   -> R.color.category_scholarship_bg
+                InfoCategory.ACTIVITY  -> R.color.category_activity_bg
+                InfoCategory.EDUCATION -> R.color.category_career_bg
+            }
+            val textColor = when (category) {
+                InfoCategory.BOOTCAMP  -> R.color.category_academic_text
+                InfoCategory.CONTEST   -> R.color.category_contest_text
+                InfoCategory.SUPPORT   -> R.color.category_scholarship_text
+                InfoCategory.ACTIVITY  -> R.color.category_activity_text
+                InfoCategory.EDUCATION -> R.color.category_career_text
+            }
+            itemBinding.layoutCategoryChip.background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(ContextCompat.getColor(context, bgColor))
+                cornerRadius = radius
+            }
+            itemBinding.tvCategory.setTextColor(ContextCompat.getColor(context, textColor))
+            container.addView(itemBinding.root)
+        }
     }
 
     private fun bindThemeItems(themes: List<Theme>) {
@@ -124,7 +208,7 @@ class HomeFragment : Fragment() {
             "noticeTitle" to notice.title,
             "noticeTeam" to notice.team,
             "noticeDate" to notice.date,
-            "noticeSummary" to ""
+            "noticeSummary" to notice.summary
         )
         findNavController().navigate(R.id.action_home_to_noticeDetail, args)
     }
@@ -156,15 +240,15 @@ class HomeFragment : Fragment() {
             binding.tvTodayClassEmpty.visibility = if (todayEmpty) View.VISIBLE else View.GONE
             binding.rvTodayClass.visibility = if (todayEmpty) View.GONE else View.VISIBLE
 
-            noticeAdapter.submitList(state.noticeList)
             val noticeEmpty = state.noticeList.isEmpty()
             binding.tvNoticeEmpty.visibility = if (noticeEmpty) View.VISIBLE else View.GONE
-            binding.rvNotice.visibility = if (noticeEmpty) View.GONE else View.VISIBLE
+            binding.llNoticeItems.visibility = if (noticeEmpty) View.GONE else View.VISIBLE
+            bindNoticeItems(state.noticeList)
 
-            infoAdapter.submitList(state.infoList)
             val infoEmpty = state.infoList.isEmpty()
             binding.tvInfoEmpty.visibility = if (infoEmpty) View.VISIBLE else View.GONE
-            binding.rvInfo.visibility = if (infoEmpty) View.GONE else View.VISIBLE
+            binding.llInfoItems.visibility = if (infoEmpty) View.GONE else View.VISIBLE
+            bindInfoItems(state.infoList)
 
             bindThemeItems(state.themeList)
 

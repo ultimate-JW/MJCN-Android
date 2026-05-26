@@ -25,5 +25,5 @@ fun UserProfileDto.toDomain() = User(
     graduationYear = graduationYear,
     interests = emptyList(),
     entranceYear = admissionYear,
-    major = major
+    major = major?.split(" · ")?.lastOrNull()?.trim()
 )
