@@ -8,11 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupStep5Binding
+import com.ultimatejw.mjcn.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SignUpStep5Fragment : Fragment() {
@@ -42,6 +47,32 @@ class SignUpStep5Fragment : Fragment() {
         setupSearch()
         setupButtons()
         refreshLists()
+        observeStepSave()
+    }
+
+    private fun observeStepSave() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.stepSaveResult.collect { result ->
+                    when (result) {
+                        is StepSaveResult.Success -> if (result.step == 5) {
+                            findNavController().navigate(R.id.action_step5_to_complete)
+                        }
+                        is StepSaveResult.Failure -> if (result.step == 5) {
+                            showToast(result.message)
+                            binding.btnNext.isEnabled = true
+                        }
+                    }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isStepSaveLoading.collect { loading ->
+                    binding.btnNext.isEnabled = !loading
+                }
+            }
+        }
     }
 
     private fun setupRecyclers() {
@@ -76,13 +107,14 @@ class SignUpStep5Fragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.btnNext.setOnClickListener {
-            findNavController().navigate(R.id.action_step5_to_complete)
+            // Step1~5 사용자 입력을 일괄 저장 + is_onboarding_completed=true 마킹.
+            viewModel.saveAllAndCompleteOnboarding()
         }
     }
 
     private fun toggleCourse(course: Course) {
         if (viewModel.findCurrentCourse(course.name) == null) {
-            viewModel.addCurrentCourse(course.name)
+            viewModel.addCurrentCourse(course.name, course.meta)
         } else {
             viewModel.removeCurrentCourse(course.name)
         }
@@ -117,20 +149,17 @@ class SignUpStep5Fragment : Fragment() {
 
     private fun buildCourseData(): List<Course> {
         val majorMeta = "반도체 ICT대학 · 컴퓨터정보통신공학부 · 컴퓨터공학과"
+        val liberalArtsMeta = "자연캠퍼스 교양"
         val code = "0727"
         return listOf(
-            Course("4차산업혁명과기업가정신", majorMeta, code),
-            Course("AI프로그래밍", majorMeta, code),
-            Course("객체지향프로그래밍2", majorMeta, code),
-            Course("공개SW실무", majorMeta, code),
-            Course("그래프신경망과빅데이터", majorMeta, code),
+            // 전공
             Course("기계학습", majorMeta, code),
+            Course("캡스톤디자인", majorMeta, code),
+            Course("시스템클라우드보안", majorMeta, code),
             Course("데이터베이스", majorMeta, code),
-            Course("데이터베이스설계", majorMeta, code),
-            Course("딥러닝", majorMeta, code),
-            Course("모바일프로그래밍", majorMeta, code),
-            Course("블록체인", majorMeta, code),
-            Course("소프트웨어공학", majorMeta, code)
+            // 교양
+            Course("4차산업혁명과미래사회진로선택", liberalArtsMeta),
+            Course("현대사회와기독교윤리", liberalArtsMeta)
         )
     }
 

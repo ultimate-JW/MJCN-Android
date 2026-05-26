@@ -215,7 +215,14 @@ class SignUpStep1Fragment : Fragment() {
         val gradeIndex = if (selectedGrade != null) {
             selectedGrade!!.replace("학년", "").toIntOrNull() ?: 0
         } else 0
-        val semesterIndex = if (selectedSemester != null) 1 else 0
+        // UI 라벨 → 학기 번호 매핑. 0은 미선택.
+        val semesterIndex = when (selectedSemester) {
+            "1학기" -> 1
+            "여름학기" -> 2
+            "2학기" -> 3
+            "겨울학기" -> 4
+            else -> 0
+        }
         val entranceYear = selectedEntranceYear?.toIntOrNull() ?: 0
 
         viewModel.onStep1Changed(name, gradeIndex, semesterIndex, entranceYear)

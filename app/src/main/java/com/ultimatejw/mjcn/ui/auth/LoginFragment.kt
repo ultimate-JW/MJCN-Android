@@ -65,6 +65,7 @@ class LoginFragment : Fragment() {
                 viewModel.event.collect { event ->
                     when (event) {
                         is LoginEvent.NavigateToMain -> navigateToMain()
+                        is LoginEvent.NavigateToStep -> navigateToStep(event.step)
                         is LoginEvent.ShowError -> showToast(event.message)
                     }
                 }
@@ -117,6 +118,18 @@ class LoginFragment : Fragment() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    /** 온보딩 미완료 사용자를 멈춘 단계로 보낸다. step=2는 step1과 묶여 저장되므로 step1로 간주. */
+    private fun navigateToStep(step: Int) {
+        val actionId = when (step) {
+            1, 2 -> R.id.action_login_to_step1
+            3 -> R.id.action_login_to_step3
+            4 -> R.id.action_login_to_step4
+            5 -> R.id.action_login_to_step5
+            else -> R.id.action_login_to_step1
+        }
+        findNavController().navigate(actionId)
     }
 
     override fun onDestroyView() {

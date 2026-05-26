@@ -311,7 +311,6 @@ class SignUpStep3Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.step3Valid.collect { valid ->
-                    // step2 와 동일한 토글 패턴: 배경/글씨색을 함께 스왑
                     binding.btnNext.isEnabled = valid
                     if (valid) {
                         binding.btnNext.setBackgroundResource(R.drawable.bg_btn_primary)
@@ -353,6 +352,7 @@ class SignUpStep3Fragment : Fragment() {
         binding.btnPrev.setOnClickListener {
             findNavController().popBackStack()
         }
+        // 서버 저장은 Step5에서 한 번에 처리. 여기는 단순 화면 전환만.
         binding.btnNext.setOnClickListener {
             findNavController().navigate(R.id.action_step3_to_step4)
         }

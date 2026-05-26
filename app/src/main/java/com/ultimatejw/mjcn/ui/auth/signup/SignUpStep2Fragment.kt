@@ -186,7 +186,7 @@ class SignUpStep2Fragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        // 다음 버튼 → Step3로 이동
+        // 서버 저장은 Step5에서 한 번에 처리. 여기는 단순 화면 전환만.
         binding.btnNext.setOnClickListener {
             findNavController().navigate(R.id.action_step2_to_step3)
         }

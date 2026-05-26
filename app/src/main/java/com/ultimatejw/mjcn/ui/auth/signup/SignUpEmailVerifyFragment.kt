@@ -98,12 +98,27 @@ class SignUpEmailVerifyFragment : Fragment() {
                     when (result) {
                         is VerifyEmailResult.Success -> {
                             countDownTimer?.cancel()
-                            findNavController().navigate(R.id.action_signUpEmailVerify_to_step1)
+                            // 인증 성공 즉시 자동 로그인을 시도해 JWT를 발급받는다.
+                            // 토큰이 있어야 Step1 이후의 PATCH/POST 요청이 통과한다.
+                            viewModel.performAutoLogin()
                         }
                         is VerifyEmailResult.Failure -> {
                             showCodeError(result.message)
                             setInputErrorStyle()
                         }
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.autoLoginResult.collect { result ->
+                    when (result) {
+                        is AutoLoginResult.Success ->
+                            findNavController().navigate(R.id.action_signUpEmailVerify_to_step1)
+                        is AutoLoginResult.Failure ->
+                            showCodeError(result.message)
                     }
                 }
             }
