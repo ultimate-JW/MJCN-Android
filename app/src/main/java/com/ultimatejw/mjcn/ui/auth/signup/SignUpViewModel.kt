@@ -1,14 +1,43 @@
 package com.ultimatejw.mjcn.ui.auth.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.ultimatejw.mjcn.data.repository.AuthApiException
+import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class SignupResult {
+    data object Success : SignupResult()
+    data class EmailError(val message: String, val rejectedEmail: String) : SignupResult()
+    data class PasswordError(val message: String) : SignupResult()
+    data class PasswordConfirmError(val message: String) : SignupResult()
+    data class GeneralError(val message: String) : SignupResult()
+}
+
+sealed class VerifyEmailResult {
+    data object Success : VerifyEmailResult()
+    data class Failure(val message: String) : VerifyEmailResult()
+}
+
+sealed class ResendResult {
+    data object Success : ResendResult()
+    data class Failure(val message: String) : ResendResult()
+}
+
 @HiltViewModel
-class SignUpViewModel @Inject constructor() : ViewModel() {
+class SignUpViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     // Step 1
     var name: String = ""
@@ -80,6 +109,21 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
     private val _majorStepValid = MutableStateFlow(false)
     val majorStepValid: StateFlow<Boolean> = _majorStepValid.asStateFlow()
 
+    private val _isSignupLoading = MutableStateFlow(false)
+    val isSignupLoading: StateFlow<Boolean> = _isSignupLoading.asStateFlow()
+
+    private val _signupResult = Channel<SignupResult>(Channel.BUFFERED)
+    val signupResult = _signupResult.receiveAsFlow()
+
+    private val _isVerifyLoading = MutableStateFlow(false)
+    val isVerifyLoading: StateFlow<Boolean> = _isVerifyLoading.asStateFlow()
+
+    private val _verifyResult = Channel<VerifyEmailResult>(Channel.BUFFERED)
+    val verifyResult = _verifyResult.receiveAsFlow()
+
+    private val _resendResult = Channel<ResendResult>(Channel.BUFFERED)
+    val resendResult = _resendResult.receiveAsFlow()
+
     companion object {
         private val NAME_REGEX = Regex("^[가-힣a-zA-Z]{2,10}$")
         const val OTHER_INTEREST_LABEL = "기타(직접 입력)"
@@ -134,5 +178,100 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         val otherTextValid = otherTextLen in OTHER_INTEREST_MIN_LENGTH..OTHER_INTEREST_MAX_LENGTH
         // 기타가 선택된 경우 다른 칩 동반 여부와 무관하게 입력 텍스트가 2~100자여야 함
         _step3Valid.value = hasSelection && (!otherSelected || otherTextValid)
+    }
+
+    fun requestSignup(email: String, password: String, passwordConfirm: String) {
+        if (_isSignupLoading.value) return
+        viewModelScope.launch {
+            _isSignupLoading.value = true
+            val result = authRepository.signup(email, password, passwordConfirm)
+            _isSignupLoading.value = false
+            result
+                .onSuccess {
+                    this@SignUpViewModel.email = email
+                    this@SignUpViewModel.password = password
+                    _signupResult.send(SignupResult.Success)
+                }
+                .onFailure { throwable ->
+                    val errorBody = (throwable as? AuthApiException)?.errorBody.orEmpty()
+                    val fallback = throwable.message ?: "회원가입에 실패했습니다."
+                    _signupResult.send(parseSignupErrorBody(errorBody, email, fallback))
+                }
+        }
+    }
+
+    private fun parseSignupErrorBody(body: String, email: String, fallback: String): SignupResult {
+        if (body.isBlank()) return SignupResult.GeneralError(fallback)
+        return try {
+            val json = JsonParser.parseString(body).asJsonObject
+            val emailMsg = json.firstStringIn("email")
+            val passwordMsg = json.firstStringIn("password")
+            val passwordConfirmMsg = json.firstStringIn("password_confirm")
+            val nonFieldMsg = json.firstStringIn("non_field_errors")
+            val detailMsg = json.get("detail")?.takeIf { !it.isJsonNull }?.asString
+            when {
+                emailMsg != null -> SignupResult.EmailError(emailMsg, email)
+                passwordMsg != null -> SignupResult.PasswordError(passwordMsg)
+                passwordConfirmMsg != null -> SignupResult.PasswordConfirmError(passwordConfirmMsg)
+                nonFieldMsg != null -> SignupResult.GeneralError(nonFieldMsg)
+                detailMsg != null -> SignupResult.GeneralError(detailMsg)
+                else -> SignupResult.GeneralError(fallback)
+            }
+        } catch (_: Exception) {
+            SignupResult.GeneralError(fallback)
+        }
+    }
+
+    private fun JsonObject.firstStringIn(key: String): String? {
+        val element = get(key) ?: return null
+        if (element.isJsonNull) return null
+        return when {
+            element.isJsonArray -> (element as JsonArray)
+                .takeIf { it.size() > 0 }
+                ?.get(0)
+                ?.takeIf { !it.isJsonNull }
+                ?.asString
+            element.isJsonPrimitive -> element.asString
+            else -> null
+        }
+    }
+
+    fun verifyEmail(code: String) {
+        if (_isVerifyLoading.value) return
+        val targetEmail = email
+        if (targetEmail.isBlank()) {
+            viewModelScope.launch {
+                _verifyResult.send(VerifyEmailResult.Failure("이메일 정보가 없습니다. 이전 단계부터 다시 진행해주세요."))
+            }
+            return
+        }
+        viewModelScope.launch {
+            _isVerifyLoading.value = true
+            val result = authRepository.verifyEmail(targetEmail, code)
+            _isVerifyLoading.value = false
+            result
+                .onSuccess { _verifyResult.send(VerifyEmailResult.Success) }
+                .onFailure {
+                    _verifyResult.send(VerifyEmailResult.Failure("인증 코드가 일치하지 않습니다."))
+                }
+        }
+    }
+
+    fun resendVerification() {
+        val targetEmail = email
+        if (targetEmail.isBlank()) {
+            viewModelScope.launch {
+                _resendResult.send(ResendResult.Failure("이메일 정보가 없습니다. 이전 단계부터 다시 진행해주세요."))
+            }
+            return
+        }
+        viewModelScope.launch {
+            val result = authRepository.resendVerification(targetEmail)
+            result
+                .onSuccess { _resendResult.send(ResendResult.Success) }
+                .onFailure {
+                    _resendResult.send(ResendResult.Failure("인증 코드 재전송에 실패했습니다."))
+                }
+        }
     }
 }

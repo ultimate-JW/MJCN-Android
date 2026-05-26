@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -46,6 +47,16 @@ class SignUpStep1Fragment : Fragment() {
         observeViewModel()
         setupListeners()
         restoreState()
+        // 이메일 인증 완료 후 들어온 화면이므로 뒤로가기를 차단해 인증 화면으로
+        // 돌아가지 못하게 한다.
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // 아무 동작도 하지 않음 → 현재 화면 유지
+                }
+            }
+        )
     }
 
     // ViewModel에 저장된 값으로 UI 복원

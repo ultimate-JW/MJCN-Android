@@ -1,5 +1,6 @@
 package com.ultimatejw.mjcn.app.di
 
+import com.ultimatejw.mjcn.data.remote.AuthApiService
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
 import dagger.Module
 import dagger.Provides
@@ -34,7 +35,7 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.mjcn.com/") // TODO: 실제 baseUrl로 교체
+            .baseUrl("http://3.34.185.127:8000/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -43,4 +44,9 @@ object NetworkModule {
     @Provides
     fun provideMjcnApiService(retrofit: Retrofit): MjcnApiService =
         retrofit.create(MjcnApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService =
+        retrofit.create(AuthApiService::class.java)
 }
