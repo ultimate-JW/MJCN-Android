@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.ultimatejw.mjcn.domain.model.User
 import com.ultimatejw.mjcn.domain.repository.NotificationRepository
+import com.ultimatejw.mjcn.domain.usecase.user.ObserveCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -19,8 +21,11 @@ data class SettingsUiState(
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
+    observeCurrentUser: ObserveCurrentUserUseCase,
 ) : ViewModel() {
+
+    val user: LiveData<User?> = observeCurrentUser().asLiveData()
 
     val uiState: LiveData<SettingsUiState> = combine(
         notificationRepository.notifAll,

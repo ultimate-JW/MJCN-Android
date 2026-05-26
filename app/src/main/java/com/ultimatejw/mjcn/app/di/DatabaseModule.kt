@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.ultimatejw.mjcn.app.dataStore
 import com.ultimatejw.mjcn.data.local.MjcnDatabase
 import com.ultimatejw.mjcn.data.local.dao.ChatDao
+import com.ultimatejw.mjcn.data.local.dao.InfoDao
 import com.ultimatejw.mjcn.data.local.dao.NoticeDao
 import com.ultimatejw.mjcn.data.local.dao.UserDao
 import dagger.Module
@@ -32,6 +33,9 @@ object DatabaseModule {
 
     @Provides
     fun provideChatDao(db: MjcnDatabase): ChatDao = db.chatDao()
+
+    @Provides
+    fun provideInfoDao(db: MjcnDatabase): InfoDao = db.infoDao()
 
     @Singleton
     @Provides

@@ -25,5 +25,6 @@ fun UserProfileDto.toDomain() = User(
     graduationYear = graduationYear,
     interests = emptyList(),
     entranceYear = admissionYear,
-    major = major?.split(" · ")?.lastOrNull()?.trim()
+    major = major?.split(" · ")?.lastOrNull()?.trim(),
+    graduationDate = if (graduationYear != null && graduationMonth != null) "${graduationYear}년 ${graduationMonth}월" else null
 )

@@ -12,6 +12,12 @@ interface NoticeDao {
     @Query("SELECT * FROM notices WHERE category = :category ORDER BY date DESC")
     fun getNoticesByCategory(category: String): Flow<List<NoticeEntity>>
 
+    @Query("SELECT * FROM notices WHERE isBookmarked = 1 ORDER BY date DESC")
+    fun getBookmarkedNotices(): Flow<List<NoticeEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(notice: NoticeEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(notices: List<NoticeEntity>)
 

@@ -113,7 +113,9 @@ class LoginViewModel @Inject constructor(
                         graduationYear = profile.graduationYear,
                         interests = emptyList(),
                         entranceYear = profile.admissionYear,
-                        major = profile.major?.split(" · ")?.lastOrNull()?.trim()
+                        major = profile.major?.split(" · ")?.lastOrNull()?.trim(),
+                        graduationDate = if (profile.graduationYear != null && profile.graduationMonth != null)
+                            "${profile.graduationYear}년 ${profile.graduationMonth}월" else null
                     )
                 )
             }
