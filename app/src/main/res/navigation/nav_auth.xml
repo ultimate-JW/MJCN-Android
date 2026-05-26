@@ -11,6 +11,28 @@
         <action
             android:id="@+id/action_login_to_signup"
             app:destination="@id/signUpIdPwFragment" />
+        <!-- 로그인 후 온보딩 미완료 상태에서 멈춘 지점으로 직접 이동.
+             popUpTo로 로그인 화면을 백스택에서 제거해 뒤로가기로 돌아오지 못하게 한다. -->
+        <action
+            android:id="@+id/action_login_to_step1"
+            app:destination="@id/signUpStep1Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step3"
+            app:destination="@id/signUpStep3Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step4"
+            app:destination="@id/signUpStep4Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step5"
+            app:destination="@id/signUpStep5Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

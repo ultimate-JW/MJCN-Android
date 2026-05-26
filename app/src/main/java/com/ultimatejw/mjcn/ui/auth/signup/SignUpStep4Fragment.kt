@@ -76,6 +76,7 @@ class SignUpStep4Fragment : Fragment() {
         binding.btnPrev.setOnClickListener {
             findNavController().popBackStack()
         }
+        // 서버 저장은 Step5에서 한 번에 처리. 여기는 단순 화면 전환만.
         binding.btnNext.setOnClickListener {
             findNavController().navigate(com.ultimatejw.mjcn.R.id.action_step4_to_step5)
         }
@@ -84,7 +85,8 @@ class SignUpStep4Fragment : Fragment() {
     /** + 버튼 클릭 시: 미선택이면 추가, 선택 상태면 해제 */
     private fun toggleCourse(course: Course) {
         if (viewModel.findSelectedCourse(course.name) == null) {
-            viewModel.addSelectedCourse(course.name)
+            // meta(전공/교양 분류)를 같이 저장 → Step5 일괄 저장 시 category 결정에 사용.
+            viewModel.addSelectedCourse(course.name, course.meta)
         } else {
             viewModel.removeSelectedCourse(course.name)
         }
@@ -97,21 +99,50 @@ class SignUpStep4Fragment : Fragment() {
     }
 
     private fun showGradePicker(course: Course) {
-        val grades = listOf("A+", "A0", "B+", "B0", "C+", "C0", "D+", "D0", "F", "P")
-        val currentGrade = viewModel.findSelectedCourse(course.name)?.grade
+        val isChapel = course.name == CHAPEL_COURSE_NAME
+        val items = if (isChapel) {
+            listOf("1", "2", "3", "4")
+        } else {
+            listOf("A+", "A0", "B+", "B0", "C+", "C0", "D+", "D0", "F", "P")
+        }
+        val title = getString(
+            if (isChapel) com.ultimatejw.mjcn.R.string.picker_chapel_count
+            else com.ultimatejw.mjcn.R.string.picker_grade_select
+        )
+        val current = viewModel.findSelectedCourse(course.name)?.grade
         ListPickerBottomSheet.newInstance(
-            title = getString(com.ultimatejw.mjcn.R.string.picker_grade_select),
-            items = grades,
-            selectedItem = currentGrade
+            title = title,
+            items = items,
+            selectedItem = current
         ) { selected ->
             viewModel.setCourseGrade(course.name, selected)
             refreshCourseList()
+            updateNextButton()
         }.show(childFragmentManager, "grade_picker")
     }
 
     private fun refreshLists() {
         refreshChipList()
         refreshCourseList()
+        updateNextButton()
+    }
+
+    /**
+     * 채플이 선택되었지만 이수 횟수가 입력되지 않은 경우에만 다음 버튼을 비활성화한다.
+     * 그 외의 모든 상태(미선택 / 선택+횟수 입력됨)에서는 활성.
+     */
+    private fun updateNextButton() {
+        val chapel = viewModel.findSelectedCourse(CHAPEL_COURSE_NAME)
+        val chapelCountMissing = chapel != null && chapel.grade.isNullOrBlank()
+        val enabled = !chapelCountMissing
+        binding.btnNext.isEnabled = enabled
+        if (enabled) {
+            binding.btnNext.setBackgroundResource(com.ultimatejw.mjcn.R.drawable.bg_btn_primary)
+            binding.btnNext.setTextColor(requireContext().getColor(com.ultimatejw.mjcn.R.color.white))
+        } else {
+            binding.btnNext.setBackgroundResource(com.ultimatejw.mjcn.R.drawable.bg_btn_disabled)
+            binding.btnNext.setTextColor(requireContext().getColor(com.ultimatejw.mjcn.R.color.text_disabled))
+        }
     }
 
     private fun refreshChipList() {
@@ -134,22 +165,47 @@ class SignUpStep4Fragment : Fragment() {
         val majorMeta = "반도체 ICT대학 · 컴퓨터정보통신공학부 · 컴퓨터공학과"
         val liberalArtsMeta = "자연캠퍼스 교양"
         return listOf(
-            Course("4차산업혁명과기업가정신", majorMeta),
-            Course("AI프로그래밍", majorMeta),
+            // 전공
+            Course("C언어프로그래밍", majorMeta),
+            Course("공학입문설계", majorMeta),
+            Course("객체지향프로그래밍1", majorMeta),
             Course("객체지향프로그래밍2", majorMeta),
-            Course("공개SW실무", majorMeta),
-            Course("그래프신경망과빅데이터", majorMeta),
-            Course("기계학습", majorMeta),
-            Course("데이터베이스", majorMeta),
-            Course("데이터베이스설계", majorMeta),
-            Course("딥러닝", majorMeta),
-            Course("모바일프로그래밍", majorMeta),
-            Course("블록체인", majorMeta),
+            Course("컴퓨터하드웨어", majorMeta),
+            Course("자료구조", majorMeta),
+            Course("웹프로그래밍", majorMeta),
+            Course("팀프로젝트1", majorMeta),
+            Course("컴퓨터 보안", majorMeta),
+            Course("컴퓨터교육론", majorMeta),
+            Course("운영체제", majorMeta),
             Course("소프트웨어공학", majorMeta),
-            Course("영어 1", liberalArtsMeta),
-            Course("영어 2", liberalArtsMeta),
-            Course("영어회화 1", liberalArtsMeta),
-            Course("영어회화 2", liberalArtsMeta)
+            Course("공개SW실무", majorMeta),
+            Course("알고리즘", majorMeta),
+            Course("시스템프로그래밍", majorMeta),
+            Course("프로그래밍언어", majorMeta),
+            Course("모바일프로그래밍", majorMeta),
+            // 교양
+            Course(CHAPEL_COURSE_NAME, liberalArtsMeta),
+            Course("기초미적분학", liberalArtsMeta),
+            Course("영어1", liberalArtsMeta),
+            Course("영어2", liberalArtsMeta),
+            Course("영어회화1", liberalArtsMeta),
+            Course("영어회화2", liberalArtsMeta),
+            Course("물리학1", liberalArtsMeta),
+            Course("물리학실험1", liberalArtsMeta),
+            Course("미적분학1", liberalArtsMeta),
+            Course("통계학개론", liberalArtsMeta),
+            Course("기독교와문화", liberalArtsMeta),
+            Course("이산수학개론", liberalArtsMeta),
+            Course("예술과창조성", liberalArtsMeta),
+            Course("발표와토의", liberalArtsMeta),
+            Course("공학수학1", liberalArtsMeta),
+            Course("파이썬프로그래밍입문", liberalArtsMeta),
+            Course("파이썬을활용한데이터분석과인공지능", liberalArtsMeta),
+            Course("선형대수학개론", liberalArtsMeta),
+            Course("세계화와사회변화", liberalArtsMeta),
+            Course("성서와인간이해", liberalArtsMeta),
+            Course("철학과인간", liberalArtsMeta),
+            Course("현대사회와기독교윤리", liberalArtsMeta)
         )
     }
 

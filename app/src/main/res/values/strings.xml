@@ -54,6 +54,9 @@
     <string name="signup_course_search_hint">전체 과목 이름으로 검색</string>
     <string name="signup_course_grade_hint">성적(선택)</string>
     <string name="picker_grade_select">성적 선택</string>
+    <!-- 채플 전용 -->
+    <string name="signup_chapel_count_hint">이수 횟수 입력(필수)</string>
+    <string name="picker_chapel_count">이수 횟수 선택</string>
 
     <!-- SignUp Step5: 현재 수강 과목 -->
     <string name="signup_current_title">현재 수강 과목</string>

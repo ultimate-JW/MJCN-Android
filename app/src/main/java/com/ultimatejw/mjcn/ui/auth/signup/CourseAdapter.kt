@@ -57,9 +57,18 @@ class CourseAdapter(
         if (isSelected && showGradeOnSelect) {
             holder.tvGrade.visibility = View.VISIBLE
             val grade = selection?.grade
+            val context = holder.itemView.context
+            val isChapel = course.name == CHAPEL_COURSE_NAME
             if (grade.isNullOrEmpty()) {
                 holder.tvGrade.text = ""
-                holder.tvGrade.hint = holder.itemView.context.getString(R.string.signup_course_grade_hint)
+                if (isChapel) {
+                    // 채플은 성적이 아닌 이수 횟수를 입력해야 하므로 빨간 필수 힌트를 노출
+                    holder.tvGrade.hint = context.getString(R.string.signup_chapel_count_hint)
+                    holder.tvGrade.setHintTextColor(context.getColor(R.color.error))
+                } else {
+                    holder.tvGrade.hint = context.getString(R.string.signup_course_grade_hint)
+                    holder.tvGrade.setHintTextColor(0xFFCCCCCC.toInt())
+                }
                 holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
             } else {
                 holder.tvGrade.text = grade

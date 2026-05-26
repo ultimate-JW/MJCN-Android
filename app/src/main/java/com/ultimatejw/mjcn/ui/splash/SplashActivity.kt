@@ -11,7 +11,6 @@ import com.ultimatejw.mjcn.ui.auth.AuthActivity
 import com.ultimatejw.mjcn.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
@@ -28,8 +27,9 @@ class SplashActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             delay(1500)
-            val isLoggedIn = viewModel.isLoggedIn.first()
-            val intent = if (isLoggedIn) {
+            // 온보딩 미완료 사용자는 로그인 화면을 거쳐 멈춘 단계로 재개시킨다.
+            val toMain = viewModel.shouldGoToMain()
+            val intent = if (toMain) {
                 Intent(this@SplashActivity, MainActivity::class.java)
             } else {
                 Intent(this@SplashActivity, AuthActivity::class.java)

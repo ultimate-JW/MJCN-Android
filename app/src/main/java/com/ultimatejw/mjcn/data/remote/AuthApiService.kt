@@ -1,5 +1,7 @@
 package com.ultimatejw.mjcn.data.remote
 
+import com.ultimatejw.mjcn.data.remote.dto.auth.LoginRequest
+import com.ultimatejw.mjcn.data.remote.dto.auth.LoginResponse
 import com.ultimatejw.mjcn.data.remote.dto.auth.ResendVerificationRequest
 import com.ultimatejw.mjcn.data.remote.dto.auth.SignupRequest
 import com.ultimatejw.mjcn.data.remote.dto.auth.VerifyEmailRequest
@@ -17,4 +19,7 @@ interface AuthApiService {
 
     @POST("api/v1/accounts/verify-email/resend/")
     suspend fun resendVerification(@Body request: ResendVerificationRequest): Response<Unit>
+
+    @POST("api/v1/accounts/login/")
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 }

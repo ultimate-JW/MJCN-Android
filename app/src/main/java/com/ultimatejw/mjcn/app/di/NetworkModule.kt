@@ -1,7 +1,12 @@
 package com.ultimatejw.mjcn.app.di
 
 import com.ultimatejw.mjcn.data.remote.AuthApiService
+import com.ultimatejw.mjcn.data.remote.CourseHistoryApiService
+import com.ultimatejw.mjcn.data.remote.CurrentCourseApiService
+import com.ultimatejw.mjcn.data.remote.InterestApiService
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
+import com.ultimatejw.mjcn.data.remote.ProfileApiService
+import com.ultimatejw.mjcn.data.remote.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,9 +30,12 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor
     ): OkHttpClient =
         OkHttpClient.Builder()
+            // AuthInterceptor가 먼저 토큰을 붙인 뒤 logging이 그 결과를 로깅하도록 순서 유지.
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
 
@@ -49,4 +57,24 @@ object NetworkModule {
     @Provides
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService =
         retrofit.create(AuthApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProfileApiService(retrofit: Retrofit): ProfileApiService =
+        retrofit.create(ProfileApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideInterestApiService(retrofit: Retrofit): InterestApiService =
+        retrofit.create(InterestApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCourseHistoryApiService(retrofit: Retrofit): CourseHistoryApiService =
+        retrofit.create(CourseHistoryApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCurrentCourseApiService(retrofit: Retrofit): CurrentCourseApiService =
+        retrofit.create(CurrentCourseApiService::class.java)
 }
