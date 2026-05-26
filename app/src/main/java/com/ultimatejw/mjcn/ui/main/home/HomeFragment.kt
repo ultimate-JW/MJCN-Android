@@ -1,5 +1,7 @@
 package com.ultimatejw.mjcn.ui.main.home
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentHomeBinding
+import com.ultimatejw.mjcn.databinding.ItemHomeThemeBinding
 import com.ultimatejw.mjcn.domain.model.Notice
+import com.ultimatejw.mjcn.domain.model.Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +35,6 @@ class HomeFragment : Fragment() {
     private val infoAdapter = HomeInfoAdapter(
         onBookmarkClick = { info -> viewModel.toggleInfoBookmark(info) }
     )
-    private val themeAdapter = HomeThemeAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,9 +63,27 @@ class HomeFragment : Fragment() {
 
         binding.rvInfo.layoutManager = LinearLayoutManager(requireContext())
         binding.rvInfo.adapter = infoAdapter
+    }
 
-        binding.rvTheme.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvTheme.adapter = themeAdapter
+    private fun bindThemeItems(themes: List<Theme>) {
+        val container = binding.llThemeItems
+        container.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        themes.forEach { theme ->
+            val itemBinding = ItemHomeThemeBinding.inflate(inflater, container, false)
+            itemBinding.tvTitle.text = theme.title
+            itemBinding.tvSubtitle.text = theme.subtitle
+            itemBinding.ivIcon.setImageResource(theme.iconRes)
+            itemBinding.layoutThemeIcon.backgroundTintList =
+                ColorStateList.valueOf(Color.parseColor(theme.iconBgColor))
+            itemBinding.root.setOnClickListener {
+                findNavController().navigate(
+                    R.id.action_home_to_chatDetail,
+                    bundleOf("sessionId" to "")
+                )
+            }
+            container.addView(itemBinding.root)
+        }
     }
 
     private fun setupNavigation() {
@@ -70,9 +91,7 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_settings)
         }
 
-        // AI 가이드 카드의 두 버튼
         binding.btnCheckNotice.setOnClickListener {
-            // 더미: 첫 번째 공지 mockup 으로 이동
             openNoticeDetailWithDummy("c1")
         }
         binding.btnAskAi.setOnClickListener {
@@ -82,9 +101,6 @@ class HomeFragment : Fragment() {
             )
         }
 
-        // 공지/테마 더보기는 BottomNav 의 탭 전환과 동일한 동작이 되도록
-        // selectedItemId 를 직접 변경해서 NavigationUI 가 popUpTo/launchSingleTop 처리하도록 위임.
-        // 그래야 다른 탭에서 홈 아이콘을 눌렀을 때도 일관되게 홈으로 복귀한다.
         binding.tvNoticeShowall.setOnClickListener {
             requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav)
                 ?.let { it.selectedItemId = R.id.noticeFragment }
@@ -136,6 +152,9 @@ class HomeFragment : Fragment() {
             } else ""
 
             todayClassAdapter.submitList(state.todayClasses)
+            val todayEmpty = state.todayClasses.isEmpty()
+            binding.tvTodayClassEmpty.visibility = if (todayEmpty) View.VISIBLE else View.GONE
+            binding.rvTodayClass.visibility = if (todayEmpty) View.GONE else View.VISIBLE
 
             noticeAdapter.submitList(state.noticeList)
             val noticeEmpty = state.noticeList.isEmpty()
@@ -147,7 +166,7 @@ class HomeFragment : Fragment() {
             binding.tvInfoEmpty.visibility = if (infoEmpty) View.VISIBLE else View.GONE
             binding.rvInfo.visibility = if (infoEmpty) View.GONE else View.VISIBLE
 
-            themeAdapter.submitList(state.themeList)
+            bindThemeItems(state.themeList)
 
             binding.tvNewNoti.text = state.courseCount.toString()
             binding.tvNewInfo.text = state.graduationCredits.toString()

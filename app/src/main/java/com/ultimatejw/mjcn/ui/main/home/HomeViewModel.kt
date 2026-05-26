@@ -50,14 +50,19 @@ class HomeViewModel @Inject constructor(
     private var noticeBookmarkedIds: Set<String> = emptySet()
     private var infoBookmarkedIds: Set<String> = emptySet()
 
-    private val _uiState = MutableLiveData(HomeUiState())
+    private val _uiState = MutableLiveData(HomeUiState(
+        themeList = listOf(
+            Theme("1", "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", R.drawable.ic_hat, "#E1F5EE"),
+            Theme("2", "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", R.drawable.ic_bag, "#E6F1FB"),
+            Theme("3", "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", R.drawable.ic_plane, "#EAF3DE"),
+        )
+    ))
     val uiState: LiveData<HomeUiState> = _uiState
 
     init {
         observeUser()
         loadDashboard()
         observeBookmarks()
-        loadThemeList()
     }
 
     private fun loadDashboard() {
@@ -122,13 +127,4 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadThemeList() {
-        _uiState.value = _uiState.value!!.copy(
-            themeList = listOf(
-                Theme("1", "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", R.drawable.ic_hat, "#E1F5EE"),
-                Theme("2", "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", R.drawable.ic_bag, "#E6F1FB"),
-                Theme("3", "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", R.drawable.ic_plane, "#EAF3DE"),
-            )
-        )
-    }
 }
