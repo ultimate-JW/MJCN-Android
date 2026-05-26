@@ -133,7 +133,7 @@ class NoticeFragment : Fragment() {
             "noticeTitle" to notice.title,
             "noticeTeam" to notice.team,
             "noticeDate" to notice.date,
-            "noticeSummary" to ""
+            "noticeSummary" to notice.summary
         )
         findNavController().navigate(R.id.action_notice_to_detail, args)
     }

@@ -29,6 +29,13 @@
             app:exitAnim="@anim/stay"
             app:popEnterAnim="@anim/stay"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -67,7 +74,15 @@
     <fragment
         android:id="@+id/infoBookmarkFragment"
         android:name="com.ultimatejw.mjcn.ui.main.info.InfoBookmarkFragment"
-        android:label="InfoBookmarkFragment" />
+        android:label="InfoBookmarkFragment">
+        <action
+            android:id="@+id/action_infoBookmark_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/themeFragment"
@@ -192,6 +207,48 @@
     <fragment
         android:id="@+id/infoFragment"
         android:name="com.ultimatejw.mjcn.ui.main.info.InfoFragment"
-        android:label="InfoFragment" />
+        android:label="InfoFragment">
+        <action
+            android:id="@+id/action_info_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.info.InfoDetailFragment"
+        android:label="InfoDetailFragment">
+        <argument
+            android:name="infoId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoCategory"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoTeam"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoDday"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="infoStartDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoEndDate"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 
 </navigation>

@@ -123,6 +123,7 @@ class HomeFragment : Fragment() {
             itemBinding.btnBookmark.setBackgroundResource(
                 if (info.isBookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark
             )
+            itemBinding.root.setOnClickListener { openInfoDetail(info) }
             itemBinding.btnBookmark.setOnClickListener { viewModel.toggleInfoBookmark(info) }
             val category = InfoCategory.from(info.category)
             val bgColor = when (category) {
@@ -211,6 +212,19 @@ class HomeFragment : Fragment() {
             "noticeSummary" to notice.summary
         )
         findNavController().navigate(R.id.action_home_to_noticeDetail, args)
+    }
+
+    private fun openInfoDetail(info: Info) {
+        val args = bundleOf(
+            "infoId" to info.id,
+            "infoCategory" to info.category,
+            "infoTitle" to info.title,
+            "infoTeam" to info.team,
+            "infoDday" to info.dday,
+            "infoStartDate" to (info.startDate ?: ""),
+            "infoEndDate" to (info.endDate ?: "")
+        )
+        findNavController().navigate(R.id.action_home_to_infoDetail, args)
     }
 
     private fun openNoticeDetailWithDummy(mockupId: String) {
