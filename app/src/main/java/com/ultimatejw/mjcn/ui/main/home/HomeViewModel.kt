@@ -60,14 +60,22 @@ class HomeViewModel @Inject constructor(
     ))
     val uiState: LiveData<HomeUiState> = _uiState
 
+    private val _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     init {
         observeUser()
         loadDashboard()
         observeBookmarks()
     }
 
+    fun refresh() {
+        loadDashboard()
+    }
+
     private fun loadDashboard() {
         viewModelScope.launch {
+            _isRefreshing.value = true
             when (val result = getDashboard()) {
                 is ApiResult.Success -> {
                     val data = result.body
@@ -76,7 +84,8 @@ class HomeViewModel @Inject constructor(
                     rawInfoList = data.infoList
                     _uiState.value = _uiState.value!!.copy(
                         dashboardUserName = data.userName,
-                        todayClasses = data.todayClasses,
+                        // TODO: API 연결 시 data.todayClasses로 교체
+                        todayClasses = dummyTodayClasses(),
                         noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) },
                         infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) },
                         courseCount = data.unreadNotificationCount,
@@ -87,6 +96,7 @@ class HomeViewModel @Inject constructor(
                     Log.e("HomeViewModel", "dashboard error: code=${result.code}, message=${result.message}")
                 }
             }
+            _isRefreshing.value = false
         }
     }
 
@@ -108,6 +118,12 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    private fun dummyTodayClasses() = listOf(
+        TodayClass("1", "캡스톤디자인", "09:00", "10:30", "공학관", "301", "홍길동"),
+        TodayClass("2", "운영체제", "13:00", "14:30", "공학관", "402", "김철수"),
+        TodayClass("3", "모바일프로그래밍", "15:00", "16:30", "정보관", "201", "이영희"),
+    )
 
     fun toggleNoticeBookmark(notice: Notice) {
         viewModelScope.launch { toggleNoticeBookmark.invoke(notice) }

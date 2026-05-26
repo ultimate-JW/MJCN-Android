@@ -51,7 +51,20 @@ class HomeFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerViews()
         setupNavigation()
+        setupSwipeRefresh()
         observeViewModel()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.point_color1)
+        )
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+        viewModel.isRefreshing.observe(viewLifecycleOwner) { refreshing ->
+            binding.swipeRefresh.isRefreshing = refreshing
+        }
     }
 
     private fun setupRecyclerViews() {
