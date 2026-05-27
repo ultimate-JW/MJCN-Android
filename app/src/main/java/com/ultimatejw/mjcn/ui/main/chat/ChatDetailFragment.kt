@@ -54,12 +54,17 @@ class ChatDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val sessionId = arguments?.getString("sessionId") ?: ""
 
+        val initialMessage = arguments?.getString("initialMessage").orEmpty()
+
         setupMessageList()
         setupListeners()
         setupKeyboardAnimation()
         observeState()
 
         viewModel.loadRoom(sessionId)
+        if (initialMessage.isNotBlank()) {
+            viewModel.sendMessage(initialMessage)
+        }
     }
 
     private fun setupMessageList() {

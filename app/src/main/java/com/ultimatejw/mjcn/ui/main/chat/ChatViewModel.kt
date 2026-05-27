@@ -12,6 +12,7 @@ import javax.inject.Inject
 
 data class ChatUiState(
     val sessions: List<ChatSession> = emptyList(),
+    val totalCount: Int = 0,
     val selectedCategory: String = "전체",
     val isLoading: Boolean = false,
     val error: String? = null
@@ -37,8 +38,11 @@ class ChatViewModel @Inject constructor(
             chatRepository.getChatRooms().fold(
                 onSuccess = { sessions ->
                     allSessions = sessions
+                    _uiState.value = _uiState.value!!.copy(
+                        totalCount = sessions.size,
+                        isLoading = false
+                    )
                     applyFilter()
-                    _uiState.value = _uiState.value!!.copy(isLoading = false)
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value!!.copy(isLoading = false, error = e.message)
