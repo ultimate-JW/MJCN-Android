@@ -10,16 +10,16 @@ data class ChatSession(
 
 data class ChatMessage(
     val id: String,
-    val sessionId: String,
+    val role: String,
     val content: String,
-    val isFromUser: Boolean,
     val createdAt: String
-)
-
-enum class ChatCategory(val label: String) {
-    ALL("전체"),
-    ENROLLMENT("수강신청"),
-    SCHOOL_LIFE("학교생활"),
-    CAREER("취업·진로"),
-    CONTEST("공모전")
+) {
+    val isFromUser: Boolean get() = role == "user"
 }
+
+data class ChatRoomDetail(
+    val id: String,
+    val title: String,
+    val category: String,
+    val messages: List<ChatMessage>
+)

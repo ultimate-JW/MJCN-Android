@@ -1,8 +1,13 @@
 package com.ultimatejw.mjcn.data.remote
 
+import com.ultimatejw.mjcn.data.remote.dto.ChatMessageCreateDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatMessageDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatRoomDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatRoomListDto
 import com.ultimatejw.mjcn.data.remote.dto.DashboardDto
 import com.ultimatejw.mjcn.data.remote.dto.InformationDetailDto
 import com.ultimatejw.mjcn.data.remote.dto.NoticeDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedChatRoomDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedInformationDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedNoticeDto
 import com.ultimatejw.mjcn.data.remote.dto.LoginRequestDto
@@ -10,6 +15,7 @@ import com.ultimatejw.mjcn.data.remote.dto.LoginResponseDto
 import com.ultimatejw.mjcn.data.remote.dto.UserProfileDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.POST
@@ -49,4 +55,22 @@ interface MjcnApiService {
 
     @GET("api/v1/information/{id}/")
     suspend fun getInformationDetail(@Path("id") id: String): Response<InformationDetailDto>
+
+    @GET("api/v1/chat/rooms/")
+    suspend fun getChatRooms(): Response<PaginatedChatRoomDto>
+
+    @POST("api/v1/chat/rooms/")
+    suspend fun createChatRoom(): Response<ChatRoomListDto>
+
+    @GET("api/v1/chat/rooms/{id}/")
+    suspend fun getChatRoomDetail(@Path("id") id: String): Response<ChatRoomDetailDto>
+
+    @DELETE("api/v1/chat/rooms/{id}/")
+    suspend fun deleteChatRoom(@Path("id") id: String): Response<Unit>
+
+    @POST("api/v1/chat/rooms/{id}/messages/")
+    suspend fun sendChatMessage(
+        @Path("id") id: String,
+        @Body body: ChatMessageCreateDto
+    ): Response<ChatMessageDto>
 }

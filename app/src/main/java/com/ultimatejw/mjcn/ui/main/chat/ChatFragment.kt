@@ -81,6 +81,7 @@ class ChatFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        viewModel.loadRooms()
     }
 
     override fun onPause() {

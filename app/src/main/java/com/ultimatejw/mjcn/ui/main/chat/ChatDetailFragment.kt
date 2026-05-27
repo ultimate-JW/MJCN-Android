@@ -12,14 +12,16 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.snackbar.Snackbar
 import com.ultimatejw.mjcn.databinding.DialogDeleteConfirmBinding
@@ -32,6 +34,9 @@ class ChatDetailFragment : Fragment() {
 
     private var _binding: FragmentChatDetailBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ChatDetailViewModel by viewModels()
+    private lateinit var messageAdapter: ChatMessageAdapter
 
     private var isKeyboardVisible = false
     private var keyboardAnimator: ValueAnimator? = null
@@ -48,9 +53,32 @@ class ChatDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sessionId = arguments?.getString("sessionId") ?: ""
-        binding.tvTitle.text = if (sessionId.isBlank()) "새 대화" else "AI 채팅"
+
+        setupMessageList()
         setupListeners()
         setupKeyboardAnimation()
+        observeState()
+
+        viewModel.loadRoom(sessionId)
+    }
+
+    private fun setupMessageList() {
+        messageAdapter = ChatMessageAdapter()
+        binding.rvMessages.layoutManager = LinearLayoutManager(requireContext()).also {
+            it.stackFromEnd = true
+        }
+        binding.rvMessages.adapter = messageAdapter
+    }
+
+    private fun observeState() {
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            binding.tvTitle.text = state.title
+            messageAdapter.submitList(state.messages) {
+                if (state.messages.isNotEmpty()) {
+                    binding.rvMessages.scrollToPosition(state.messages.size - 1)
+                }
+            }
+        }
     }
 
     private fun setupKeyboardAnimation() {
@@ -117,10 +145,10 @@ class ChatDetailFragment : Fragment() {
             showChatMenuPopup(anchor)
         }
         binding.btnSend.setOnClickListener {
-            val message = binding.etMessage.text.toString()
+            val message = binding.etMessage.text.toString().trim()
             if (message.isBlank()) return@setOnClickListener
             binding.etMessage.text.clear()
-            // TODO: AI API 호출
+            viewModel.sendMessage(message)
         }
     }
 
@@ -197,7 +225,6 @@ class ChatDetailFragment : Fragment() {
             popupBinding.chipCareer
         ).forEach { chip ->
             chip.setOnClickListener {
-                // TODO: 카테고리 변경 저장
                 popup.dismiss()
                 showToast("카테고리가 변경되었습니다.")
             }
@@ -220,8 +247,10 @@ class ChatDetailFragment : Fragment() {
 
         dialogBinding.btnDeleteConfirm.setOnClickListener {
             dialog.dismiss()
-            showToast("채팅 내용을 삭제했습니다.")
-            findNavController().popBackStack()
+            viewModel.deleteRoom {
+                showToast("채팅 내용을 삭제했습니다.")
+                findNavController().popBackStack()
+            }
         }
         dialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()
