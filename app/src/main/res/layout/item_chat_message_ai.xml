@@ -2,30 +2,64 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
-    <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_ai_chat" />
-
     <TextView
-        android:id="@+id/tv_message"
+        android:id="@+id/tv_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="64dp"
-        android:background="@drawable/bg_chat_bubble_ai"
-        android:fontFamily="@font/pretendard_regular"
-        android:lineSpacingExtra="2dp"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp"
-        android:textColor="@color/font_color1"
-        android:textSize="15sp" />
+        android:background="@drawable/bg_ai_header_chip"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:fontFamily="@font/pretendard_medium"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/container_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_ai_message_card"
+        android:padding="16dp"
+        android:layout_marginTop="8dp" />
+
+    <LinearLayout
+        android:id="@+id/container_suggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_ai_suggestion_section"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_suggestions_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="추가로 물을 수 있어요"
+            android:textSize="13sp"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textColor="@color/primary" />
+
+        <LinearLayout
+            android:id="@+id/container_suggestion_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -68,7 +68,13 @@ class ChatDetailFragment : Fragment() {
     }
 
     private fun setupMessageList() {
-        messageAdapter = ChatMessageAdapter()
+        messageAdapter = ChatMessageAdapter().also {
+            it.onSuggestionClick = { suggestion ->
+                binding.etMessage.setText(suggestion)
+                binding.etMessage.setSelection(suggestion.length)
+                binding.etMessage.requestFocus()
+            }
+        }
         binding.rvMessages.layoutManager = LinearLayoutManager(requireContext()).also {
             it.stackFromEnd = true
         }
