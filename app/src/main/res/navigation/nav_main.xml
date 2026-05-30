@@ -121,22 +121,42 @@
     <fragment
         android:id="@+id/themeDetail1Fragment"
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail1Fragment"
-        android:label="ThemeDetail1Fragment" />
+        android:label="ThemeDetail1Fragment">
+        <argument
+            android:name="themeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/themeDetail2Fragment"
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail2Fragment"
-        android:label="ThemeDetail2Fragment" />
+        android:label="ThemeDetail2Fragment">
+        <argument
+            android:name="themeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/themeDetail3Fragment"
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail3Fragment"
-        android:label="ThemeDetail3Fragment" />
+        android:label="ThemeDetail3Fragment">
+        <argument
+            android:name="themeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/themeDetail4Fragment"
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail4Fragment"
-        android:label="ThemeDetail4Fragment" />
+        android:label="ThemeDetail4Fragment">
+        <argument
+            android:name="themeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 
     <fragment
         android:id="@+id/chatFragment"

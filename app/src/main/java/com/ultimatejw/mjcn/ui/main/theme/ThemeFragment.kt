@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -42,14 +43,15 @@ class ThemeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = ThemeAdapter { theme ->
-            val actionId = when (theme.id) {
-                "1" -> R.id.action_theme_to_detail1
-                "2" -> R.id.action_theme_to_detail2
-                "3" -> R.id.action_theme_to_detail3
-                "4" -> R.id.action_theme_to_detail4
-                else -> return@ThemeAdapter // theme 5 등 미구현 테마는 무시
+            val actionId = when (theme.category) {
+                "course_registration" -> R.id.action_theme_to_detail1
+                "career"              -> R.id.action_theme_to_detail2
+                "exchange"            -> R.id.action_theme_to_detail3
+                "grant"               -> R.id.action_theme_to_detail4
+                else -> return@ThemeAdapter
             }
-            findNavController().navigate(actionId)
+            val args = bundleOf("themeId" to theme.id)
+            findNavController().navigate(actionId, args)
         }
         binding.rvThemes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvThemes.adapter = adapter

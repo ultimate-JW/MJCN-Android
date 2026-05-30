@@ -11,6 +11,7 @@ import com.ultimatejw.mjcn.data.repository.InterestRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.NoticeRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.NotificationRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.ProfileRepositoryImpl
+import com.ultimatejw.mjcn.data.repository.ThemeRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.UserRepositoryImpl
 import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import com.ultimatejw.mjcn.domain.repository.BookmarkRepository
@@ -23,6 +24,7 @@ import com.ultimatejw.mjcn.domain.repository.InterestRepository
 import com.ultimatejw.mjcn.domain.repository.NoticeRepository
 import com.ultimatejw.mjcn.domain.repository.NotificationRepository
 import com.ultimatejw.mjcn.domain.repository.ProfileRepository
+import com.ultimatejw.mjcn.domain.repository.ThemeRepository
 import com.ultimatejw.mjcn.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -81,4 +83,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCurrentCourseRepository(impl: CurrentCourseRepositoryImpl): CurrentCourseRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindThemeRepository(impl: ThemeRepositoryImpl): ThemeRepository
 }

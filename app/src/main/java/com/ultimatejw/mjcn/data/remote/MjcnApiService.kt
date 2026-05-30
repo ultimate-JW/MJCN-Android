@@ -10,6 +10,8 @@ import com.ultimatejw.mjcn.data.remote.dto.NoticeDetailDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedChatRoomDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedInformationDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedNoticeDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedThemeDto
+import com.ultimatejw.mjcn.data.remote.dto.ThemeDetailDto
 import com.ultimatejw.mjcn.data.remote.dto.LoginRequestDto
 import com.ultimatejw.mjcn.data.remote.dto.LoginResponseDto
 import com.ultimatejw.mjcn.data.remote.dto.UserProfileDto
@@ -73,4 +75,14 @@ interface MjcnApiService {
         @Path("id") id: String,
         @Body body: ChatMessageCreateDto
     ): Response<ChatMessageDto>
+
+    @GET("api/v1/themes/")
+    suspend fun getThemes(
+        @Query("category") category: String? = null,
+        @Query("page") page: Int = 1,
+        @Query("page_size") pageSize: Int = 20
+    ): Response<PaginatedThemeDto>
+
+    @GET("api/v1/themes/{id}/")
+    suspend fun getThemeDetail(@Path("id") id: Int): Response<ThemeDetailDto>
 }
