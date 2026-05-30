@@ -4,6 +4,7 @@ import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
 import com.ultimatejw.mjcn.data.remote.dto.ThemeListItemDto
 import com.ultimatejw.mjcn.domain.model.Theme
+import com.ultimatejw.mjcn.domain.model.ThemeDetailData
 import com.ultimatejw.mjcn.domain.model.ThemeItem
 import com.ultimatejw.mjcn.domain.repository.ThemeRepository
 import javax.inject.Inject
@@ -18,18 +19,24 @@ class ThemeRepositoryImpl @Inject constructor(
         body.results.map { it.toDomain() }
     }
 
-    override suspend fun fetchThemeDetail(id: Int): Result<List<ThemeItem>> = runCatching {
+    override suspend fun fetchThemeDetail(id: Int): Result<ThemeDetailData> = runCatching {
         val response = apiService.getThemeDetail(id)
         val body = response.body() ?: error("테마 상세 응답이 비어있습니다 (${response.code()})")
-        body.items.map { dto ->
-            ThemeItem(
-                id = dto.id,
-                title = dto.title,
-                content = dto.content.orEmpty(),
-                externalUrl = dto.externalUrl,
-                itemType = dto.itemType
-            )
-        }
+        ThemeDetailData(
+            id = body.id,
+            title = body.title,
+            category = body.category,
+            description = body.description.orEmpty(),
+            items = body.items.map { dto ->
+                ThemeItem(
+                    id = dto.id,
+                    title = dto.title,
+                    content = dto.content.orEmpty(),
+                    externalUrl = dto.externalUrl,
+                    itemType = dto.itemType
+                )
+            }
+        )
     }
 
     private fun ThemeListItemDto.toDomain(): Theme {

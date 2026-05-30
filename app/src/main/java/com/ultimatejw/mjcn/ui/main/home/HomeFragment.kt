@@ -175,10 +175,14 @@ class HomeFragment : Fragment() {
             itemBinding.layoutThemeIcon.backgroundTintList =
                 ColorStateList.valueOf(Color.parseColor(theme.iconBgColor))
             itemBinding.root.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_home_to_chatDetail,
-                    bundleOf("sessionId" to "")
-                )
+                val actionId = when (theme.category) {
+                    "course_registration" -> R.id.action_home_to_themeDetail1
+                    "career"              -> R.id.action_home_to_themeDetail2
+                    "exchange"            -> R.id.action_home_to_themeDetail3
+                    "grant"               -> R.id.action_home_to_themeDetail4
+                    else -> return@setOnClickListener
+                }
+                findNavController().navigate(actionId, bundleOf("themeId" to theme.id))
             }
             container.addView(itemBinding.root)
         }

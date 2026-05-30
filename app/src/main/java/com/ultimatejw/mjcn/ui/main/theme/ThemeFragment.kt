@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -37,7 +38,9 @@ class ThemeFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.tvSubtitle.text = "${CurrentUser.honorific}을 위한 어쩌구 맞춤 가이드"
+
         setupRecyclerView()
+        setupSwipeRefresh()
         observeViewModel()
     }
 
@@ -57,9 +60,21 @@ class ThemeFragment : Fragment() {
         binding.rvThemes.adapter = adapter
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+    }
+
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.themes)
+            binding.swipeRefresh.isRefreshing = state.isRefreshing
+            binding.progressLoading.visibility =
+                if (state.isLoading) View.VISIBLE else View.GONE
         }
     }
 
