@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -40,7 +41,15 @@ class ChatFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerView()
         setupListeners()
+        setupSwipeRefresh()
         observeUiState()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener { viewModel.loadRooms() }
     }
 
     private fun setupRecyclerView() {
@@ -84,6 +93,7 @@ class ChatFragment : Fragment() {
             binding.scrollChips.isVisible = hasAnySession
             binding.tvChatEmpty.isVisible = state.sessions.isEmpty() && !state.isLoading
             adapter.submitList(state.sessions)
+            if (!state.isLoading) binding.swipeRefresh.isRefreshing = false
         }
     }
 

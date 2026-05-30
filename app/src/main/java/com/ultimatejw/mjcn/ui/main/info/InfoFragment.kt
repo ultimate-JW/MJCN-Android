@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.core.content.ContextCompat
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentInfoBinding
 import com.ultimatejw.mjcn.domain.model.Info
@@ -46,7 +47,15 @@ class InfoFragment : Fragment() {
         setupSearch()
         setupTabs()
         setupScrollListener()
+        setupSwipeRefresh()
         observeState()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener { viewModel.refresh() }
     }
 
     private fun observeState() {
@@ -56,6 +65,7 @@ class InfoFragment : Fragment() {
                 getString(R.string.info_total_count_format, state.totalCount)
             binding.progressLoadMore.visibility =
                 if (state.isLoadingMore) View.VISIBLE else View.GONE
+            if (!state.isLoading) binding.swipeRefresh.isRefreshing = false
         }
     }
 

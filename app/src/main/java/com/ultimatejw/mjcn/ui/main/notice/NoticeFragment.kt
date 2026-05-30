@@ -11,6 +11,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentNoticeBinding
@@ -47,7 +48,15 @@ class NoticeFragment : Fragment() {
         setupSearch()
         setupTabs()
         setupScrollListener()
+        setupSwipeRefresh()
         observeState()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener { viewModel.refresh() }
     }
 
     private fun observeState() {
@@ -57,6 +66,7 @@ class NoticeFragment : Fragment() {
                 getString(R.string.notice_total_count_format, state.totalCount)
             binding.progressLoadMore.visibility =
                 if (state.isLoadingMore) View.VISIBLE else View.GONE
+            if (!state.isLoading) binding.swipeRefresh.isRefreshing = false
         }
     }
 

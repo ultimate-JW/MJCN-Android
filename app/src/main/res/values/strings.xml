@@ -92,6 +92,9 @@
     <string name="chat_welcome">무엇을 알려드릴까요?</string>
     <string name="chat_history">이전 대화</string>
     <string name="chat_empty">아직 대화가 없습니다. 띵똥이와 대화를 시작해 보세요!</string>
+    <string name="chat_suggestion1">&#x1F4E2; 최근 7일간 교내 공지 요약해줘</string>
+    <string name="chat_suggestion2">&#x1F3C6; 요즘 자주 등장하는 공모전 키워드는?</string>
+    <string name="chat_ai_icon">&#x1F916;</string>
 
     <!-- Notice -->
     <string name="notice_title">공지</string>
