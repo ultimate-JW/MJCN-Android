@@ -11,6 +11,28 @@
         <action
             android:id="@+id/action_login_to_signup"
             app:destination="@id/signUpIdPwFragment" />
+        <!-- 로그인 후 온보딩 미완료 상태에서 멈춘 지점으로 직접 이동.
+             popUpTo로 로그인 화면을 백스택에서 제거해 뒤로가기로 돌아오지 못하게 한다. -->
+        <action
+            android:id="@+id/action_login_to_step1"
+            app:destination="@id/signUpStep1Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step3"
+            app:destination="@id/signUpStep3Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step4"
+            app:destination="@id/signUpStep4Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_step5"
+            app:destination="@id/signUpStep5Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -54,9 +76,35 @@
         android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep3Fragment"
         android:label="SignUpStep3Fragment">
         <action
+            android:id="@+id/action_step3_to_step4"
+            app:destination="@id/signUpStep4Fragment" />
+        <action
             android:id="@+id/action_step3_to_onboarding"
             app:destination="@id/onboardingFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep4Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep4Fragment"
+        android:label="SignUpStep4Fragment">
+        <action
+            android:id="@+id/action_step4_to_step5"
+            app:destination="@id/signUpStep5Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpStep5Fragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpStep5Fragment"
+        android:label="SignUpStep5Fragment">
+        <action
+            android:id="@+id/action_step5_to_complete"
+            app:destination="@id/signUpCompleteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpCompleteFragment"
+        android:name="com.ultimatejw.mjcn.ui.auth.signup.SignUpCompleteFragment"
+        android:label="SignUpCompleteFragment" />
 
     <fragment
         android:id="@+id/onboardingFragment"

@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.ActivityMainBinding
@@ -31,21 +32,45 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNav.setupWithNavController(navController)
 
-        binding.btnTempLogout.setOnClickListener {
-            lifecycleScope.launch {
-                viewModel.logout()
-                val intent = Intent(this@MainActivity, AuthActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        // 탭 전환 시 설정 화면이 백스택에 남지 않도록 먼저 pop
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            if (navController.currentDestination?.id == R.id.settingsFragment) {
+                navController.popBackStack()
+            }
+            NavigationUI.onNavDestinationSelected(item, navController)
+        }
+
+        lifecycleScope.launch {
+            viewModel.sessionExpiredFlow.collect {
+                val intent = Intent(this@MainActivity, AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
                 startActivity(intent)
             }
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.themeDetailFragment,
+                R.id.themeDetail1Fragment,
+                R.id.themeDetail2Fragment,
+                R.id.themeDetail3Fragment,
+                R.id.themeDetail4Fragment,
                 R.id.chatDetailFragment,
-                R.id.noticeDetailFragment -> binding.bottomNav.visibility = View.GONE
-                else -> binding.bottomNav.visibility = View.VISIBLE
+                R.id.noticeDetailFragment,
+                R.id.noticeBookmarkFragment,
+                R.id.infoBookmarkFragment -> {
+                    binding.bottomNav.visibility = View.GONE
+                    binding.bottomNav.menu.setGroupCheckable(0, true, true)
+                }
+                R.id.settingsFragment -> {
+                    binding.bottomNav.visibility = View.VISIBLE
+                    // 설정 화면에서는 하단 탭 포커스 해제
+                    binding.bottomNav.menu.setGroupCheckable(0, false, true)
+                }
+                else -> {
+                    binding.bottomNav.visibility = View.VISIBLE
+                    binding.bottomNav.menu.setGroupCheckable(0, true, true)
+                }
             }
         }
     }

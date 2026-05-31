@@ -21,6 +21,7 @@
     <string name="signup_id_title">아이디 설정</string>
     <string name="signup_interest_title">관심 분야</string>
     <string name="signup_interest_desc">관심 있는 분야를 1~3개 선택해주세요.</string>
+    <string name="signup_interest_other_hint">내용을 2자 이상, 100자 이하로 자유롭게 작성해주세요.</string>
     <string name="name_hint">한글 또는 영문 2~10자 입력</string>
     <string name="grade_hint">현재 학년 선택</string>
     <string name="semester_hint">현재 학기 선택</string>
@@ -47,6 +48,25 @@
     <string name="prev">이전</string>
     <string name="no_selection">선택 안 함</string>
 
+    <!-- SignUp Step4: 수강 이력 -->
+    <string name="signup_course_title">수강 이력</string>
+    <string name="signup_course_desc">기존에 수강한 과목들을 선택해주세요.\n추후 설정에서 수정 가능합니다.</string>
+    <string name="signup_course_search_hint">전체 과목 이름으로 검색</string>
+    <string name="signup_course_grade_hint">성적(선택)</string>
+    <string name="picker_grade_select">성적 선택</string>
+    <!-- 채플 전용 -->
+    <string name="signup_chapel_count_hint">이수 횟수 입력(필수)</string>
+    <string name="picker_chapel_count">이수 횟수 선택</string>
+
+    <!-- SignUp Step5: 현재 수강 과목 -->
+    <string name="signup_current_title">현재 수강 과목</string>
+    <string name="signup_current_desc">현재 수강 중인 과목을 선택해주세요.\n추후 설정에서 수정 가능합니다.</string>
+
+    <!-- SignUp 완료 화면 -->
+    <string name="signup_complete_title">회원가입이 완료되었습니다!</string>
+    <string name="signup_complete_desc">MJCN과 함께 대학 생활을\n더 스마트하게 시작해보세요.</string>
+    <string name="signup_complete_start">시작하기</string>
+
     <!-- Bottom Nav -->
     <string name="nav_home">홈</string>
     <string name="nav_theme">테마</string>
@@ -61,21 +81,36 @@
     <!-- Theme -->
     <string name="theme_title">테마</string>
     <string name="theme_subtitle_format">%s님을 위한 어쩌구 맞춤 가이드</string>
+    <string name="theme_add_notice">💡 맞춤 테마는 계속 추가됩니다!</string>
+    <string name="theme_add_notice_desc">학년, 전공, 이수 과목 등 입력된 모든 데이터와 기존 채팅 내용을
+바탕으로 김지현님께 필요한 가이드를 추천해드릴게요.</string>
 
     <!-- Chat -->
     <string name="chat_title">AI 채팅</string>
     <string name="chat_subtitle">AI 비서 땡뚱이에게 다 물어보세요!</string>
-    <string name="chat_ask_hint">땡뚱이에게 물어보기</string>
+    <string name="chat_ask_hint">띵똥이에게 물어보기</string>
     <string name="chat_welcome">무엇을 알려드릴까요?</string>
     <string name="chat_history">이전 대화</string>
+    <string name="chat_empty">아직 대화가 없습니다. 띵똥이와 대화를 시작해 보세요!</string>
 
     <!-- Notice -->
     <string name="notice_title">공지</string>
-    <string name="notice_subtitle">맞춤 공지사항을 모아드려요!</string>
+    <string name="notice_subtitle">교내 모든 공지사항과 활동정보를 한 번에</string>
+    <string name="notice_tab_custom">맞춤형</string>
+    <string name="notice_tab_all">전체</string>
+    <string name="notice_search_hint">검색할 내용을 입력해 주세요.</string>
+    <string name="notice_total_count_format">총 %d건</string>
+    <string name="notice_detail_summary_title">AI 띵똥이의 간단 요약</string>
+    <string name="notice_detail_keypoints_title">띵똥이 핵심 정리</string>
+    <string name="notice_detail_original_link">원문글 바로가기</string>
 
     <!-- Info -->
     <string name="info_title">정보</string>
-    <string name="info_subtitle">맞춤 공지사항을 모아드려요!</string>
+    <string name="info_subtitle">다양한 교외 정보를 알려드릴게요.</string>
+    <string name="info_tab_custom">맞춤형</string>
+    <string name="info_tab_all">전체</string>
+    <string name="info_search_hint">검색할 내용을 입력해 주세요.</string>
+    <string name="info_total_count_format">총 %d건</string>
 
     <!-- Settings -->
     <string name="settings_title">설정</string>

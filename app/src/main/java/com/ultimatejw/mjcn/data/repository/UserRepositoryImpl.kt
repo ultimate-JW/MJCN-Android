@@ -21,6 +21,7 @@ class UserRepositoryImpl @Inject constructor(
     companion object {
         private val KEY_IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         private val KEY_USER_TOKEN = stringPreferencesKey("user_token")
+        private val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }
 
     override val isLoggedIn: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -33,6 +34,14 @@ class UserRepositoryImpl @Inject constructor(
         dataStore.edit { prefs ->
             prefs[KEY_IS_LOGGED_IN] = true
             prefs[KEY_USER_TOKEN] = token
+        }
+    }
+
+    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
+        dataStore.edit { prefs ->
+            prefs[KEY_IS_LOGGED_IN] = true
+            prefs[KEY_USER_TOKEN] = accessToken
+            prefs[KEY_REFRESH_TOKEN] = refreshToken
         }
     }
 

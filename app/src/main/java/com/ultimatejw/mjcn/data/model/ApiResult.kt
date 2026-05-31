@@ -18,7 +18,8 @@ suspend fun <T> runRemote(block: suspend () -> Response<T>): ApiResult<T> {
                 ApiResult.Error("응답이 비어있습니다")
             }
         } else {
-            ApiResult.Error(response.message(), response.code())
+            val errorBody = try { response.errorBody()?.string() } catch (_: Exception) { null }
+            ApiResult.Error(errorBody ?: response.message(), response.code())
         }
     } catch (e: Exception) {
         ApiResult.Error(e.message)

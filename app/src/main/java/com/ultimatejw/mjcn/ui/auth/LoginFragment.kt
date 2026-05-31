@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentLoginBinding
+import com.ultimatejw.mjcn.ui.common.LoadingDialog
 import com.ultimatejw.mjcn.ui.main.MainActivity
 import com.ultimatejw.mjcn.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,11 @@ class LoginFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            if (state.isLoading) {
+                LoadingDialog.show(childFragmentManager)
+            } else {
+                LoadingDialog.hide(childFragmentManager)
+            }
             binding.btnLogin.isEnabled = state.isFormValid && !state.isLoading
             if (state.isFormValid) {
                 binding.btnLogin.setBackgroundResource(R.drawable.bg_btn_primary)
@@ -65,6 +71,7 @@ class LoginFragment : Fragment() {
                 viewModel.event.collect { event ->
                     when (event) {
                         is LoginEvent.NavigateToMain -> navigateToMain()
+                        is LoginEvent.NavigateToStep -> navigateToStep(event.step)
                         is LoginEvent.ShowError -> showToast(event.message)
                     }
                 }
@@ -117,6 +124,18 @@ class LoginFragment : Fragment() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    /** 온보딩 미완료 사용자를 멈춘 단계로 보낸다. step=2는 step1과 묶여 저장되므로 step1로 간주. */
+    private fun navigateToStep(step: Int) {
+        val actionId = when (step) {
+            1, 2 -> R.id.action_login_to_step1
+            3 -> R.id.action_login_to_step3
+            4 -> R.id.action_login_to_step4
+            5 -> R.id.action_login_to_step5
+            else -> R.id.action_login_to_step1
+        }
+        findNavController().navigate(actionId)
     }
 
     override fun onDestroyView() {

@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.ultimatejw.mjcn.ui.common.LoadingDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -41,6 +42,9 @@ abstract class BaseFragment<B : ViewDataBinding>(
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED, block)
         }
     }
+
+    fun showLoading() = LoadingDialog.show(childFragmentManager)
+    fun hideLoading() = LoadingDialog.hide(childFragmentManager)
 
     fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

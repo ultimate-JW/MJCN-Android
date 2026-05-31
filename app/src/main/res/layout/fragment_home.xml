@@ -9,26 +9,29 @@
             type="com.ultimatejw.mjcn.ui.main.home.HomeViewModel" />
     </data>
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/surface">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg_sheet" >
+            android:orientation="vertical"
+            android:background="@color/bg_sheet">
 
             <!-- 헤더 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_header"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="136dp"
                 android:background="@color/background"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/tv_title"
@@ -48,11 +51,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:layout_marginEnd="8dp"
                     android:text="컴퓨터공학과 3학년 · 2026학년도 1학기"
                     android:textColor="@color/font_color2"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_profile" />
 
                 <ImageView
                     android:id="@+id/iv_profile"
@@ -68,14 +73,11 @@
             <!-- AI 가이드 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/card_ai_guide"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="133dp"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_point_color1_radius18"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_header">
+                android:background="@drawable/bg_point_color1_radius18">
 
                 <TextView
                     android:id="@+id/tv_ai_guide"
@@ -114,6 +116,7 @@
                     app:layout_constraintStart_toStartOf="parent">
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_check_notice"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="9dp"
@@ -126,6 +129,7 @@
                         android:textSize="14sp" />
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_ask_ai"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="9dp"
@@ -145,14 +149,11 @@
             <!-- 통계 카드 -->
             <LinearLayout
                 android:id="@+id/card_stats"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/card_ai_guide">
+                android:paddingHorizontal="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/card_new_noti"
@@ -318,10 +319,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/card_stats">
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/tv_today_class_title"
@@ -336,15 +334,19 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_today_class_showall"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_today_class_empty"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:text="전체 보기"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="오늘 수업이 없습니다."
                     android:textColor="@color/font_color3"
                     android:textSize="14sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_today_class_title" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_today_class"
@@ -354,7 +356,6 @@
                     android:paddingVertical="8dp"
                     android:background="@drawable/bg_white_radius12"
                     android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_today_class_title" />
@@ -367,10 +368,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_today_class">
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/tv_notice_title"
@@ -395,13 +393,27 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_notice"
+                <TextView
+                    android:id="@+id/tv_notice_empty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="등록된 공지가 없습니다."
+                    android:textColor="@color/font_color3"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
+
+                <LinearLayout
+                    android:id="@+id/ll_notice_items"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
@@ -414,10 +426,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_notice">
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/tv_info_title"
@@ -442,13 +451,27 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_info"
+                <TextView
+                    android:id="@+id/tv_info_empty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="등록된 정보가 없습니다."
+                    android:textColor="@color/font_color3"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_info_title" />
+
+                <LinearLayout
+                    android:id="@+id/ll_info_items"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_info_title" />
@@ -456,52 +479,54 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- 테마 섹션 -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:id="@+id/layout_theme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="24dp"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_info">
+                android:paddingHorizontal="24dp">
 
-                <TextView
-                    android:id="@+id/tv_theme_title"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_theme_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="테마 전체"
+                        android:textColor="@color/font_color1"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_theme_showall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:text="더 보기"
+                        android:textColor="@color/font_color3"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_theme_items"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/pretendard_bold"
-                    android:text="테마 전체"
-                    android:textColor="@color/font_color1"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp" />
 
-                <TextView
-                    android:id="@+id/tv_theme_showall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:text="더 보기"
-                    android:textColor="@color/font_color3"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_theme"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_theme_title" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

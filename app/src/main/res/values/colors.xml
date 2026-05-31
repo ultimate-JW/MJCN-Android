@@ -80,6 +80,9 @@
     <color name="category_scholarship_simple_bg">#F0FDF4</color>
     <color name="category_scholarship_simple_text">#15803D</color>
 
+    <!-- Interest Chip -->
+    <color name="interest_chip_selected_bg">#E8E6FB</color>
+
     <!-- Etc -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

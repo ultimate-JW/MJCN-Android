@@ -7,25 +7,136 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.ultimatejw.mjcn.ui.main.home.HomeFragment"
-        android:label="HomeFragment" />
+        android:label="HomeFragment">
+        <action
+            android:id="@+id/action_home_to_chatDetail"
+            app:destination="@id/chatDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_noticeDetail"
+            app:destination="@id/noticeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_settings"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_settings_to_noticeBookmark"
+            app:destination="@id/noticeBookmarkFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_infoBookmark"
+            app:destination="@id/infoBookmarkFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noticeBookmarkFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.notice.NoticeBookmarkFragment"
+        android:label="NoticeBookmarkFragment">
+        <action
+            android:id="@+id/action_noticeBookmark_to_noticeDetail"
+            app:destination="@id/noticeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoBookmarkFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.info.InfoBookmarkFragment"
+        android:label="InfoBookmarkFragment">
+        <action
+            android:id="@+id/action_infoBookmark_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/themeFragment"
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeFragment"
         android:label="ThemeFragment">
         <action
-            android:id="@+id/action_theme_to_detail"
-            app:destination="@id/themeDetailFragment" />
+            android:id="@+id/action_theme_to_detail1"
+            app:destination="@id/themeDetail1Fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_theme_to_detail2"
+            app:destination="@id/themeDetail2Fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_theme_to_detail3"
+            app:destination="@id/themeDetail3Fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_theme_to_detail4"
+            app:destination="@id/themeDetail4Fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
-        android:id="@+id/themeDetailFragment"
-        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetailFragment"
-        android:label="ThemeDetailFragment">
-        <argument
-            android:name="themeId"
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/themeDetail1Fragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail1Fragment"
+        android:label="ThemeDetail1Fragment" />
+
+    <fragment
+        android:id="@+id/themeDetail2Fragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail2Fragment"
+        android:label="ThemeDetail2Fragment" />
+
+    <fragment
+        android:id="@+id/themeDetail3Fragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail3Fragment"
+        android:label="ThemeDetail3Fragment" />
+
+    <fragment
+        android:id="@+id/themeDetail4Fragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail4Fragment"
+        android:label="ThemeDetail4Fragment" />
 
     <fragment
         android:id="@+id/chatFragment"
@@ -33,7 +144,11 @@
         android:label="ChatFragment">
         <action
             android:id="@+id/action_chat_to_detail"
-            app:destination="@id/chatDetailFragment" />
+            app:destination="@id/chatDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -52,7 +167,11 @@
         android:label="NoticeFragment">
         <action
             android:id="@+id/action_notice_to_detail"
-            app:destination="@id/noticeDetailFragment" />
+            app:destination="@id/noticeDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -61,12 +180,75 @@
         android:label="NoticeDetailFragment">
         <argument
             android:name="noticeId"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeCategory"
+            app:argType="string"
+            android:defaultValue="학사" />
+        <argument
+            android:name="noticeTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeTeam"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="noticeSummary"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment
         android:id="@+id/infoFragment"
         android:name="com.ultimatejw.mjcn.ui.main.info.InfoFragment"
-        android:label="InfoFragment" />
+        android:label="InfoFragment">
+        <action
+            android:id="@+id/action_info_to_infoDetail"
+            app:destination="@id/infoDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.info.InfoDetailFragment"
+        android:label="InfoDetailFragment">
+        <argument
+            android:name="infoId"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoCategory"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoTeam"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoDday"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="infoStartDate"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="infoEndDate"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
 
 </navigation>
