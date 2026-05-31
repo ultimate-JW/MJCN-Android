@@ -8,18 +8,25 @@ data class ChatSession(
     val updatedAt: String
 )
 
-data class ChatMessage(
-    val id: String,
-    val sessionId: String,
-    val content: String,
-    val isFromUser: Boolean,
-    val createdAt: String
+data class ReferencedItem(
+    val type: String,   // "notice" | "information"
+    val title: String,
+    val url: String
 )
 
-enum class ChatCategory(val label: String) {
-    ALL("전체"),
-    ENROLLMENT("수강신청"),
-    SCHOOL_LIFE("학교생활"),
-    CAREER("취업·진로"),
-    CONTEST("공모전")
+data class ChatMessage(
+    val id: String,
+    val role: String,
+    val content: String,
+    val referencedItems: List<ReferencedItem> = emptyList(),
+    val createdAt: String
+) {
+    val isFromUser: Boolean get() = role == "user"
 }
+
+data class ChatRoomDetail(
+    val id: String,
+    val title: String,
+    val category: String,
+    val messages: List<ChatMessage>
+)

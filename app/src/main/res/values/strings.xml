@@ -80,10 +80,10 @@
 
     <!-- Theme -->
     <string name="theme_title">테마</string>
-    <string name="theme_subtitle_format">%s님을 위한 어쩌구 맞춤 가이드</string>
+    <string name="theme_subtitle_format">%s님을 위한 맞춤 가이드</string>
     <string name="theme_add_notice">💡 맞춤 테마는 계속 추가됩니다!</string>
     <string name="theme_add_notice_desc">학년, 전공, 이수 과목 등 입력된 모든 데이터와 기존 채팅 내용을
-바탕으로 김지현님께 필요한 가이드를 추천해드릴게요.</string>
+바탕으로 필요한 가이드를 추천해드릴게요.</string>
 
     <!-- Chat -->
     <string name="chat_title">AI 채팅</string>
@@ -92,6 +92,9 @@
     <string name="chat_welcome">무엇을 알려드릴까요?</string>
     <string name="chat_history">이전 대화</string>
     <string name="chat_empty">아직 대화가 없습니다. 띵똥이와 대화를 시작해 보세요!</string>
+    <string name="chat_suggestion1">&#x1F4E2; 최근 7일간 교내 공지 요약해줘</string>
+    <string name="chat_suggestion2">&#x1F3C6; 요즘 자주 등장하는 공모전 키워드는?</string>
+    <string name="chat_ai_icon">&#x1F916;</string>
 
     <!-- Notice -->
     <string name="notice_title">공지</string>

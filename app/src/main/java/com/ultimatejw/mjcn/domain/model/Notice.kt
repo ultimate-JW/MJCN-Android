@@ -2,6 +2,12 @@ package com.ultimatejw.mjcn.domain.model
 
 data class NoticeCard(val title: String, val items: List<String>)
 
+data class NoticePage(
+    val notices: List<Notice>,
+    val totalCount: Int,
+    val hasMore: Boolean
+)
+
 data class Notice(
     val id: String,
     val title: String,

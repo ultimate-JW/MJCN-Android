@@ -10,12 +10,13 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
-    tokenStore: TokenStore,
+    private val tokenStore: TokenStore,
 ) : ViewModel() {
 
     val sessionExpiredFlow: SharedFlow<Unit> = tokenStore.sessionExpiredFlow
 
     suspend fun logout() {
         logoutUseCase()
+        tokenStore.clearTokens()
     }
 }

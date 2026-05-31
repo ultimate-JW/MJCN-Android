@@ -175,9 +175,10 @@ class HomeFragment : Fragment() {
             itemBinding.layoutThemeIcon.backgroundTintList =
                 ColorStateList.valueOf(Color.parseColor(theme.iconBgColor))
             itemBinding.root.setOnClickListener {
+                if (theme.id <= 0) return@setOnClickListener
                 findNavController().navigate(
-                    R.id.action_home_to_chatDetail,
-                    bundleOf("sessionId" to "")
+                    R.id.action_home_to_themeDetail,
+                    bundleOf("themeId" to theme.id)
                 )
             }
             container.addView(itemBinding.root)

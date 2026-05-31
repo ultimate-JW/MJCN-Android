@@ -12,6 +12,7 @@ import com.ultimatejw.mjcn.domain.model.Notice
 import com.ultimatejw.mjcn.domain.model.Theme
 import com.ultimatejw.mjcn.domain.model.TodayClass
 import com.ultimatejw.mjcn.domain.model.User
+import com.ultimatejw.mjcn.domain.repository.ThemeRepository
 import com.ultimatejw.mjcn.domain.usecase.bookmark.ObserveInfoBookmarksUseCase
 import com.ultimatejw.mjcn.domain.usecase.bookmark.ObserveNoticeBookmarksUseCase
 import com.ultimatejw.mjcn.domain.usecase.bookmark.ToggleInfoBookmarkUseCase
@@ -44,6 +45,7 @@ class HomeViewModel @Inject constructor(
     private val toggleInfoBookmark: ToggleInfoBookmarkUseCase,
     private val observeNoticeBookmarks: ObserveNoticeBookmarksUseCase,
     private val observeInfoBookmarks: ObserveInfoBookmarksUseCase,
+    private val themeRepository: ThemeRepository,
 ) : ViewModel() {
 
     private var rawNoticeList: List<Notice> = emptyList()
@@ -53,9 +55,9 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableLiveData(HomeUiState(
         themeList = listOf(
-            Theme("1", "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", R.drawable.ic_hat, "#E1F5EE"),
-            Theme("2", "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", R.drawable.ic_bag, "#E6F1FB"),
-            Theme("3", "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", R.drawable.ic_plane, "#EAF3DE"),
+            Theme(0, "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", "course_registration", R.drawable.ic_hat, "#E1F5EE"),
+            Theme(0, "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", "career", R.drawable.ic_bag, "#E6F1FB"),
+            Theme(0, "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", "exchange", R.drawable.ic_plane, "#EAF3DE"),
         ),
         todayClasses = dummyTodayClasses(),
     ))
@@ -67,12 +69,31 @@ class HomeViewModel @Inject constructor(
     init {
         observeUser()
         loadDashboard()
+        loadThemes()
         observeBookmarks()
     }
 
     fun refresh() {
         loadDashboard()
+        loadThemes()
     }
+
+    private fun loadThemes() {
+        viewModelScope.launch {
+            themeRepository.fetchThemes()
+                .onSuccess { themes ->
+                    val display = themes.take(3).ifEmpty { fallbackThemes() }
+                    _uiState.value = _uiState.value!!.copy(themeList = display)
+                }
+                // 실패 시 초기 hardcoded 목록 유지
+        }
+    }
+
+    private fun fallbackThemes() = listOf(
+        Theme(0, "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", "course_registration", R.drawable.ic_hat, "#E1F5EE"),
+        Theme(0, "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", "career", R.drawable.ic_bag, "#E6F1FB"),
+        Theme(0, "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", "exchange", R.drawable.ic_plane, "#EAF3DE"),
+    )
 
     private fun loadDashboard() {
         viewModelScope.launch {
@@ -137,6 +158,7 @@ class HomeViewModel @Inject constructor(
     private fun observeUser() {
         viewModelScope.launch {
             observeCurrentUser().collect { user ->
+                if (user != null) CurrentUser.update(user)
                 _uiState.value = _uiState.value!!.copy(currentUser = user)
             }
         }

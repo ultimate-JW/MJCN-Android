@@ -12,14 +12,16 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.snackbar.Snackbar
 import com.ultimatejw.mjcn.databinding.DialogDeleteConfirmBinding
@@ -32,6 +34,9 @@ class ChatDetailFragment : Fragment() {
 
     private var _binding: FragmentChatDetailBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ChatDetailViewModel by viewModels()
+    private lateinit var messageAdapter: ChatMessageAdapter
 
     private var isKeyboardVisible = false
     private var keyboardAnimator: ValueAnimator? = null
@@ -48,9 +53,53 @@ class ChatDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sessionId = arguments?.getString("sessionId") ?: ""
-        binding.tvTitle.text = if (sessionId.isBlank()) "새 대화" else "AI 채팅"
+
+        val initialMessage = arguments?.getString("initialMessage").orEmpty()
+
+        setupMessageList()
         setupListeners()
         setupKeyboardAnimation()
+        observeState()
+
+        viewModel.loadRoom(sessionId)
+        if (initialMessage.isNotBlank()) {
+            viewModel.sendMessage(initialMessage)
+        }
+    }
+
+    private fun setupMessageList() {
+        messageAdapter = ChatMessageAdapter().also {
+            it.onSuggestionClick = { suggestion ->
+                binding.etMessage.setText(suggestion)
+                binding.etMessage.setSelection(suggestion.length)
+                binding.etMessage.requestFocus()
+            }
+        }
+        binding.rvMessages.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvMessages.adapter = messageAdapter
+    }
+
+    private fun observeState() {
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            binding.tvTitle.text = state.title
+            messageAdapter.submitList(state.messages) {
+                when {
+                    state.messages.size == 1 -> binding.rvMessages.scrollToPosition(0)
+                    state.messages.isNotEmpty() -> binding.rvMessages.scrollToPosition(state.messages.size - 1)
+                }
+            }
+
+            messageAdapter.showLoading = state.isSending
+            if (state.isSending && state.messages.size == 1) {
+                binding.rvMessages.scrollToPosition(0)
+            } else if (state.isSending) {
+                binding.rvMessages.scrollToPosition(messageAdapter.itemCount - 1)
+            }
+
+            binding.etMessage.isEnabled = !state.isSending
+            binding.btnSend.isEnabled = !state.isSending
+            binding.btnSend.alpha = if (state.isSending) 0.4f else 1f
+        }
     }
 
     private fun setupKeyboardAnimation() {
@@ -117,10 +166,10 @@ class ChatDetailFragment : Fragment() {
             showChatMenuPopup(anchor)
         }
         binding.btnSend.setOnClickListener {
-            val message = binding.etMessage.text.toString()
+            val message = binding.etMessage.text.toString().trim()
             if (message.isBlank()) return@setOnClickListener
             binding.etMessage.text.clear()
-            // TODO: AI API 호출
+            viewModel.sendMessage(message)
         }
     }
 
@@ -177,6 +226,23 @@ class ChatDetailFragment : Fragment() {
             isOutsideTouchable = true
         }
 
+        val currentCategory = viewModel.uiState.value?.category.orEmpty()
+        val chipMap = mapOf(
+            "academic"    to popupBinding.chipAcademic,
+            "course"      to popupBinding.chipCourse,
+            "scholarship" to popupBinding.chipScholarship,
+            "contest"     to popupBinding.chipContest,
+            "career"      to popupBinding.chipCareer
+        )
+        chipMap[currentCategory]?.isChecked = true
+
+        chipMap.values.forEach { chip ->
+            chip.setOnClickListener {
+                popup.dismiss()
+                showToast("카테고리가 변경되었습니다.")
+            }
+        }
+
         popupBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val popupWidth = popupBinding.root.measuredWidth
 
@@ -188,20 +254,6 @@ class ChatDetailFragment : Fragment() {
         val margin24dp = (24 * density).toInt()
         val screenWidth = resources.displayMetrics.widthPixels
         val popupX = screenWidth - popupWidth - margin24dp
-
-        listOf(
-            popupBinding.chipAcademic,
-            popupBinding.chipCourse,
-            popupBinding.chipScholarship,
-            popupBinding.chipContest,
-            popupBinding.chipCareer
-        ).forEach { chip ->
-            chip.setOnClickListener {
-                // TODO: 카테고리 변경 저장
-                popup.dismiss()
-                showToast("카테고리가 변경되었습니다.")
-            }
-        }
 
         popup.showAtLocation(binding.root, Gravity.NO_GRAVITY, popupX, headerBottom)
     }
@@ -220,8 +272,10 @@ class ChatDetailFragment : Fragment() {
 
         dialogBinding.btnDeleteConfirm.setOnClickListener {
             dialog.dismiss()
-            showToast("채팅 내용을 삭제했습니다.")
-            findNavController().popBackStack()
+            viewModel.deleteRoom {
+                showToast("채팅 내용을 삭제했습니다.")
+                findNavController().popBackStack()
+            }
         }
         dialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()

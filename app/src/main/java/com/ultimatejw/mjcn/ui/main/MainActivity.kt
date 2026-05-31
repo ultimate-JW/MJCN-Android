@@ -51,10 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.themeDetail1Fragment,
-                R.id.themeDetail2Fragment,
-                R.id.themeDetail3Fragment,
-                R.id.themeDetail4Fragment,
+                R.id.themeDetailFragment,
                 R.id.chatDetailFragment,
                 R.id.noticeDetailFragment,
                 R.id.noticeBookmarkFragment,

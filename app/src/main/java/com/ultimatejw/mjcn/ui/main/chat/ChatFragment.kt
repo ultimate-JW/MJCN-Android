@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -40,7 +41,15 @@ class ChatFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerView()
         setupListeners()
+        setupSwipeRefresh()
         observeUiState()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener { viewModel.loadRooms() }
     }
 
     private fun setupRecyclerView() {
@@ -53,13 +62,15 @@ class ChatFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnSend.setOnClickListener {
-            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
+            val message = binding.etMessage.text.toString().trim()
+            binding.etMessage.text.clear()
+            navigateToNewChat(message)
         }
         binding.tvSuggestion1.setOnClickListener {
-            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
+            navigateToNewChat(binding.tvSuggestion1.text.toString().trim())
         }
         binding.tvSuggestion2.setOnClickListener {
-            findNavController().navigate(R.id.action_chat_to_detail, bundleOf("sessionId" to ""))
+            navigateToNewChat(binding.tvSuggestion2.text.toString().trim())
         }
         binding.chipGroupCategory.setOnCheckedStateChangeListener { group, checkedIds ->
             val category = checkedIds.firstOrNull()
@@ -69,18 +80,27 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private fun navigateToNewChat(initialMessage: String = "") {
+        findNavController().navigate(
+            R.id.action_chat_to_detail,
+            bundleOf("sessionId" to "", "initialMessage" to initialMessage)
+        )
+    }
+
     private fun observeUiState() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
-            val isEmpty = state.sessions.isEmpty()
-            binding.scrollChips.isVisible = !isEmpty
-            binding.tvChatEmpty.isVisible = isEmpty
+            val hasAnySession = state.totalCount > 0
+            binding.scrollChips.isVisible = hasAnySession
+            binding.tvChatEmpty.isVisible = state.sessions.isEmpty() && !state.isLoading
             adapter.submitList(state.sessions)
+            if (!state.isLoading) binding.swipeRefresh.isRefreshing = false
         }
     }
 
     override fun onResume() {
         super.onResume()
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        viewModel.loadRooms()
     }
 
     override fun onPause() {
