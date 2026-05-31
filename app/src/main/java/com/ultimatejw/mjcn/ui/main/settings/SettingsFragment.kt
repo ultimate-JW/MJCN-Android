@@ -16,6 +16,7 @@ import com.ultimatejw.mjcn.ui.auth.AuthActivity
 import com.ultimatejw.mjcn.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
@@ -81,6 +82,18 @@ class SettingsFragment : Fragment() {
             binding.switchNotice.isChecked = state.notifNotice
             binding.switchContest.isChecked = state.notifContest
             isUpdatingFromViewModel = false
+        }
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user == null) return@observe
+            binding.tvUserName.text = user.name
+            val year = Calendar.getInstance().get(Calendar.YEAR)
+            val dept = user.major ?: user.department ?: ""
+            binding.tvUserInfo.text = "${dept} ${user.grade}학년 · ${year}학년도 ${user.semester}학기"
+            binding.tvUserGrad.text = if (!user.graduationDate.isNullOrBlank()) {
+                "졸업 희망 시기 : ${user.graduationDate}"
+            } else {
+                ""
+            }
         }
     }
 

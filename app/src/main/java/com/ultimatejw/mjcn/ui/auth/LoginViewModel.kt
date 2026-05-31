@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.data.local.TokenStore
 import com.ultimatejw.mjcn.data.repository.AuthApiException
+import com.ultimatejw.mjcn.domain.model.User
 import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import com.ultimatejw.mjcn.domain.repository.ProfileRepository
+import com.ultimatejw.mjcn.domain.repository.UserRepository
 import com.ultimatejw.mjcn.utils.isValidEmail
 import com.ultimatejw.mjcn.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,7 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
     private val tokenStore: TokenStore,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _event = MutableSharedFlow<LoginEvent>()
@@ -98,6 +101,25 @@ class LoginViewModel @Inject constructor(
      */
     private suspend fun determineResumeTarget(): LoginEvent {
         val profile = profileRepository.getProfile().getOrNull()
+        if (profile != null) {
+            runCatching {
+                userRepository.saveUser(
+                    User(
+                        id = "",
+                        name = profile.name ?: "",
+                        email = email,
+                        grade = profile.grade ?: 0,
+                        semester = profile.semester ?: 0,
+                        graduationYear = profile.graduationYear,
+                        interests = emptyList(),
+                        entranceYear = profile.admissionYear,
+                        major = profile.major?.split(" · ")?.lastOrNull()?.trim(),
+                        graduationDate = if (profile.graduationYear != null && profile.graduationMonth != null)
+                            "${profile.graduationYear}년 ${profile.graduationMonth}월" else null
+                    )
+                )
+            }
+        }
         if (profile?.isOnboardingCompleted == true) {
             tokenStore.setOnboardingCompleted(true)
             return LoginEvent.NavigateToMain
@@ -106,11 +128,12 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun friendlyMessage(t: Throwable): String {
-        val api = t as? AuthApiException ?: return t.message ?: "로그인에 실패했습니다."
+        val api = t as? AuthApiException ?: return "네트워크 연결을 확인해주세요."
         return when (api.code) {
             400, 401 -> "이메일 또는 비밀번호가 올바르지 않습니다."
             403 -> "이메일 인증 후 다시 시도해주세요."
-            else -> "로그인에 실패했습니다. (HTTP ${api.code})"
+            in 500..599 -> "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            else -> "로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
         }
     }
 }

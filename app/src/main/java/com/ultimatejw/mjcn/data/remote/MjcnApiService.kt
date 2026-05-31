@@ -1,4 +1,88 @@
 package com.ultimatejw.mjcn.data.remote
 
-// TODO: 각 화면 구현 시 API 엔드포인트 추가
-interface MjcnApiService
+import com.ultimatejw.mjcn.data.remote.dto.ChatMessageCreateDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatMessageDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatRoomDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.ChatRoomListDto
+import com.ultimatejw.mjcn.data.remote.dto.DashboardDto
+import com.ultimatejw.mjcn.data.remote.dto.InformationDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.NoticeDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedChatRoomDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedInformationDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedNoticeDto
+import com.ultimatejw.mjcn.data.remote.dto.PaginatedThemeDto
+import com.ultimatejw.mjcn.data.remote.dto.ThemeDetailDto
+import com.ultimatejw.mjcn.data.remote.dto.LoginRequestDto
+import com.ultimatejw.mjcn.data.remote.dto.LoginResponseDto
+import com.ultimatejw.mjcn.data.remote.dto.UserProfileDto
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.POST
+import retrofit2.http.Query
+
+interface MjcnApiService {
+
+    @POST("api/v1/accounts/login/")
+    suspend fun login(@Body body: LoginRequestDto): Response<LoginResponseDto>
+
+    @GET("api/v1/dashboard/")
+    suspend fun getDashboard(): Response<DashboardDto>
+
+    @GET("api/v1/accounts/profile/")
+    suspend fun getProfile(): Response<UserProfileDto>
+
+    @GET("api/v1/notices/")
+    suspend fun getNotices(
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int,
+        @Query("view") view: String? = null,
+        @Query(value = "source", encoded = true) source: String? = null,
+        @Query("q") q: String? = null
+    ): Response<PaginatedNoticeDto>
+
+    @GET("api/v1/information/")
+    suspend fun getInformations(
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int,
+        @Query("view") view: String? = null,
+        @Query(value = "category", encoded = true) category: String? = null,
+        @Query("q") q: String? = null
+    ): Response<PaginatedInformationDto>
+
+    @GET("api/v1/notices/{id}/")
+    suspend fun getNoticeDetail(@Path("id") id: String): Response<NoticeDetailDto>
+
+    @GET("api/v1/information/{id}/")
+    suspend fun getInformationDetail(@Path("id") id: String): Response<InformationDetailDto>
+
+    @GET("api/v1/chat/rooms/")
+    suspend fun getChatRooms(): Response<PaginatedChatRoomDto>
+
+    @POST("api/v1/chat/rooms/")
+    suspend fun createChatRoom(): Response<ChatRoomListDto>
+
+    @GET("api/v1/chat/rooms/{id}/")
+    suspend fun getChatRoomDetail(@Path("id") id: String): Response<ChatRoomDetailDto>
+
+    @DELETE("api/v1/chat/rooms/{id}/")
+    suspend fun deleteChatRoom(@Path("id") id: String): Response<Unit>
+
+    @POST("api/v1/chat/rooms/{id}/messages/")
+    suspend fun sendChatMessage(
+        @Path("id") id: String,
+        @Body body: ChatMessageCreateDto
+    ): Response<ChatMessageDto>
+
+    @GET("api/v1/themes/")
+    suspend fun getThemes(
+        @Query("category") category: String? = null,
+        @Query("page") page: Int = 1,
+        @Query("page_size") pageSize: Int = 20
+    ): Response<PaginatedThemeDto>
+
+    @GET("api/v1/themes/{id}/")
+    suspend fun getThemeDetail(@Path("id") id: Int): Response<ThemeDetailDto>
+}

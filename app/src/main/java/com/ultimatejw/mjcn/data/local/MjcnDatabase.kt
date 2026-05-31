@@ -6,15 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.ultimatejw.mjcn.data.local.dao.ChatDao
+import com.ultimatejw.mjcn.data.local.dao.InfoDao
 import com.ultimatejw.mjcn.data.local.dao.NoticeDao
 import com.ultimatejw.mjcn.data.local.dao.UserDao
 import com.ultimatejw.mjcn.data.local.entity.ChatSessionEntity
+import com.ultimatejw.mjcn.data.local.entity.InfoEntity
 import com.ultimatejw.mjcn.data.local.entity.NoticeEntity
 import com.ultimatejw.mjcn.data.local.entity.UserEntity
 
 @Database(
-    entities = [UserEntity::class, NoticeEntity::class, ChatSessionEntity::class],
-    version = 1,
+    entities = [UserEntity::class, NoticeEntity::class, ChatSessionEntity::class, InfoEntity::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -22,6 +24,7 @@ abstract class MjcnDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun noticeDao(): NoticeDao
     abstract fun chatDao(): ChatDao
+    abstract fun infoDao(): InfoDao
 
     companion object {
         @Volatile
@@ -33,7 +36,7 @@ abstract class MjcnDatabase : RoomDatabase() {
                     context.applicationContext,
                     MjcnDatabase::class.java,
                     "mjcn_database"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
             }
     }
 }

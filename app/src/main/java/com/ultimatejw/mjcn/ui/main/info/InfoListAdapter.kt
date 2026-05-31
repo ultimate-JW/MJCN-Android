@@ -13,6 +13,7 @@ import com.ultimatejw.mjcn.domain.model.Info
 import com.ultimatejw.mjcn.domain.model.InfoCategory
 
 class InfoListAdapter(
+    private val onItemClick: (Info) -> Unit = {},
     private val onBookmarkClick: (Info) -> Unit = {}
 ) : ListAdapter<Info, InfoListAdapter.ViewHolder>(DiffCallback) {
 
@@ -37,6 +38,7 @@ class InfoListAdapter(
                 if (item.isBookmarked) R.drawable.ic_bookmark_filled
                 else R.drawable.ic_bookmark
             )
+            binding.root.setOnClickListener { onItemClick(item) }
             binding.btnBookmark.setOnClickListener { onBookmarkClick(item) }
             applyCategoryChip(item.category)
         }

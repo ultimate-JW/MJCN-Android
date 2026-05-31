@@ -40,12 +40,18 @@ class MainActivity : AppCompatActivity() {
             NavigationUI.onNavDestinationSelected(item, navController)
         }
 
+        lifecycleScope.launch {
+            viewModel.sessionExpiredFlow.collect {
+                val intent = Intent(this@MainActivity, AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+            }
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.themeDetail1Fragment,
-                R.id.themeDetail2Fragment,
-                R.id.themeDetail3Fragment,
-                R.id.themeDetail4Fragment,
+                R.id.themeDetailFragment,
                 R.id.chatDetailFragment,
                 R.id.noticeDetailFragment,
                 R.id.noticeBookmarkFragment,

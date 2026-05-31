@@ -5,12 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,6 +30,13 @@ class TokenStore @Inject constructor(
 
     @Volatile private var cachedAccess: String? = null
     @Volatile private var cachedRefresh: String? = null
+
+    private val _sessionExpiredFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val sessionExpiredFlow: SharedFlow<Unit> = _sessionExpiredFlow.asSharedFlow()
+
+    fun notifySessionExpired() {
+        _sessionExpiredFlow.tryEmit(Unit)
+    }
 
     init {
         // Singleton이 처음 주입될 때 1회 동기 로드. 짧은 IO이므로 cold start 시 허용 가능.

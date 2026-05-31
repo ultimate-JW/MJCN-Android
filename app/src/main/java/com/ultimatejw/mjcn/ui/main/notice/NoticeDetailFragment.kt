@@ -15,9 +15,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentNoticeDetailBinding
+import com.ultimatejw.mjcn.domain.model.Notice
+import com.ultimatejw.mjcn.domain.model.NoticeCard
 import com.ultimatejw.mjcn.domain.model.NoticeCategory
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,8 +30,11 @@ class NoticeDetailFragment : Fragment() {
     private var _binding: FragmentNoticeDetailBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: NoticeDetailViewModel by viewModels()
+
     private var isKeyboardVisible = false
     private var keyboardAnimator: ValueAnimator? = null
+    private lateinit var argNotice: Notice
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,15 +47,33 @@ class NoticeDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val noticeId = arguments?.getString("noticeId").orEmpty()
-        val mockup = pickMockup(noticeId)
-        applyMockup(mockup)
+        argNotice = Notice(
+            id = arguments?.getString("noticeId").orEmpty(),
+            category = arguments?.getString("noticeCategory").orEmpty(),
+            title = arguments?.getString("noticeTitle").orEmpty(),
+            team = arguments?.getString("noticeTeam").orEmpty(),
+            date = arguments?.getString("noticeDate").orEmpty(),
+            summary = arguments?.getString("noticeSummary").orEmpty()
+        )
+        applyNotice(argNotice)
 
-        // TODO: 원문 링크 연결
-        binding.btnOriginalLink.setOnClickListener { /* TODO: open original URL */ }
+        // API 응답으로 업데이트 — args 데이터를 fallback으로 merge
+        viewModel.notice.observe(viewLifecycleOwner) { apiNotice ->
+            applyNotice(apiNotice.mergeWith(argNotice))
+        }
 
         setupQuestionBarToggle()
     }
+
+    private fun Notice.mergeWith(fallback: Notice) = copy(
+        category = category.ifBlank { fallback.category },
+        title    = title.ifBlank { fallback.title },
+        team     = team.ifBlank { fallback.team },
+        date     = date.ifBlank { fallback.date },
+        url      = url.ifBlank { fallback.url },
+        summary  = summary.ifBlank { fallback.summary },
+        cards    = cards.ifEmpty { fallback.cards }
+    )
 
     /**
      * inline 질문바를 클릭하면 floating 으로 전환 + 키보드 올림.
@@ -138,28 +162,46 @@ class NoticeDetailFragment : Fragment() {
         binding.etMessage.text?.clear()
     }
 
-    private fun applyMockup(m: NoticeMockup) {
-        binding.tvCategory.text = m.category
-        binding.tvTitle.text = m.title
-        binding.tvTeamDate.text = if (m.team.isBlank()) m.date else "${m.team} · ${m.date}"
-        binding.tvSummary.text = m.summary
-        applyCategoryChip(m.category)
-        renderKeypoints(m.keypoints)
+    private var currentUrl: String = ""
+
+    private fun applyNotice(notice: Notice) {
+        binding.tvCategory.text = notice.category
+        binding.tvTitle.text = notice.title
+        binding.tvTeamDate.text = if (notice.team.isBlank()) notice.date else "${notice.team} · ${notice.date}"
+        binding.tvSummary.text = notice.summary
+        applyCategoryChip(notice.category)
+        if (notice.cards.isNotEmpty()) {
+            renderKeypoints(notice.cards)
+        } else if (notice.summary.isNotBlank()) {
+            renderKeypoints(listOf(NoticeCard("요약", listOf(notice.summary))))
+        }
+        if (notice.url.isNotBlank()) {
+            currentUrl = notice.url
+            binding.btnOriginalLink.visibility = View.VISIBLE
+            binding.btnOriginalLink.setOnClickListener {
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse(currentUrl))
+                startActivity(intent)
+            }
+        } else {
+            binding.btnOriginalLink.visibility = View.GONE
+        }
     }
 
-    private fun renderKeypoints(items: List<Keypoint>) {
+    private fun renderKeypoints(cards: List<NoticeCard>) {
         val container = binding.layoutKeypointsInner
         container.removeAllViews()
         val inflater = LayoutInflater.from(requireContext())
         val gap = (12 * resources.displayMetrics.density).toInt()
-        items.forEachIndexed { index, kp ->
-            val card = inflater.inflate(R.layout.item_keypoint_card, container, false) as LinearLayout
-            card.findViewById<TextView>(R.id.tv_kp_title).text = kp.title
-            card.findViewById<TextView>(R.id.tv_kp_body).text = kp.body
-            val lp = card.layoutParams as LinearLayout.LayoutParams
-            lp.bottomMargin = if (index == items.lastIndex) 0 else gap
-            card.layoutParams = lp
-            container.addView(card)
+        cards.forEachIndexed { index, card ->
+            val view = inflater.inflate(R.layout.item_keypoint_card, container, false) as LinearLayout
+            view.findViewById<TextView>(R.id.tv_kp_title).text = card.title
+            view.findViewById<TextView>(R.id.tv_kp_body).text =
+                card.items.joinToString("\n") { "• $it" }
+            val lp = view.layoutParams as LinearLayout.LayoutParams
+            lp.bottomMargin = if (index == cards.lastIndex) 0 else gap
+            view.layoutParams = lp
+            container.addView(view)
         }
     }
 
@@ -202,104 +244,4 @@ class NoticeDetailFragment : Fragment() {
         keyboardAnimator?.cancel()
         _binding = null
     }
-
-    // TODO: API 연결 시 도메인 모델 + ViewModel로 대체. 지금은 리스트 위치별 더미 mockup.
-    private fun pickMockup(noticeId: String): NoticeMockup = when (noticeId) {
-        "c2", "a2" -> mockup2()
-        else -> mockup1()
-    }
-
-    private data class Keypoint(val title: String, val body: String)
-
-    private data class NoticeMockup(
-        val category: String,
-        val title: String,
-        val team: String,
-        val date: String,
-        val summary: String,
-        val keypoints: List<Keypoint>,
-    )
-
-    private fun mockup1(): NoticeMockup = NoticeMockup(
-        category = "학사",
-        title = "2026학년도 1학기 대학 재학생 등록금 구제 납부 안내",
-        team = "교육지원팀",
-        date = "1시간 전",
-        summary = "등록기간 3/23~3/25, 고지서 MSI 출력 후 가상계좌·은행 납부 가능, " +
-            "다음날 납부 확인, 환불 없이 이월 처리됩니다.",
-        keypoints = listOf(
-            Keypoint(
-                "📌 등록 기간",
-                "•  재학생: 2026.03.23 ~ 03.25\n" +
-                    "•  초과학기 / 유예자: 2026.03.16 ~ 03.25"
-            ),
-            Keypoint(
-                "📃 고지서 출력",
-                "•  MSI(학생정보시스템) 접속\n" +
-                    "•  로그인 → 등록금 관련 출력 → 고지서 확인"
-            ),
-            Keypoint(
-                "💵 납부 방법",
-                "1. 가상계좌 납부\n" +
-                    "    •  고지서에 있는 계좌로 이체\n" +
-                    "    •  납부시간: 00:00 ~ 23:30\n" +
-                    "2. 은행 방문 납부\n" +
-                    "    •  전국 은행 방문\n" +
-                    "    •  납부시간: 09:00 ~ 16:00"
-            ),
-            Keypoint(
-                "✅ 납부 확인",
-                "•  하나은행 홈페이지 → 즉시 확인 가능\n" +
-                    "•  MSI → 다음날 12시 이후 확인 가능"
-            ),
-            Keypoint(
-                "⚠ 주의사항",
-                "•  등록금은 환불되지 않고 이월 처리됨\n" +
-                    "•  초과학기생은 학점확인서 제출 필요"
-            ),
-            Keypoint(
-                "📞 문의",
-                "•  1577-0020"
-            ),
-        )
-    )
-
-    private fun mockup2(): NoticeMockup = NoticeMockup(
-        category = "학사",
-        title = "2026-1학기 과(전공)변경자 이수구분 일괄 변경 안내",
-        team = "교육지원팀",
-        date = "1시간 전",
-        summary = "전과·다전공 등으로 전공 이수구분이 변경되었습니다. " +
-            "MSI에서 이수구분을 반드시 확인하고, 오류 시 교학팀/학사지원팀에 문의하세요.",
-        keypoints = listOf(
-            Keypoint(
-                "👤 대상 확인",
-                "•  전과(전공변경) 승인 학생\n" +
-                    "•  다전공 신청/포기 학생\n" +
-                    "•  학과·전공 선택 변경 학생"
-            ),
-            Keypoint(
-                "🔄 변경 내용",
-                "•  전공 교과목 이수구분 자동 변경됨"
-            ),
-            Keypoint(
-                "🔍 확인 방법",
-                "•  MSI 접속\n" +
-                    "•  성적/졸업 → 성적조회 → 이수구분 확인"
-            ),
-            Keypoint(
-                "⚠ 꼭 확인할 것 (중요)",
-                "1. 교양 과목\n" +
-                    "    •  자동 변경 아님\n" +
-                    "    •  잘못된 경우 → 교학팀 방문\n" +
-                    "2. 전공 과목\n" +
-                    "    •  소속 기준과 다르면 → 학사지원팀 문의"
-            ),
-            Keypoint(
-                "📞 문의",
-                "•  인문: 02-300-1471\n" +
-                    "•  자연: 031-330-6026"
-            ),
-        )
-    )
 }

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -35,29 +37,40 @@ class ThemeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.tvSubtitle.text = "${CurrentUser.honorific}을 위한 어쩌구 맞춤 가이드"
+        binding.tvSubtitle.text = "${CurrentUser.honorific}을 위한 맞춤 가이드"
+
         setupRecyclerView()
+        setupSwipeRefresh()
         observeViewModel()
     }
 
     private fun setupRecyclerView() {
         adapter = ThemeAdapter { theme ->
-            val actionId = when (theme.id) {
-                "1" -> R.id.action_theme_to_detail1
-                "2" -> R.id.action_theme_to_detail2
-                "3" -> R.id.action_theme_to_detail3
-                "4" -> R.id.action_theme_to_detail4
-                else -> return@ThemeAdapter // theme 5 등 미구현 테마는 무시
-            }
-            findNavController().navigate(actionId)
+            if (theme.id <= 0) return@ThemeAdapter
+            findNavController().navigate(
+                R.id.action_theme_to_detail,
+                bundleOf("themeId" to theme.id)
+            )
         }
         binding.rvThemes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvThemes.adapter = adapter
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeColors(
+            ContextCompat.getColor(requireContext(), R.color.primary)
+        )
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+    }
+
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.themes)
+            binding.swipeRefresh.isRefreshing = state.isRefreshing
+            binding.progressLoading.visibility =
+                if (state.isLoading) View.VISIBLE else View.GONE
         }
     }
 

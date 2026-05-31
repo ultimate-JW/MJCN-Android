@@ -1,5 +1,11 @@
 package com.ultimatejw.mjcn.domain.model
 
+data class InfoPage(
+    val infos: List<Info>,
+    val totalCount: Int,
+    val hasMore: Boolean
+)
+
 data class Info(
     val id: String,
     val title: String,
@@ -7,6 +13,9 @@ data class Info(
     val team: String,
     val isGroup: Boolean,
     val dday: Int,
+    val url: String = "",
+    val startDate: String? = null,
+    val endDate: String? = null,
     val isBookmarked: Boolean = false,
 )
 

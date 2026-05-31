@@ -7,6 +7,7 @@ import com.ultimatejw.mjcn.data.remote.InterestApiService
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
 import com.ultimatejw.mjcn.data.remote.ProfileApiService
 import com.ultimatejw.mjcn.data.remote.interceptor.AuthInterceptor
+import com.ultimatejw.mjcn.data.remote.interceptor.TokenRefreshAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,12 +32,14 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
+        tokenRefreshAuthenticator: TokenRefreshAuthenticator
     ): OkHttpClient =
         OkHttpClient.Builder()
             // AuthInterceptor가 먼저 토큰을 붙인 뒤 logging이 그 결과를 로깅하도록 순서 유지.
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .authenticator(tokenRefreshAuthenticator)
             .build()
 
     @Singleton

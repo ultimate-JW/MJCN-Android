@@ -50,15 +50,20 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- 스크롤 영역 (AI 카드 + 이전 대화) -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nested_scroll"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/layout_header"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,7 +86,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:background="@drawable/bg_send_button"
-                        android:text="🤖"
+                        android:text="@string/chat_ai_icon"
                         android:textColor="@color/black"
                         android:textSize="30sp"
                         android:gravity="center"
@@ -111,7 +116,7 @@
                         android:background="@drawable/bg_e8e6fb_radius33"
                         android:gravity="center"
                         android:padding="14dp"
-                        android:text="📢 최근 7일간 교내 공지 요약해줘"
+                        android:text="@string/chat_suggestion1"
                         android:textColor="@color/point_color1"
                         android:textSize="14sp"
                         app:layout_constraintTop_toBottomOf="@id/tv_ai_welcome"
@@ -126,7 +131,7 @@
                         android:background="@drawable/bg_e8e6fb_radius33"
                         android:gravity="center"
                         android:padding="14dp"
-                        android:text="🏆 요즘 자주 등장하는 공모전 키워드는?"
+                        android:text="@string/chat_suggestion2"
                         android:textColor="@color/point_color1"
                         android:textSize="14sp"
                         app:layout_constraintTop_toBottomOf="@id/tv_suggestion1"
@@ -292,6 +297,7 @@
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
