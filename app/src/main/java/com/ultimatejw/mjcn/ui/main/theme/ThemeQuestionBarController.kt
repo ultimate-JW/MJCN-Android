@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.AbsoluteCornerSize
+import com.ultimatejw.mjcn.R
 
 /**
  * 테마 상세 화면들에 공통으로 들어가는 inline ↔ floating 질문바 토글 + chat_detail 스타일
@@ -27,8 +28,17 @@ class ThemeQuestionBarController(
     private var isKeyboardVisible = false
     private var animator: ValueAnimator? = null
 
+    var onSendMessage: ((String) -> Unit)? = null
+
     fun setup() {
         inlineInput.setOnClickListener { showFloating() }
+        floatingInput.findViewById<android.view.View>(R.id.btn_send)?.setOnClickListener {
+            val message = etMessage.text?.toString()?.trim().orEmpty()
+            if (message.isNotBlank()) {
+                etMessage.text?.clear()
+                onSendMessage?.invoke(message)
+            }
+        }
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             val navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom

@@ -52,7 +52,21 @@ class ThemeDetailFragment : Fragment() {
             floatingInput = binding.floatingInput,
             cardInput = binding.cardInput,
             etMessage = binding.etMessage,
-        ).also { it.setup() }
+        ).also {
+            it.onSendMessage = { message ->
+                val nav = findNavController()
+                nav.popBackStack(R.id.themeDetailFragment, true)
+                nav.navigate(R.id.chatFragment)
+                nav.navigate(
+                    R.id.action_chat_to_detail,
+                    androidx.core.os.bundleOf(
+                        "sessionId" to "",
+                        "initialMessage" to message
+                    )
+                )
+            }
+            it.setup()
+        }
     }
 
     private fun renderWithApiData(state: ThemeDetailUiState) {
