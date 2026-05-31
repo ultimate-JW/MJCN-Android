@@ -75,9 +75,7 @@ class ChatDetailFragment : Fragment() {
                 binding.etMessage.requestFocus()
             }
         }
-        binding.rvMessages.layoutManager = LinearLayoutManager(requireContext()).also {
-            it.stackFromEnd = true
-        }
+        binding.rvMessages.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMessages.adapter = messageAdapter
     }
 
@@ -85,10 +83,22 @@ class ChatDetailFragment : Fragment() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             binding.tvTitle.text = state.title
             messageAdapter.submitList(state.messages) {
-                if (state.messages.isNotEmpty()) {
-                    binding.rvMessages.scrollToPosition(state.messages.size - 1)
+                when {
+                    state.messages.size == 1 -> binding.rvMessages.scrollToPosition(0)
+                    state.messages.isNotEmpty() -> binding.rvMessages.scrollToPosition(state.messages.size - 1)
                 }
             }
+
+            messageAdapter.showLoading = state.isSending
+            if (state.isSending && state.messages.size == 1) {
+                binding.rvMessages.scrollToPosition(0)
+            } else if (state.isSending) {
+                binding.rvMessages.scrollToPosition(messageAdapter.itemCount - 1)
+            }
+
+            binding.etMessage.isEnabled = !state.isSending
+            binding.btnSend.isEnabled = !state.isSending
+            binding.btnSend.alpha = if (state.isSending) 0.4f else 1f
         }
     }
 
@@ -216,6 +226,23 @@ class ChatDetailFragment : Fragment() {
             isOutsideTouchable = true
         }
 
+        val currentCategory = viewModel.uiState.value?.category.orEmpty()
+        val chipMap = mapOf(
+            "academic"    to popupBinding.chipAcademic,
+            "course"      to popupBinding.chipCourse,
+            "scholarship" to popupBinding.chipScholarship,
+            "contest"     to popupBinding.chipContest,
+            "career"      to popupBinding.chipCareer
+        )
+        chipMap[currentCategory]?.isChecked = true
+
+        chipMap.values.forEach { chip ->
+            chip.setOnClickListener {
+                popup.dismiss()
+                showToast("카테고리가 변경되었습니다.")
+            }
+        }
+
         popupBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val popupWidth = popupBinding.root.measuredWidth
 
@@ -227,19 +254,6 @@ class ChatDetailFragment : Fragment() {
         val margin24dp = (24 * density).toInt()
         val screenWidth = resources.displayMetrics.widthPixels
         val popupX = screenWidth - popupWidth - margin24dp
-
-        listOf(
-            popupBinding.chipAcademic,
-            popupBinding.chipCourse,
-            popupBinding.chipScholarship,
-            popupBinding.chipContest,
-            popupBinding.chipCareer
-        ).forEach { chip ->
-            chip.setOnClickListener {
-                popup.dismiss()
-                showToast("카테고리가 변경되었습니다.")
-            }
-        }
 
         popup.showAtLocation(binding.root, Gravity.NO_GRAVITY, popupX, headerBottom)
     }

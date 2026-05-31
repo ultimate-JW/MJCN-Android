@@ -158,6 +158,7 @@ class HomeViewModel @Inject constructor(
     private fun observeUser() {
         viewModelScope.launch {
             observeCurrentUser().collect { user ->
+                if (user != null) CurrentUser.update(user)
                 _uiState.value = _uiState.value!!.copy(currentUser = user)
             }
         }

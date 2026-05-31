@@ -13,6 +13,7 @@ import javax.inject.Inject
 data class ChatDetailUiState(
     val roomId: String? = null,
     val title: String = "새 대화",
+    val category: String = "",
     val messages: List<ChatMessage> = emptyList(),
     val isLoading: Boolean = false,
     val isSending: Boolean = false,
@@ -36,6 +37,7 @@ class ChatDetailViewModel @Inject constructor(
                     _uiState.value = _uiState.value!!.copy(
                         roomId = detail.id,
                         title = detail.title,
+                        category = detail.category,
                         messages = detail.messages,
                         isLoading = false
                     )
@@ -50,6 +52,7 @@ class ChatDetailViewModel @Inject constructor(
     fun sendMessage(content: String) {
         val state = _uiState.value ?: return
         if (state.isSending) return
+        val isNewRoom = state.roomId == null
         viewModelScope.launch {
             _uiState.value = state.copy(isSending = true, error = null)
 
@@ -77,6 +80,11 @@ class ChatDetailViewModel @Inject constructor(
                         messages = _uiState.value!!.messages + aiMsg,
                         isSending = false
                     )
+                    if (isNewRoom) {
+                        chatRepository.getChatRoomDetail(roomId).onSuccess { detail ->
+                            _uiState.value = _uiState.value!!.copy(title = detail.title)
+                        }
+                    }
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value!!.copy(isSending = false, error = e.message)

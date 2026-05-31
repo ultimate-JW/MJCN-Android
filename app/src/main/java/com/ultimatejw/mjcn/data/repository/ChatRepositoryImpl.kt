@@ -7,6 +7,7 @@ import com.ultimatejw.mjcn.data.remote.dto.ChatRoomListDto
 import com.ultimatejw.mjcn.domain.model.ChatMessage
 import com.ultimatejw.mjcn.domain.model.ChatRoomDetail
 import com.ultimatejw.mjcn.domain.model.ChatSession
+import com.ultimatejw.mjcn.domain.model.ReferencedItem
 import com.ultimatejw.mjcn.domain.repository.ChatRepository
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -63,6 +64,9 @@ class ChatRepositoryImpl @Inject constructor(
         id = id.toString(),
         role = role,
         content = content,
+        referencedItems = referencedItems?.map {
+            ReferencedItem(type = it.type, title = it.title, url = it.url)
+        } ?: emptyList(),
         createdAt = createdAt.take(19).replace("T", " ")
     )
 

@@ -37,29 +37,8 @@
             app:popEnterAnim="@anim/stay"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_home_to_themeDetail1"
-            app:destination="@id/themeDetail1Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_home_to_themeDetail2"
-            app:destination="@id/themeDetail2Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_home_to_themeDetail3"
-            app:destination="@id/themeDetail3Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_home_to_themeDetail4"
-            app:destination="@id/themeDetail4Fragment"
+            android:id="@+id/action_home_to_themeDetail"
+            app:destination="@id/themeDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/stay"
             app:popEnterAnim="@anim/stay"
@@ -117,29 +96,8 @@
         android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeFragment"
         android:label="ThemeFragment">
         <action
-            android:id="@+id/action_theme_to_detail1"
-            app:destination="@id/themeDetail1Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_theme_to_detail2"
-            app:destination="@id/themeDetail2Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_theme_to_detail3"
-            app:destination="@id/themeDetail3Fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/stay"
-            app:popEnterAnim="@anim/stay"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_theme_to_detail4"
-            app:destination="@id/themeDetail4Fragment"
+            android:id="@+id/action_theme_to_detail"
+            app:destination="@id/themeDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/stay"
             app:popEnterAnim="@anim/stay"
@@ -147,39 +105,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/themeDetail1Fragment"
-        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail1Fragment"
-        android:label="ThemeDetail1Fragment">
-        <argument
-            android:name="themeId"
-            app:argType="integer"
-            android:defaultValue="0" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/themeDetail2Fragment"
-        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail2Fragment"
-        android:label="ThemeDetail2Fragment">
-        <argument
-            android:name="themeId"
-            app:argType="integer"
-            android:defaultValue="0" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/themeDetail3Fragment"
-        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail3Fragment"
-        android:label="ThemeDetail3Fragment">
-        <argument
-            android:name="themeId"
-            app:argType="integer"
-            android:defaultValue="0" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/themeDetail4Fragment"
-        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetail4Fragment"
-        android:label="ThemeDetail4Fragment">
+        android:id="@+id/themeDetailFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.theme.ThemeDetailFragment"
+        android:label="ThemeDetailFragment">
         <argument
             android:name="themeId"
             app:argType="integer"

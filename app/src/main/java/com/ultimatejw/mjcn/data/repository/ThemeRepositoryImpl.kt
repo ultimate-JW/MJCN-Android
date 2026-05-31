@@ -32,7 +32,7 @@ class ThemeRepositoryImpl @Inject constructor(
                     id = dto.id,
                     title = dto.title,
                     content = dto.content.orEmpty(),
-                    externalUrl = dto.externalUrl,
+                    externalUrl = dto.externalUrl?.takeIf { it.isNotBlank() },
                     itemType = dto.itemType
                 )
             }

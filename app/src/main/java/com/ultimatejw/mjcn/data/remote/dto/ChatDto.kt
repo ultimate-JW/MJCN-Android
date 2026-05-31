@@ -18,10 +18,26 @@ data class PaginatedChatRoomDto(
     val results: List<ChatRoomListDto>
 )
 
+data class ReferencedItemDto(
+    val type: String,
+    val title: String,
+    val url: String
+)
+
+data class ChatAttachmentDto(
+    val id: Int,
+    val file: String,
+    @SerializedName("file_type") val fileType: String,
+    @SerializedName("original_name") val originalName: String,
+    @SerializedName("created_at") val createdAt: String
+)
+
 data class ChatMessageDto(
     val id: Int,
     val role: String,
     val content: String,
+    @SerializedName("referenced_items") val referencedItems: List<ReferencedItemDto>? = null,
+    val attachments: List<ChatAttachmentDto>? = null,
     @SerializedName("created_at") val createdAt: String
 )
 

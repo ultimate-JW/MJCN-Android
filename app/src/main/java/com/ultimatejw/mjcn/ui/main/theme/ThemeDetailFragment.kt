@@ -13,15 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
-import com.ultimatejw.mjcn.databinding.FragmentThemeDetail4Binding
+import com.ultimatejw.mjcn.databinding.FragmentThemeDetailBinding
 import com.ultimatejw.mjcn.domain.model.ThemeItem
-import com.ultimatejw.mjcn.ui.common.CurrentUser
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ThemeDetail4Fragment : Fragment() {
+class ThemeDetailFragment : Fragment() {
 
-    private var _binding: FragmentThemeDetail4Binding? = null
+    private var _binding: FragmentThemeDetailBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ThemeDetailViewModel by viewModels()
     private var questionBar: ThemeQuestionBarController? = null
@@ -31,7 +30,7 @@ class ThemeDetail4Fragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentThemeDetail4Binding.inflate(inflater, container, false)
+        _binding = FragmentThemeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -39,12 +38,11 @@ class ThemeDetail4Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
-        showFallback()
-
         val themeId = arguments?.getInt("themeId") ?: 0
         viewModel.load(themeId)
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            binding.progressLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
             if (state.title.isNotBlank()) renderWithApiData(state)
         }
 
@@ -58,28 +56,43 @@ class ThemeDetail4Fragment : Fragment() {
     }
 
     private fun renderWithApiData(state: ThemeDetailUiState) {
+        binding.tvHeaderTitle.text = state.title
         binding.tvAdvice.text = state.adviceText
-        binding.tvPriorityTitle.text = "${CurrentUser.honorific} 맞춤 우선순위"
 
-        renderItemCards(binding.containerPrograms, state.contentItems)
-        binding.containerPriorities.removeAllViews()
+        if (state.contentItems.isEmpty()) {
+            binding.layoutContentSection.visibility = View.GONE
+        } else {
+            binding.layoutContentSection.visibility = View.VISIBLE
+            renderItemCards(binding.containerContent, state.contentItems)
+        }
 
-        val firstLink = state.linkItems.firstOrNull()
-        if (firstLink != null) {
-            binding.btnPriorityApply.setOnClickListener {
-                firstLink.externalUrl?.let { url ->
+        updateLinkButtons(state.linkItems)
+    }
+
+    private fun updateLinkButtons(links: List<ThemeItem>) {
+        if (links.isEmpty()) {
+            binding.layoutLinksSection.visibility = View.GONE
+            return
+        }
+        binding.layoutLinksSection.visibility = View.VISIBLE
+
+        fun setup(btnLayout: LinearLayout, item: ThemeItem?) {
+            if (item == null) {
+                btnLayout.visibility = View.GONE
+                return
+            }
+            btnLayout.visibility = View.VISIBLE
+            (btnLayout.getChildAt(0) as? TextView)?.text = item.title
+            btnLayout.setOnClickListener {
+                item.externalUrl?.let { url ->
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 }
             }
         }
-    }
 
-    private fun showFallback() {
-        binding.tvAdvice.text =
-            "  ${CurrentUser.honorific}은 현재 2001년 3월 30일생 만 22세로 대부분의 청년 대상 지원사업 신청 가능 구간이에요.\n" +
-                "  특히 지금은 \"취업 준비 + 실무 경험 + 경제 지원\"을 같이 가져가는 게 중요해요.\n" +
-                "  신청 가능한 국가 사업을 모두 알려드릴게요!"
-        binding.tvPriorityTitle.text = "${CurrentUser.honorific} 맞춤 우선순위"
+        setup(binding.btnQuick1, links.getOrNull(0))
+        setup(binding.btnQuick2, links.getOrNull(1))
+        setup(binding.btnQuick3, links.getOrNull(2))
     }
 
     private fun renderItemCards(container: LinearLayout, items: List<ThemeItem>) {

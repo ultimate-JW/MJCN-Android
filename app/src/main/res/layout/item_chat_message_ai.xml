@@ -6,30 +6,12 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
-    <TextView
-        android:id="@+id/tv_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_ai_header_chip"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="7dp"
-        android:paddingBottom="7dp"
-        android:textColor="@color/white"
-        android:textSize="13sp"
-        android:fontFamily="@font/pretendard_medium"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:visibility="gone" />
-
     <LinearLayout
         android:id="@+id/container_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_ai_message_card"
-        android:padding="16dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="4dp" />
 
     <LinearLayout
         android:id="@+id/container_suggestions"

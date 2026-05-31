@@ -37,7 +37,7 @@ class ThemeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.tvSubtitle.text = "${CurrentUser.honorific}을 위한 어쩌구 맞춤 가이드"
+        binding.tvSubtitle.text = "${CurrentUser.honorific}을 위한 맞춤 가이드"
 
         setupRecyclerView()
         setupSwipeRefresh()
@@ -46,15 +46,11 @@ class ThemeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = ThemeAdapter { theme ->
-            val actionId = when (theme.category) {
-                "course_registration" -> R.id.action_theme_to_detail1
-                "career"              -> R.id.action_theme_to_detail2
-                "exchange"            -> R.id.action_theme_to_detail3
-                "grant"               -> R.id.action_theme_to_detail4
-                else -> return@ThemeAdapter
-            }
-            val args = bundleOf("themeId" to theme.id)
-            findNavController().navigate(actionId, args)
+            if (theme.id <= 0) return@ThemeAdapter
+            findNavController().navigate(
+                R.id.action_theme_to_detail,
+                bundleOf("themeId" to theme.id)
+            )
         }
         binding.rvThemes.layoutManager = LinearLayoutManager(requireContext())
         binding.rvThemes.adapter = adapter
