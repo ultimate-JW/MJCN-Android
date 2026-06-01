@@ -79,10 +79,10 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
             val parsed = parseAiContent(content)
 
             // 본문 렌더링
-            var firstLine = true
+            var firstBlock = true
             parsed.mainBlocks.forEach { block ->
-                if (!firstLine) addSpacer(containerContent, (6 * density).toInt())
-                firstLine = false
+                if (!firstBlock) addDivider(ctx, containerContent, density)
+                firstBlock = false
 
                 block.lines().forEach { rawLine ->
                     val line = rawLine.trimEnd()
@@ -105,6 +105,10 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
                         line.trim().startsWith("**") && line.trim().endsWith("**") && line.trim().length > 4 -> {
                             val text = line.trim().removePrefix("**").removeSuffix("**").trim()
                             addBoldLine(ctx, containerContent, text, density)
+                        }
+                        line.trim().matches(Regex("^\\[([^\\]]+)]\\((https?://[^)]+)\\)$")) -> {
+                            val match = Regex("^\\[([^\\]]+)]\\((https?://[^)]+)\\)$").find(line.trim())!!
+                            addLinkButton(ctx, containerContent, match.groupValues[1], match.groupValues[2], density)
                         }
                         else -> addBodyText(ctx, containerContent, line.trimStart(), density)
                     }
@@ -254,15 +258,15 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
         private fun addLinkButton(ctx: android.content.Context, container: LinearLayout, label: String, url: String, density: Float) {
             val btnLayout = LinearLayout(ctx).apply {
                 orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                background = ContextCompat.getDrawable(ctx, R.drawable.bg_chat_link_button)
-                val pH = (16 * density).toInt()
-                val pV = (12 * density).toInt()
-                setPadding(pH, pV, pH, pV)
+                gravity = Gravity.CENTER
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_btn_primary)
+                isClickable = true
+                isFocusable = true
+                val heightPx = (46 * density).toInt()
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { topMargin = (6 * density).toInt() }
+                    heightPx
+                ).apply { topMargin = (8 * density).toInt() }
                 setOnClickListener {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 }
@@ -270,20 +274,37 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
             val labelTv = TextView(ctx).apply {
                 text = label
                 textSize = 14f
-                setTypeface(ResourcesCompat.getFont(ctx, R.font.pretendard_medium))
+                typeface = ResourcesCompat.getFont(ctx, R.font.pretendard_semibold)
                 setTextColor(ctx.getColor(R.color.white))
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
             }
             val iconView = ImageView(ctx).apply {
-                setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_white_chevron))
-                val size = (20 * density).toInt()
+                setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_external_link))
+                val size = (14 * density).toInt()
                 layoutParams = LinearLayout.LayoutParams(size, size).apply {
-                    marginStart = (8 * density).toInt()
+                    marginStart = (4 * density).toInt()
                 }
             }
             btnLayout.addView(labelTv)
             btnLayout.addView(iconView)
             container.addView(btnLayout)
+        }
+
+        private fun addDivider(ctx: android.content.Context, container: LinearLayout, density: Float) {
+            val divider = View(ctx).apply {
+                setBackgroundColor(ctx.getColor(R.color.font_color4))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (1 * density).toInt()
+                ).apply {
+                    topMargin = (24 * density).toInt()
+                    bottomMargin = (16 * density).toInt()
+                }
+            }
+            container.addView(divider)
         }
 
         private fun addSuggestionItem(
