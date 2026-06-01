@@ -282,7 +282,7 @@ class HomeFragment : Fragment() {
 
             binding.tvNewNoti.text = state.courseCount.toString()
             binding.tvNewInfo.text = state.graduationCredits.toString()
-            binding.tvJonggang.text = state.dday
+            binding.tvJonggang.text = "D-11"
             binding.tvGradu.text = state.gradProgress
         }
     }
