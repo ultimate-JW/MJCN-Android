@@ -63,7 +63,67 @@
             app:exitAnim="@anim/stay"
             app:popEnterAnim="@anim/stay"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_profileEditBasic"
+            app:destination="@id/profileEditBasicFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_profileEditMajor"
+            app:destination="@id/profileEditMajorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_profileEditInterest"
+            app:destination="@id/profileEditInterestFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_profileEditCourse"
+            app:destination="@id/profileEditCourseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_profileEditCurrentCourse"
+            app:destination="@id/profileEditCurrentCourseFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/profileEditBasicFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.ProfileEditBasicFragment"
+        android:label="ProfileEditBasicFragment" />
+
+    <fragment
+        android:id="@+id/profileEditMajorFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.ProfileEditMajorFragment"
+        android:label="ProfileEditMajorFragment" />
+
+    <fragment
+        android:id="@+id/profileEditInterestFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.ProfileEditInterestFragment"
+        android:label="ProfileEditInterestFragment" />
+
+    <fragment
+        android:id="@+id/profileEditCourseFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.ProfileEditCourseFragment"
+        android:label="ProfileEditCourseFragment" />
+
+    <fragment
+        android:id="@+id/profileEditCurrentCourseFragment"
+        android:name="com.ultimatejw.mjcn.ui.main.settings.ProfileEditCurrentCourseFragment"
+        android:label="ProfileEditCurrentCourseFragment" />
 
     <fragment
         android:id="@+id/noticeBookmarkFragment"

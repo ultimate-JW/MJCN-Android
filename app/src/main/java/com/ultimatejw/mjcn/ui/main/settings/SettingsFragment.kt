@@ -48,6 +48,21 @@ class SettingsFragment : Fragment() {
         binding.itemInfoBookmark.setOnClickListener {
             findNavController().navigate(R.id.action_settings_to_infoBookmark)
         }
+        binding.itemBasicInfo.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_profileEditBasic)
+        }
+        binding.itemMajor.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_profileEditMajor)
+        }
+        binding.itemInterest.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_profileEditInterest)
+        }
+        binding.itemCourseHistory.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_profileEditCourse)
+        }
+        binding.itemCurrentCourse.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_profileEditCurrentCourse)
+        }
         binding.tvWithdraw.setOnClickListener {
             lifecycleScope.launch {
                 mainViewModel.logout()
