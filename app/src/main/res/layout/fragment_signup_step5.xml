@@ -69,17 +69,83 @@
                 android:src="@drawable/ic_search" />
         </FrameLayout>
 
+        <!-- 전공 / 교양 탭 -->
+        <LinearLayout
+            android:id="@+id/tab_bar"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/search_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <FrameLayout
+                android:id="@+id/tab_major"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tv_tab_major"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/pretendard_bold"
+                    android:text="@string/course_tab_major"
+                    android:textColor="@color/point_color1"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/indicator_major"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_gravity="bottom"
+                    android:background="@color/point_color1" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/tab_liberal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tv_tab_liberal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="@string/course_tab_liberal"
+                    android:textColor="@color/font_color2"
+                    android:textSize="15sp" />
+
+                <View
+                    android:id="@+id/indicator_liberal"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_gravity="bottom"
+                    android:background="@color/point_color1"
+                    android:visibility="invisible" />
+            </FrameLayout>
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_selected_courses"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/search_container" />
+            app:layout_constraintTop_toBottomOf="@id/tab_bar" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_courses"

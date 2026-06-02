@@ -6,14 +6,19 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.ultimatejw.mjcn.data.local.TokenStore
+import com.ultimatejw.mjcn.data.remote.dto.course.CourseListDto
+import com.ultimatejw.mjcn.data.remote.dto.course.CourseOfferingDto
 import com.ultimatejw.mjcn.data.repository.AuthApiException
 import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import com.ultimatejw.mjcn.domain.repository.CourseHistoryRepository
+import com.ultimatejw.mjcn.domain.repository.CoursesRepository
 import com.ultimatejw.mjcn.domain.repository.CurrentCourseRepository
 import com.ultimatejw.mjcn.domain.repository.InterestRepository
 import com.ultimatejw.mjcn.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,6 +63,7 @@ class SignUpViewModel @Inject constructor(
     private val interestRepository: InterestRepository,
     private val courseHistoryRepository: CourseHistoryRepository,
     private val currentCourseRepository: CurrentCourseRepository,
+    private val coursesRepository: CoursesRepository,
     private val tokenStore: TokenStore
 ) : ViewModel() {
 
@@ -86,12 +92,51 @@ class SignUpViewModel @Inject constructor(
     // Step 4 - 수강 이력
     val selectedCourses = mutableListOf<SelectedCourse>()
 
+    private val _courseSearchResults = MutableStateFlow<List<Course>>(emptyList())
+    val courseSearchResults: StateFlow<List<Course>> = _courseSearchResults.asStateFlow()
+
+    private val _offeringSearchResults = MutableStateFlow<List<Course>>(emptyList())
+    val offeringSearchResults: StateFlow<List<Course>> = _offeringSearchResults.asStateFlow()
+
+    private var searchJob: Job? = null
+
+    fun onCourseQueryChanged(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            if (query.isNotBlank()) delay(300)
+            coursesRepository.searchCourses(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
+                .onSuccess { _courseSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+        }
+    }
+
+    fun onOfferingQueryChanged(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            if (query.isNotBlank()) delay(300)
+            coursesRepository.searchOfferings(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
+                .onSuccess { _offeringSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+        }
+    }
+
+    private fun CourseListDto.toCourse(): Course {
+        val meta = listOfNotNull(college, department, major).filter { it.isNotBlank() }.joinToString(" · ").ifEmpty { category }
+        return Course(name = name, meta = meta, code = courseCode, category = category)
+    }
+
+    private fun CourseOfferingDto.toCourse(): Course {
+        val schedule = schedules.firstOrNull()
+        val timePart = schedule?.let { "${it.dayOfWeek} ${it.startTime.take(5)}" }.orEmpty()
+        val meta = listOfNotNull(professor?.takeIf { it.isNotBlank() }, timePart.takeIf { it.isNotBlank() })
+            .joinToString(" · ").ifEmpty { category }
+        return Course(name = name, meta = meta, code = courseCode, offeringId = id, category = category)
+    }
+
     fun findSelectedCourse(name: String): SelectedCourse? =
         selectedCourses.firstOrNull { it.name == name }
 
-    fun addSelectedCourse(name: String, meta: String = "") {
+    fun addSelectedCourse(name: String, meta: String = "", courseCode: String = "") {
         if (findSelectedCourse(name) == null) {
-            selectedCourses.add(SelectedCourse(name = name, meta = meta))
+            selectedCourses.add(SelectedCourse(name = name, meta = meta, courseCode = courseCode))
         }
     }
 
@@ -103,20 +148,32 @@ class SignUpViewModel @Inject constructor(
         findSelectedCourse(name)?.grade = grade
     }
 
+    fun setCourseYear(name: String, year: Int) {
+        findSelectedCourse(name)?.year = year
+    }
+
+    fun setCourseSemester(name: String, semester: Int) {
+        findSelectedCourse(name)?.semester = semester
+    }
+
     // Step 5 - 현재 수강 과목
     val selectedCurrentCourses = mutableListOf<SelectedCourse>()
 
     fun findCurrentCourse(name: String): SelectedCourse? =
         selectedCurrentCourses.firstOrNull { it.name == name }
 
-    fun addCurrentCourse(name: String, meta: String = "") {
+    fun findCurrentCourseByOfferingId(offeringId: Int): SelectedCourse? =
+        selectedCurrentCourses.firstOrNull { it.offeringId == offeringId }
+
+    fun addCurrentCourse(name: String, meta: String = "", offeringId: Int? = null) {
         if (findCurrentCourse(name) == null) {
-            selectedCurrentCourses.add(SelectedCourse(name = name, meta = meta))
+            selectedCurrentCourses.add(SelectedCourse(name = name, meta = meta, offeringId = offeringId))
         }
     }
 
-    fun removeCurrentCourse(name: String) {
-        selectedCurrentCourses.removeAll { it.name == name }
+    fun removeCurrentCourse(name: String, offeringId: Int? = null) {
+        if (offeringId != null) selectedCurrentCourses.removeAll { it.offeringId == offeringId }
+        else selectedCurrentCourses.removeAll { it.name == name }
     }
 
     private val _step1Valid = MutableStateFlow(false)
@@ -380,12 +437,31 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
 
-                // 3) Step4 (course-history) / 4) Step5 (current-courses) 는
-                //    서버의 Course 마스터 테이블과 course_code FK 매칭이 필요해
-                //    placeholder 코드로는 IntegrityError → 500 이 발생함을 확인.
-                //    백엔드와 course_code 매핑 확정 전까지 저장은 보류.
-                //    사용자가 선택한 selectedCourses / selectedCurrentCourses 는
-                //    ViewModel 메모리에 남아 있으므로 추후 연결만 하면 됨.
+                // 3) Step4 → POST /course-history/ (year+semester 입력된 과목만)
+                for (course in selectedCourses) {
+                    val year = course.year ?: continue
+                    val semester = course.semester ?: continue
+                    val r = courseHistoryRepository.createCourseHistory(
+                        courseCode = course.courseCode,
+                        year = year,
+                        semester = semester,
+                        gradeReceived = course.grade ?: ""
+                    )
+                    if (r.isFailure) {
+                        emitFailure(r.exceptionOrNull()!!, "수강이력 저장에 실패했습니다.")
+                        return@launch
+                    }
+                }
+
+                // 4) Step5 → POST /current-courses/ (offeringId 있는 과목만)
+                for (course in selectedCurrentCourses) {
+                    val offeringId = course.offeringId ?: continue
+                    val r = currentCourseRepository.createCurrentCourse(offeringId)
+                    if (r.isFailure) {
+                        emitFailure(r.exceptionOrNull()!!, "현재 수강과목 저장에 실패했습니다.")
+                        return@launch
+                    }
+                }
 
                 // 5) 온보딩 완료 마킹
                 profileRepository.patchProfile(isOnboardingCompleted = true)

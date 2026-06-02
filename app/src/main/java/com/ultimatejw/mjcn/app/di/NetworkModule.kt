@@ -2,6 +2,7 @@ package com.ultimatejw.mjcn.app.di
 
 import com.ultimatejw.mjcn.data.remote.AuthApiService
 import com.ultimatejw.mjcn.data.remote.CourseHistoryApiService
+import com.ultimatejw.mjcn.data.remote.CoursesApiService
 import com.ultimatejw.mjcn.data.remote.CurrentCourseApiService
 import com.ultimatejw.mjcn.data.remote.InterestApiService
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
@@ -80,4 +81,9 @@ object NetworkModule {
     @Provides
     fun provideCurrentCourseApiService(retrofit: Retrofit): CurrentCourseApiService =
         retrofit.create(CurrentCourseApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCoursesApiService(retrofit: Retrofit): CoursesApiService =
+        retrofit.create(CoursesApiService::class.java)
 }

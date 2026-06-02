@@ -77,12 +77,12 @@ class ProfileEditInterestFragment : Fragment() {
         binding.btnNext.text = "저장"
 
         hidePrevButton()
-        restoreState()
         observeViewModel()
         setupChipListeners()
         setupListeners()
         setupOtherInput()
         setupKeyboardInsets()
+        viewModel.loadInterests()
         binding.interestsContainer.post {
             lockChipWidthsToBold()
             binding.interestsContainer.post { cacheSameRowChips() }
@@ -295,6 +295,11 @@ class ProfileEditInterestFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.interestsLoaded.collect { loaded ->
+                        if (loaded) restoreState()
+                    }
+                }
                 launch {
                     viewModel.interestValid.collect { valid ->
                         binding.btnNext.isEnabled = valid

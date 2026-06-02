@@ -9,28 +9,8 @@ class CurrentCourseRepositoryImpl @Inject constructor(
     private val api: CurrentCourseApiService
 ) : CurrentCourseRepository {
 
-    override suspend fun createCurrentCourse(
-        courseName: String,
-        courseCode: String,
-        dayOfWeek: String,
-        startTime: String,
-        endTime: String,
-        professor: String,
-        room: String,
-        building: String
-    ): Result<Unit> = runCatching {
-        val response = api.createCurrentCourse(
-            CurrentCourseRequest(
-                courseName = courseName,
-                courseCode = courseCode,
-                dayOfWeek = dayOfWeek,
-                startTime = startTime,
-                endTime = endTime,
-                professor = professor,
-                room = room,
-                building = building
-            )
-        )
+    override suspend fun createCurrentCourse(offeringId: Int): Result<Unit> = runCatching {
+        val response = api.createCurrentCourse(CurrentCourseRequest(offeringId))
         if (!response.isSuccessful) {
             throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
         }

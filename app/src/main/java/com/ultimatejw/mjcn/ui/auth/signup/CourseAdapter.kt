@@ -11,14 +11,22 @@ import com.ultimatejw.mjcn.R
 
 /**
  * 수강 이력 / 현재 수강 과목 리스트 어댑터.
- * - 카드 형태. 선택 시 primary 테두리.
- * - [showGradeOnSelect] true → 선택 시 성적 선택칸도 노출 (step4).
- *                       false → 테두리만 변경, 성적칸 미노출 (step5).
+ *
+ * 카드 상태:
+ *  - 선택됨  : primary 테두리, 버튼 ic_minus_circle
+ *  - 비활성화 : 같은 과목명의 다른 분반이 선택된 경우 → alpha 낮춰 탁하게 표시
+ *  - 기본    : normal 테두리, 버튼 ic_plus_circle
+ *
+ * [showGradeOnSelect] true  → 선택 시 연도·학기·성적 드롭다운 노출 (수강이력).
+ *                    false → 선택 표시만 (현재 수강과목).
  */
 class CourseAdapter(
     private val onAddClick: (Course) -> Unit,
+    private val onYearClick: (Course) -> Unit = {},
+    private val onSemesterClick: (Course) -> Unit = {},
     private val onGradeClick: (Course) -> Unit = {},
-    private val selectionProvider: (String) -> SelectedCourse?,
+    private val selectionProvider: (Course) -> SelectedCourse?,
+    private val disabledProvider: (Course) -> Boolean = { false },
     private val showGradeOnSelect: Boolean = true
 ) : RecyclerView.Adapter<CourseAdapter.ViewHolder>() {
 
@@ -35,6 +43,8 @@ class CourseAdapter(
         val tvName: TextView = itemView.findViewById(R.id.tv_course_name)
         val tvMeta: TextView = itemView.findViewById(R.id.tv_course_meta)
         val btnAdd: ImageView = itemView.findViewById(R.id.btn_add_course)
+        val tvYear: TextView = itemView.findViewById(R.id.tv_year_select)
+        val tvSemester: TextView = itemView.findViewById(R.id.tv_semester_select)
         val tvGrade: TextView = itemView.findViewById(R.id.tv_grade_select)
     }
 
@@ -46,41 +56,73 @@ class CourseAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val course = items[position]
-        // 학수번호가 있으면 "코드 과목명" 형태로, 없으면 과목명만 표시
         holder.tvName.text = if (course.code.isEmpty()) course.name else "${course.code} ${course.name}"
         holder.tvMeta.text = course.meta
 
-        val selection = selectionProvider(course.name)
+        val selection = selectionProvider(course)
         val isSelected = selection != null
-        holder.card.isSelected = isSelected
+        val isDisabled = !isSelected && disabledProvider(course)
 
-        if (isSelected && showGradeOnSelect) {
-            holder.tvGrade.visibility = View.VISIBLE
-            val grade = selection?.grade
-            val context = holder.itemView.context
-            val isChapel = course.name == CHAPEL_COURSE_NAME
-            if (grade.isNullOrEmpty()) {
-                holder.tvGrade.text = ""
-                if (isChapel) {
-                    // 채플은 성적이 아닌 이수 횟수를 입력해야 하므로 빨간 필수 힌트를 노출
-                    holder.tvGrade.hint = context.getString(R.string.signup_chapel_count_hint)
-                    holder.tvGrade.setHintTextColor(context.getColor(R.color.error))
-                } else {
-                    holder.tvGrade.hint = context.getString(R.string.signup_course_grade_hint)
-                    holder.tvGrade.setHintTextColor(0xFFCCCCCC.toInt())
-                }
-                holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
-            } else {
-                holder.tvGrade.text = grade
-                holder.tvGrade.setBackgroundResource(R.drawable.bg_grade_select)
-            }
-            holder.tvGrade.setOnClickListener { onGradeClick(course) }
-        } else {
-            holder.tvGrade.visibility = View.GONE
-            holder.tvGrade.setOnClickListener(null)
-        }
+        // 카드 선택 상태 (테두리)
+        holder.card.isSelected = isSelected
+        // 비활성화 시 탁하게
+        holder.itemView.alpha = if (isDisabled) 0.35f else 1.0f
+
+        // + / - 아이콘 전환
+        holder.btnAdd.setImageResource(
+            if (isSelected) R.drawable.ic_minus_circle else R.drawable.ic_plus_circle
+        )
 
         holder.btnAdd.setOnClickListener { onAddClick(course) }
+
+        // 연도·학기·성적 드롭다운 (수강이력 모드)
+        if (isSelected && showGradeOnSelect) {
+            holder.tvYear.visibility = View.VISIBLE
+            holder.tvSemester.visibility = View.VISIBLE
+            holder.tvGrade.visibility = View.VISIBLE
+
+            bindDropdown(holder.tvYear, selection?.year?.toString(),
+                holder.itemView.context.getString(R.string.course_year_hint))
+            bindDropdown(holder.tvSemester,
+                when (selection?.semester) { 1 -> "1학기"; 2 -> "2학기"; else -> null },
+                holder.itemView.context.getString(R.string.course_semester_hint))
+
+            val isChapel = course.name == CHAPEL_COURSE_NAME
+            val gradeHint = holder.itemView.context.getString(
+                if (isChapel) R.string.signup_chapel_count_hint else R.string.signup_course_grade_hint
+            )
+            if (isChapel && selection?.grade.isNullOrEmpty()) {
+                holder.tvGrade.text = ""
+                holder.tvGrade.hint = gradeHint
+                holder.tvGrade.setHintTextColor(holder.itemView.context.getColor(R.color.error))
+                holder.tvGrade.setBackgroundResource(R.drawable.bg_search_field)
+            } else {
+                bindDropdown(holder.tvGrade, selection?.grade, gradeHint)
+            }
+
+            holder.tvYear.setOnClickListener { onYearClick(course) }
+            holder.tvSemester.setOnClickListener { onSemesterClick(course) }
+            holder.tvGrade.setOnClickListener { onGradeClick(course) }
+        } else {
+            holder.tvYear.visibility = View.GONE
+            holder.tvSemester.visibility = View.GONE
+            holder.tvGrade.visibility = View.GONE
+            holder.tvYear.setOnClickListener(null)
+            holder.tvSemester.setOnClickListener(null)
+            holder.tvGrade.setOnClickListener(null)
+        }
+    }
+
+    private fun bindDropdown(view: TextView, value: String?, hint: String) {
+        if (value.isNullOrEmpty()) {
+            view.text = ""
+            view.hint = hint
+            view.setHintTextColor(0xFFCCCCCC.toInt())
+            view.setBackgroundResource(R.drawable.bg_search_field)
+        } else {
+            view.text = value
+            view.setBackgroundResource(R.drawable.bg_grade_select)
+        }
     }
 
     override fun getItemCount(): Int = items.size

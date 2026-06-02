@@ -10,23 +10,17 @@ class CourseHistoryRepositoryImpl @Inject constructor(
 ) : CourseHistoryRepository {
 
     override suspend fun createCourseHistory(
-        courseName: String,
         courseCode: String,
         year: Int,
         semester: Int,
-        gradeReceived: String,
-        category: String,
-        credits: Int
+        gradeReceived: String
     ): Result<Unit> = runCatching {
         val response = api.createCourseHistory(
             CourseHistoryRequest(
-                courseName = courseName,
                 courseCode = courseCode,
                 year = year,
                 semester = semester,
-                gradeReceived = gradeReceived,
-                category = category,
-                credits = credits
+                gradeReceived = gradeReceived
             )
         )
         if (!response.isSuccessful) {

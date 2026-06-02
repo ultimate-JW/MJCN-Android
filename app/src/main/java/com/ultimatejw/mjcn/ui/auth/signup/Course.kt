@@ -10,12 +10,18 @@ const val CHAPEL_COURSE_NAME = "채플"
 data class Course(
     val name: String,
     val meta: String,
-    val code: String = ""
+    val code: String = "",
+    val offeringId: Int? = null,
+    val category: String = ""
 )
 
 /** 사용자가 선택한 과목과 (선택적으로) 성적. meta는 전공/교양 분류 판단용. */
 data class SelectedCourse(
     val name: String,
     var grade: String? = null,
-    val meta: String = ""
+    val meta: String = "",
+    val courseCode: String = "",
+    val offeringId: Int? = null,
+    var year: Int? = null,
+    var semester: Int? = null
 )

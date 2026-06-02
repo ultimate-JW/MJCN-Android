@@ -5,6 +5,7 @@ import com.ultimatejw.mjcn.data.repository.BookmarkRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.HomeRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.ChatRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.CourseHistoryRepositoryImpl
+import com.ultimatejw.mjcn.data.repository.CoursesRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.CurrentCourseRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.InfoRepositoryImpl
 import com.ultimatejw.mjcn.data.repository.InterestRepositoryImpl
@@ -18,6 +19,7 @@ import com.ultimatejw.mjcn.domain.repository.BookmarkRepository
 import com.ultimatejw.mjcn.domain.repository.HomeRepository
 import com.ultimatejw.mjcn.domain.repository.ChatRepository
 import com.ultimatejw.mjcn.domain.repository.CourseHistoryRepository
+import com.ultimatejw.mjcn.domain.repository.CoursesRepository
 import com.ultimatejw.mjcn.domain.repository.CurrentCourseRepository
 import com.ultimatejw.mjcn.domain.repository.InfoRepository
 import com.ultimatejw.mjcn.domain.repository.InterestRepository
@@ -83,6 +85,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCurrentCourseRepository(impl: CurrentCourseRepositoryImpl): CurrentCourseRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCoursesRepository(impl: CoursesRepositoryImpl): CoursesRepository
 
     @Binds
     @Singleton
