@@ -49,7 +49,11 @@ class ThemeFragment : Fragment() {
             if (theme.id <= 0) return@ThemeAdapter
             findNavController().navigate(
                 R.id.action_theme_to_detail,
-                bundleOf("themeId" to theme.id)
+                bundleOf(
+                    "themeId" to theme.id,
+                    "category" to theme.category,
+                    "themeTitle" to theme.title
+                )
             )
         }
         binding.rvThemes.layoutManager = LinearLayoutManager(requireContext())

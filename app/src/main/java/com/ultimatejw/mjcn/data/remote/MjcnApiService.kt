@@ -10,6 +10,8 @@ import com.ultimatejw.mjcn.data.remote.dto.NoticeDetailDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedChatRoomDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedInformationDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedNoticeDto
+import com.ultimatejw.mjcn.data.remote.dto.CourseRecommendSectionsDto
+import com.ultimatejw.mjcn.data.remote.dto.ExchangeGuideDto
 import com.ultimatejw.mjcn.data.remote.dto.PaginatedThemeDto
 import com.ultimatejw.mjcn.data.remote.dto.ThemeDetailDto
 import com.ultimatejw.mjcn.data.remote.dto.LoginRequestDto
@@ -85,4 +87,10 @@ interface MjcnApiService {
 
     @GET("api/v1/themes/{id}/")
     suspend fun getThemeDetail(@Path("id") id: Int): Response<ThemeDetailDto>
+
+    @GET("api/v1/courses/recommend/next/sections/")
+    suspend fun getCourseRecommendSections(): Response<CourseRecommendSectionsDto>
+
+    @GET("api/v1/courses/exchange-guide/")
+    suspend fun getExchangeGuide(): Response<ExchangeGuideDto>
 }

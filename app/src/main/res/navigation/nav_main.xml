@@ -172,6 +172,14 @@
             android:name="themeId"
             app:argType="integer"
             android:defaultValue="0" />
+        <argument
+            android:name="category"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="themeTitle"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment

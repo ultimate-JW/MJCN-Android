@@ -52,7 +52,7 @@ class ThemeViewModel @Inject constructor(
     }
 
     private fun fallbackThemes(): List<Theme> = listOf(
-        Theme(0, "${CurrentUser.gradeSemester} 수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", "course_registration", R.drawable.ic_hat, "#E1F5EE"),
+        Theme(0, "수강신청 가이드", "전공필수와 선택과목 균형있게 설계하기", "course_registration", R.drawable.ic_hat, "#E1F5EE"),
         Theme(0, "나의 취업·진로 로드맵", "인턴십, 자격증, 포트폴리오 뭐 부터 하지?", "career", R.drawable.ic_bag, "#E6F1FB"),
         Theme(0, "교환학생·해외 인턴십 가이드", "나한테 필요할까? 시기는 언제로 가야하지?", "exchange", R.drawable.ic_plane, "#EAF3DE"),
         Theme(0, "국가 지원 사업 신청하기", "내가 신청할 수 있는 국가 사업 알아보기", "grant", R.drawable.ic_donate, "#FAEEDA"),

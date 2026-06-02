@@ -122,6 +122,205 @@
                         android:textSize="16sp" />
                 </LinearLayout>
 
+                <!-- 수강신청 과목 추천 섹션 -->
+                <LinearLayout
+                    android:id="@+id/layout_course_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="수강 과목 권장 사항"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:text="관심분야 추천 과목"
+                            android:textColor="@color/font_color1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            android:text="관심분야 관련 수업 추천"
+                            android:textColor="#888888"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:id="@+id/container_interest_courses"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="16dp"
+                            android:background="#F0F0F0" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:text="지난학기 맞춤형"
+                            android:textColor="@color/font_color1"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/pretendard_regular"
+                            android:text="이전학기 수강과목을 토대로 연달아 듣기 좋은 과목 추천"
+                            android:textColor="#888888"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:id="@+id/container_linked_courses"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 취업 로드맵 섹션 -->
+                <LinearLayout
+                    android:id="@+id/layout_career_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="현재 취업 준비도 평가"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_assessment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="단계별 로드맵"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_roadmap"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp" />
+
+                </LinearLayout>
+
+                <!-- 교환학생 가이드 섹션 -->
+                <LinearLayout
+                    android:id="@+id/layout_exchange_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="나에게 필요한 선택형?"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_necessity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="판단 기준"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_evaluation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="지금 시점 추천"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_current_recommendation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp" />
+
+                </LinearLayout>
+
                 <!-- 주요 내용 (guide + checklist 아이템, API에 없으면 숨김) -->
                 <LinearLayout
                     android:id="@+id/layout_content_section"
