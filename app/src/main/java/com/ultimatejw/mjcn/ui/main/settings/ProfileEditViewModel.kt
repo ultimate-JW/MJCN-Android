@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ultimatejw.mjcn.data.remote.dto.course.CourseListDto
 import com.ultimatejw.mjcn.data.remote.dto.course.CourseOfferingDto
+import com.ultimatejw.mjcn.data.remote.dto.course.CourseScheduleDto
 import com.ultimatejw.mjcn.data.remote.dto.profile.ProfileResponse
 import com.ultimatejw.mjcn.domain.repository.CourseHistoryRepository
 import com.ultimatejw.mjcn.domain.repository.CoursesRepository
@@ -15,6 +16,7 @@ import com.ultimatejw.mjcn.ui.auth.signup.Course
 import com.ultimatejw.mjcn.ui.auth.signup.SelectedCourse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,10 +111,19 @@ class ProfileEditViewModel @Inject constructor(
         val existing = if (offeringId != null) findCurrentCourseByOfferingId(offeringId)
                        else findCurrentCourse(name)
         if (existing == null) {
+            // 같은 과목의 다른 분반이 있으면 제거 후 새 분반 추가
+            if (offeringId != null) {
+                selectedCurrentCourses.removeAll { it.name == name && it.offeringId != offeringId }
+                originalEnrolledOfferingIds.remove(offeringId)
+            }
             selectedCurrentCourses.add(SelectedCourse(name = name, meta = meta, offeringId = offeringId))
         } else {
-            if (offeringId != null) selectedCurrentCourses.removeAll { it.offeringId == offeringId }
-            else selectedCurrentCourses.removeAll { it.name == name }
+            if (offeringId != null) {
+                selectedCurrentCourses.removeAll { it.offeringId == offeringId }
+                originalEnrolledOfferingIds.remove(offeringId)
+            } else {
+                selectedCurrentCourses.removeAll { it.name == name }
+            }
         }
     }
 
@@ -129,8 +140,19 @@ class ProfileEditViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             if (query.isNotBlank()) delay(300)
-            coursesRepository.searchCourses(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
-                .onSuccess { _courseSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+            val q = query.takeIf { it.isNotBlank() }
+            val majorDeferred = async { coursesRepository.searchCourses(query = q, category = "전공필수", pageSize = 300) }
+            val electiveDeferred = async { coursesRepository.searchCourses(query = q, category = "전공선택", pageSize = 300) }
+            val liberalCategories = listOf("공통교양", "핵심교양", "학문기초교양", "일반교양", "자유선택")
+            val liberalDeferreds = liberalCategories.map { cat ->
+                async { coursesRepository.searchCourses(query = q, category = cat, pageSize = 300) }
+            }
+            val combined = buildList {
+                majorDeferred.await().onSuccess { addAll(it.results.map { dto -> dto.toCourse() }) }
+                electiveDeferred.await().onSuccess { addAll(it.results.map { dto -> dto.toCourse() }) }
+                liberalDeferreds.forEach { it.await().onSuccess { res -> addAll(res.results.map { dto -> dto.toCourse() }) } }
+            }
+            if (combined.isNotEmpty()) _courseSearchResults.value = combined
         }
     }
 
@@ -138,8 +160,19 @@ class ProfileEditViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             if (query.isNotBlank()) delay(300)
-            coursesRepository.searchOfferings(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
-                .onSuccess { _offeringSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+            val q = query.takeIf { it.isNotBlank() }
+            val allOfferings = mutableListOf<CourseOfferingDto>()
+            var page = 1
+            while (true) {
+                val result = coursesRepository.searchOfferings(query = q, page = page, pageSize = 300)
+                val data = result.getOrNull() ?: break
+                allOfferings.addAll(data.results)
+                if (data.next == null) break
+                page++
+            }
+            if (allOfferings.isNotEmpty()) {
+                _offeringSearchResults.value = allOfferings.map { it.toCourse() }
+            }
         }
     }
 
@@ -151,14 +184,111 @@ class ProfileEditViewModel @Inject constructor(
         return Course(name = name, meta = meta, code = courseCode, category = category)
     }
 
+    private val offeringScheduleMap = mutableMapOf<Int, List<CourseScheduleDto>>()
+
     private fun CourseOfferingDto.toCourse(): Course {
-        val schedule = schedules.firstOrNull()
-        val timePart = schedule?.let { "${it.dayOfWeek} ${it.startTime.take(5)}" }.orEmpty()
+        offeringScheduleMap[id] = schedules
+        val timePart = schedules.joinToString(" · ") {
+            "${it.dayOfWeek} ${it.startTime.take(5)}~${it.endTime.take(5)}"
+        }
         val meta = listOfNotNull(
             professor?.takeIf { it.isNotBlank() },
             timePart.takeIf { it.isNotBlank() }
         ).joinToString(" · ").ifEmpty { category }
         return Course(name = name, meta = meta, code = courseCode, offeringId = id, category = category)
+    }
+
+    fun hasTimeConflict(offeringId: Int): Boolean {
+        val candidate = offeringScheduleMap[offeringId] ?: return false
+        val selectedIds = selectedCurrentCourses.mapNotNull { it.offeringId }
+            .filter { it != offeringId }
+        return selectedIds.any { selectedId ->
+            val selected = offeringScheduleMap[selectedId] ?: return@any false
+            candidate.any { cs ->
+                selected.any { ss ->
+                    cs.dayOfWeek == ss.dayOfWeek && cs.startTime < ss.endTime && ss.startTime < cs.endTime
+                }
+            }
+        }
+    }
+
+    // ── Course history prefill ───────────────────────────────────────────────
+    private val originalCourseHistoryIds = mutableListOf<Int>()
+
+    private val _courseHistoryLoaded = MutableStateFlow(false)
+    val courseHistoryLoaded: StateFlow<Boolean> = _courseHistoryLoaded.asStateFlow()
+
+    fun loadCourseHistory() {
+        _courseHistoryLoaded.value = false
+        viewModelScope.launch {
+            profileRepository.getProfile().onSuccess { profile ->
+                selectedCourseHistory.clear()
+                originalCourseHistoryIds.clear()
+                profile.courseHistories?.forEach { dto ->
+                    originalCourseHistoryIds.add(dto.id)
+                    selectedCourseHistory.add(
+                        SelectedCourse(
+                            name = dto.courseName,
+                            meta = dto.category,
+                            courseCode = dto.courseCode,
+                            grade = dto.gradeReceived,
+                            year = dto.year,
+                            semester = dto.semester
+                        )
+                    )
+                }
+            }
+            _courseHistoryLoaded.value = true
+        }
+    }
+
+    // ── Current courses prefill ──────────────────────────────────────────────
+    private val courseNameToEnrollmentId = mutableMapOf<String, Int>()
+    private val originalEnrolledOfferingIds = mutableSetOf<Int>()
+
+    fun isOriginalEnrollment(offeringId: Int): Boolean = offeringId in originalEnrolledOfferingIds
+
+    private val _currentCoursesLoaded = MutableStateFlow(false)
+    val currentCoursesLoaded: StateFlow<Boolean> = _currentCoursesLoaded.asStateFlow()
+
+    fun loadCurrentCourses() {
+        _currentCoursesLoaded.value = false
+        viewModelScope.launch {
+            profileRepository.getProfile().onSuccess { profile ->
+                selectedCurrentCourses.clear()
+                courseNameToEnrollmentId.clear()
+                originalEnrolledOfferingIds.clear()
+                profile.currentCourses?.forEach { dto ->
+                    courseNameToEnrollmentId[dto.courseName] = dto.id
+                    val offeringId = dto.offeringId ?: dto.id
+                    originalEnrolledOfferingIds.add(offeringId)
+                    // offerings 페이지네이션 완료 전에도 시간 충돌 판단이 되도록 미리 채움
+                    // (offerings 로딩 완료 시 toCourse()에서 완전한 스케줄로 덮어씌워짐)
+                    if (dto.dayOfWeek != null && dto.startTime != null && dto.endTime != null) {
+                        offeringScheduleMap[offeringId] = listOf(
+                            CourseScheduleDto(dayOfWeek = dto.dayOfWeek, startTime = dto.startTime, endTime = dto.endTime, room = null)
+                        )
+                    }
+                    val timePart = dto.dayOfWeek?.takeIf { it.isNotBlank() }?.let { day ->
+                        val start = dto.startTime?.take(5).orEmpty()
+                        val end = dto.endTime?.take(5).orEmpty()
+                        when {
+                            start.isNotBlank() && end.isNotBlank() -> "$day $start~$end"
+                            start.isNotBlank() -> "$day $start"
+                            else -> day
+                        }
+                    }
+                    val meta = listOfNotNull(
+                        dto.professor?.takeIf { it.isNotBlank() },
+                        timePart
+                    ).joinToString(" · ")
+                    selectedCurrentCourses.add(
+                        SelectedCourse(name = dto.courseName, meta = meta, offeringId = offeringId)
+                    )
+                }
+            }
+            _currentCoursesLoaded.value = true
+        }
     }
 
     // ── Interests prefill ────────────────────────────────────────────────────
@@ -320,6 +450,13 @@ class ProfileEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
+                for (id in originalCourseHistoryIds) {
+                    val result = courseHistoryRepository.deleteCourseHistory(id)
+                    if (result.isFailure) {
+                        _saveResult.send(ProfileSaveResult.Failure(result.exceptionOrNull()?.message ?: "수강이력 저장에 실패했습니다."))
+                        return@launch
+                    }
+                }
                 for (course in selectedCourseHistory) {
                     val year = course.year ?: continue
                     val semester = course.semester ?: continue
@@ -334,6 +471,8 @@ class ProfileEditViewModel @Inject constructor(
                         return@launch
                     }
                 }
+                originalCourseHistoryIds.clear()
+                refreshUserFromProfile()
                 _saveResult.send(ProfileSaveResult.Success)
             } finally {
                 _isSaving.value = false
@@ -346,6 +485,13 @@ class ProfileEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
+                for (id in courseNameToEnrollmentId.values) {
+                    val result = currentCourseRepository.deleteCurrentCourse(id)
+                    if (result.isFailure) {
+                        _saveResult.send(ProfileSaveResult.Failure(result.exceptionOrNull()?.message ?: "수강 과목 저장에 실패했습니다."))
+                        return@launch
+                    }
+                }
                 for (course in selectedCurrentCourses) {
                     val offeringId = course.offeringId ?: continue
                     val result = currentCourseRepository.createCurrentCourse(offeringId)
@@ -354,6 +500,7 @@ class ProfileEditViewModel @Inject constructor(
                         return@launch
                     }
                 }
+                refreshUserFromProfile()
                 _saveResult.send(ProfileSaveResult.Success)
             } finally {
                 _isSaving.value = false

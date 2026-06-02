@@ -67,6 +67,7 @@ class ProfileEditCurrentCourseFragment : Fragment() {
         observeViewModel()
         refreshLists()
 
+        viewModel.loadCurrentCourses()
         viewModel.onOfferingQueryChanged("")
     }
 
@@ -96,17 +97,33 @@ class ProfileEditCurrentCourseFragment : Fragment() {
     private fun setupRecyclers() {
         courseAdapter = CourseAdapter(
             onAddClick = { course ->
-                viewModel.toggleCurrentCourse(course.name, course.meta, course.offeringId)
+                val id = course.offeringId ?: return@CourseAdapter
+                // 비활성화된 과목은 버튼 동작 안 함
+                if (viewModel.isOriginalEnrollment(id)) return@CourseAdapter
+                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
+                if (!isSelected) {
+                    val sameCourseSelected = viewModel.selectedCurrentCourses
+                        .any { it.name == course.name && it.offeringId != null }
+                    if (sameCourseSelected || viewModel.hasTimeConflict(id)) return@CourseAdapter
+                }
+                viewModel.toggleCurrentCourse(course.name, course.meta, id)
                 refreshLists()
             },
             selectionProvider = { course ->
-                if (course.offeringId != null) viewModel.findCurrentCourseByOfferingId(course.offeringId)
-                else viewModel.findCurrentCourse(course.name)
+                val id = course.offeringId ?: return@CourseAdapter viewModel.findCurrentCourse(course.name)
+                if (viewModel.isOriginalEnrollment(id)) null  // 기존 수강 = 포커스 없음
+                else viewModel.findCurrentCourseByOfferingId(id)
             },
             disabledProvider = { course ->
-                course.offeringId != null &&
-                viewModel.selectedCurrentCourses.any { it.name == course.name } &&
-                viewModel.findCurrentCourseByOfferingId(course.offeringId) == null
+                val id = course.offeringId ?: return@CourseAdapter false
+                if (viewModel.isOriginalEnrollment(id)) return@CourseAdapter true  // 기존 수강 = 비활
+                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
+                if (isSelected) false
+                else {
+                    val sameCourseSelected = viewModel.selectedCurrentCourses
+                        .any { it.name == course.name && it.offeringId != null }
+                    sameCourseSelected || viewModel.hasTimeConflict(id)
+                }
             },
             showGradeOnSelect = false
         )
@@ -150,6 +167,11 @@ class ProfileEditCurrentCourseFragment : Fragment() {
                     viewModel.offeringSearchResults.collect { list ->
                         fullOfferingList = list
                         applyFilter()
+                    }
+                }
+                launch {
+                    viewModel.currentCoursesLoaded.collect { loaded ->
+                        if (loaded) refreshLists()
                     }
                 }
                 launch {

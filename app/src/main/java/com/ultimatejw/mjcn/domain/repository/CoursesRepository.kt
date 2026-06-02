@@ -7,6 +7,7 @@ import com.ultimatejw.mjcn.data.remote.dto.course.PaginatedDto
 interface CoursesRepository {
     suspend fun searchCourses(
         query: String? = null,
+        category: String? = null,
         page: Int = 1,
         pageSize: Int = 50
     ): Result<PaginatedDto<CourseListDto>>

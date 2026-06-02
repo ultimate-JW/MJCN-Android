@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import com.ultimatejw.mjcn.data.local.TokenStore
 import com.ultimatejw.mjcn.data.remote.dto.course.CourseListDto
 import com.ultimatejw.mjcn.data.remote.dto.course.CourseOfferingDto
+import com.ultimatejw.mjcn.data.remote.dto.course.CourseScheduleDto
 import com.ultimatejw.mjcn.data.repository.AuthApiException
 import com.ultimatejw.mjcn.domain.repository.AuthRepository
 import com.ultimatejw.mjcn.domain.repository.CourseHistoryRepository
@@ -17,6 +18,7 @@ import com.ultimatejw.mjcn.domain.repository.InterestRepository
 import com.ultimatejw.mjcn.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,13 +101,25 @@ class SignUpViewModel @Inject constructor(
     val offeringSearchResults: StateFlow<List<Course>> = _offeringSearchResults.asStateFlow()
 
     private var searchJob: Job? = null
+    private val offeringScheduleMap = mutableMapOf<Int, List<CourseScheduleDto>>()
 
     fun onCourseQueryChanged(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             if (query.isNotBlank()) delay(300)
-            coursesRepository.searchCourses(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
-                .onSuccess { _courseSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+            val q = query.takeIf { it.isNotBlank() }
+            val majorDeferred = async { coursesRepository.searchCourses(query = q, category = "전공필수", pageSize = 300) }
+            val electiveDeferred = async { coursesRepository.searchCourses(query = q, category = "전공선택", pageSize = 300) }
+            val liberalCategories = listOf("공통교양", "핵심교양", "학문기초교양", "일반교양", "자유선택")
+            val liberalDeferreds = liberalCategories.map { cat ->
+                async { coursesRepository.searchCourses(query = q, category = cat, pageSize = 300) }
+            }
+            val combined = buildList {
+                majorDeferred.await().onSuccess { addAll(it.results.map { dto -> dto.toCourse() }) }
+                electiveDeferred.await().onSuccess { addAll(it.results.map { dto -> dto.toCourse() }) }
+                liberalDeferreds.forEach { it.await().onSuccess { res -> addAll(res.results.map { dto -> dto.toCourse() }) } }
+            }
+            if (combined.isNotEmpty()) _courseSearchResults.value = combined
         }
     }
 
@@ -113,8 +127,32 @@ class SignUpViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             if (query.isNotBlank()) delay(300)
-            coursesRepository.searchOfferings(query = query.takeIf { it.isNotBlank() }, pageSize = 300)
-                .onSuccess { _offeringSearchResults.value = it.results.map { dto -> dto.toCourse() } }
+            val q = query.takeIf { it.isNotBlank() }
+            val allOfferings = mutableListOf<CourseOfferingDto>()
+            var page = 1
+            while (true) {
+                val result = coursesRepository.searchOfferings(query = q, page = page, pageSize = 300)
+                val data = result.getOrNull() ?: break
+                allOfferings.addAll(data.results)
+                if (data.next == null) break
+                page++
+            }
+            if (allOfferings.isNotEmpty()) {
+                _offeringSearchResults.value = allOfferings.map { it.toCourse() }
+            }
+        }
+    }
+
+    fun hasTimeConflict(offeringId: Int): Boolean {
+        val candidate = offeringScheduleMap[offeringId] ?: return false
+        val selectedIds = selectedCurrentCourses.mapNotNull { it.offeringId }.filter { it != offeringId }
+        return selectedIds.any { selectedId ->
+            val selected = offeringScheduleMap[selectedId] ?: return@any false
+            candidate.any { cs ->
+                selected.any { ss ->
+                    cs.dayOfWeek == ss.dayOfWeek && cs.startTime < ss.endTime && ss.startTime < cs.endTime
+                }
+            }
         }
     }
 
@@ -124,8 +162,8 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun CourseOfferingDto.toCourse(): Course {
-        val schedule = schedules.firstOrNull()
-        val timePart = schedule?.let { "${it.dayOfWeek} ${it.startTime.take(5)}" }.orEmpty()
+        offeringScheduleMap[id] = schedules
+        val timePart = schedules.joinToString(" · ") { "${it.dayOfWeek} ${it.startTime.take(5)}~${it.endTime.take(5)}" }
         val meta = listOfNotNull(professor?.takeIf { it.isNotBlank() }, timePart.takeIf { it.isNotBlank() })
             .joinToString(" · ").ifEmpty { category }
         return Course(name = name, meta = meta, code = courseCode, offeringId = id, category = category)

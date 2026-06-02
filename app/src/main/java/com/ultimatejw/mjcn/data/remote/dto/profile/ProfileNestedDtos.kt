@@ -21,8 +21,12 @@ data class CourseHistoryDto(
 
 data class CurrentCourseDto(
     @SerializedName("id") val id: Int,
+    @SerializedName("offering_id") val offeringId: Int? = null,
     @SerializedName("course_name") val courseName: String,
     @SerializedName("course_code") val courseCode: String,
-    @SerializedName("day_of_week") val dayOfWeek: String,
-    @SerializedName("professor") val professor: String
+    @SerializedName("day_of_week") val dayOfWeek: String? = null,
+    @SerializedName("start_time") val startTime: String? = null,
+    @SerializedName("end_time") val endTime: String? = null,
+    @SerializedName("professor") val professor: String? = null,
+    @SerializedName("room") val room: String? = null
 )

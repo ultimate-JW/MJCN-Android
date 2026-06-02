@@ -56,14 +56,17 @@ class SignUpStep5Fragment : Fragment() {
     private fun setupRecyclers() {
         courseAdapter = CourseAdapter(
             onAddClick = { course ->
-                val existing = if (course.offeringId != null)
-                    viewModel.findCurrentCourseByOfferingId(course.offeringId)
-                else
-                    viewModel.findCurrentCourse(course.name)
-                if (existing == null) {
-                    viewModel.addCurrentCourse(course.name, course.meta, course.offeringId)
+                val id = course.offeringId ?: return@CourseAdapter
+                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
+                if (!isSelected) {
+                    val sameCourseSelected = viewModel.selectedCurrentCourses
+                        .any { it.name == course.name && it.offeringId != null }
+                    if (sameCourseSelected || viewModel.hasTimeConflict(id)) return@CourseAdapter
+                }
+                if (viewModel.findCurrentCourseByOfferingId(id) == null) {
+                    viewModel.addCurrentCourse(course.name, course.meta, id)
                 } else {
-                    viewModel.removeCurrentCourse(course.name, course.offeringId)
+                    viewModel.removeCurrentCourse(course.name, id)
                 }
                 refreshLists()
             },
@@ -72,9 +75,14 @@ class SignUpStep5Fragment : Fragment() {
                 else viewModel.findCurrentCourse(course.name)
             },
             disabledProvider = { course ->
-                course.offeringId != null &&
-                viewModel.selectedCurrentCourses.any { it.name == course.name } &&
-                viewModel.findCurrentCourseByOfferingId(course.offeringId) == null
+                val id = course.offeringId ?: return@CourseAdapter false
+                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
+                if (isSelected) false
+                else {
+                    val sameCourseSelected = viewModel.selectedCurrentCourses
+                        .any { it.name == course.name && it.offeringId != null }
+                    sameCourseSelected || viewModel.hasTimeConflict(id)
+                }
             },
             showGradeOnSelect = false
         )

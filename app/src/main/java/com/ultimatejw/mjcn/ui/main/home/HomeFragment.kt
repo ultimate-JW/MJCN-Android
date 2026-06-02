@@ -55,6 +55,11 @@ class HomeFragment : Fragment() {
         observeViewModel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.refresh()
+    }
+
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setColorSchemeColors(
             ContextCompat.getColor(requireContext(), R.color.point_color1)

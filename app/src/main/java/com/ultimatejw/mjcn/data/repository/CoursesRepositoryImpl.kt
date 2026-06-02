@@ -13,10 +13,11 @@ class CoursesRepositoryImpl @Inject constructor(
 
     override suspend fun searchCourses(
         query: String?,
+        category: String?,
         page: Int,
         pageSize: Int
     ): Result<PaginatedDto<CourseListDto>> = runCatching {
-        val response = api.getCourses(query = query, page = page, pageSize = pageSize)
+        val response = api.getCourses(query = query, category = category, page = page, pageSize = pageSize)
         if (!response.isSuccessful) {
             throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
         }

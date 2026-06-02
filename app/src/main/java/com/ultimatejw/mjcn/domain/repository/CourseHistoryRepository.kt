@@ -7,4 +7,6 @@ interface CourseHistoryRepository {
         semester: Int,
         gradeReceived: String = ""
     ): Result<Unit>
+
+    suspend fun deleteCourseHistory(id: Int): Result<Unit>
 }

@@ -21,6 +21,7 @@ import com.ultimatejw.mjcn.domain.usecase.home.GetDashboardUseCase
 import com.ultimatejw.mjcn.domain.usecase.user.ObserveCurrentUserUseCase
 import com.ultimatejw.mjcn.ui.common.CurrentUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -74,8 +75,17 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refresh() {
+        reloadUser()
         loadDashboard()
         loadThemes()
+    }
+
+    fun reloadUser() {
+        viewModelScope.launch {
+            val user = observeCurrentUser().first()
+            if (user != null) CurrentUser.update(user)
+            _uiState.value = _uiState.value!!.copy(currentUser = user)
+        }
     }
 
     private fun loadThemes() {
@@ -106,8 +116,7 @@ class HomeViewModel @Inject constructor(
                     rawInfoList = data.infoList
                     _uiState.value = _uiState.value!!.copy(
                         dashboardUserName = data.userName,
-                        // TODO: API 연결 시 data.todayClasses로 교체
-                        todayClasses = dummyTodayClasses(),
+                        todayClasses = data.todayClasses,
                         noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) },
                         infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) },
                         courseCount = data.unreadNotificationCount,

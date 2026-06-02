@@ -27,4 +27,11 @@ class CourseHistoryRepositoryImpl @Inject constructor(
             throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
         }
     }
+
+    override suspend fun deleteCourseHistory(id: Int): Result<Unit> = runCatching {
+        val response = api.deleteCourseHistory(id)
+        if (!response.isSuccessful) {
+            throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
+        }
+    }
 }

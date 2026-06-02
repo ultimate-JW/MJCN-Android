@@ -67,6 +67,7 @@ class ProfileEditCourseFragment : Fragment() {
         observeViewModel()
         refreshLists()
 
+        viewModel.loadCourseHistory()
         viewModel.onCourseQueryChanged("")
     }
 
@@ -144,6 +145,11 @@ class ProfileEditCourseFragment : Fragment() {
                     viewModel.courseSearchResults.collect { list ->
                         fullCourseList = list
                         applyFilter()
+                    }
+                }
+                launch {
+                    viewModel.courseHistoryLoaded.collect { loaded ->
+                        if (loaded) refreshLists()
                     }
                 }
                 launch {

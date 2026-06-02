@@ -15,4 +15,11 @@ class CurrentCourseRepositoryImpl @Inject constructor(
             throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
         }
     }
+
+    override suspend fun deleteCurrentCourse(id: Int): Result<Unit> = runCatching {
+        val response = api.deleteCurrentCourse(id)
+        if (!response.isSuccessful) {
+            throw AuthApiException(response.code(), response.errorBody()?.string().orEmpty())
+        }
+    }
 }

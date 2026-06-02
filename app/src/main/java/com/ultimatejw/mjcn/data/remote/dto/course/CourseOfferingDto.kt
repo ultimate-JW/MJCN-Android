@@ -16,7 +16,7 @@ data class CourseOfferingDto(
     @SerializedName("section_no") val sectionNo: String,
     @SerializedName("course_code") val courseCode: String,
     @SerializedName("name") val name: String,
-    @SerializedName("college") val college: String,
+    @SerializedName("college") val college: String? = null,
     @SerializedName("department") val department: String? = null,
     @SerializedName("major") val major: String? = null,
     @SerializedName("category") val category: String,
