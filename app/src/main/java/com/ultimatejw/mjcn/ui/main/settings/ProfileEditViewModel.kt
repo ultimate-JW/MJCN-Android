@@ -426,6 +426,16 @@ class ProfileEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
+                // 기존 관심분야 전체 삭제
+                val existing = interestRepository.listInterests().getOrElse { emptyList() }
+                for ((id, _) in existing) {
+                    val result = interestRepository.deleteInterest(id)
+                    if (result.isFailure) {
+                        _saveResult.send(ProfileSaveResult.Failure(result.exceptionOrNull()?.message ?: "기존 관심분야 삭제에 실패했습니다."))
+                        return@launch
+                    }
+                }
+                // 선택된 관심분야 저장
                 for (label in selectedInterests) {
                     val isOther = label == OTHER_INTEREST_LABEL
                     val result = interestRepository.createInterest(

@@ -111,7 +111,10 @@ class LoginViewModel @Inject constructor(
                         grade = profile.grade ?: 0,
                         semester = profile.semester ?: 0,
                         graduationYear = profile.graduationYear,
-                        interests = emptyList(),
+                        interests = profile.interests?.map { dto ->
+                            if (dto.category == "기타" && !dto.customText.isNullOrBlank()) dto.customText
+                            else dto.category
+                        } ?: emptyList(),
                         entranceYear = profile.admissionYear,
                         major = profile.major?.split(" · ")?.lastOrNull()?.trim(),
                         graduationDate = if (profile.graduationYear != null && profile.graduationMonth != null)
