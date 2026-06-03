@@ -20,10 +20,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -99,40 +103,85 @@ class ProfileEditViewModel @Inject constructor(
     }
 
     // ── Current courses (현재 수강과목) ────────────────────────────────────
-    val selectedCurrentCourses = mutableListOf<SelectedCourse>()
 
-    fun findCurrentCourse(name: String): SelectedCourse? =
-        selectedCurrentCourses.firstOrNull { it.name == name }
-
-    fun findCurrentCourseByOfferingId(offeringId: Int): SelectedCourse? =
-        selectedCurrentCourses.firstOrNull { it.offeringId == offeringId }
-
-    fun toggleCurrentCourse(name: String, meta: String, offeringId: Int?) {
-        val existing = if (offeringId != null) findCurrentCourseByOfferingId(offeringId)
-                       else findCurrentCourse(name)
-        if (existing == null) {
-            // 같은 과목의 다른 분반이 있으면 제거 후 새 분반 추가
-            if (offeringId != null) {
-                selectedCurrentCourses.removeAll { it.name == name && it.offeringId != offeringId }
-                originalEnrolledOfferingIds.remove(offeringId)
-            }
-            selectedCurrentCourses.add(SelectedCourse(name = name, meta = meta, offeringId = offeringId))
-        } else {
-            if (offeringId != null) {
-                selectedCurrentCourses.removeAll { it.offeringId == offeringId }
-                originalEnrolledOfferingIds.remove(offeringId)
-            } else {
-                selectedCurrentCourses.removeAll { it.name == name }
-            }
-        }
+    private data class OfferingInfo(
+        val offeringId: Int,
+        val courseCode: String,
+        val courseName: String,
+        val category: String,
+        val meta: String,
+        val schedules: List<CourseScheduleDto>
+    ) {
+        fun toCourse() = Course(name = courseName, meta = meta, code = courseCode, offeringId = offeringId, category = category)
+        fun toSelectedCourse() = SelectedCourse(name = courseName, meta = meta, offeringId = offeringId)
     }
 
-    // ── Course API search ────────────────────────────────────────────────────
+    // 서버 기록 (삭제용): enrollmentId to offeringId
+    private var originalEnrollments: List<Pair<Int, Int>> = emptyList()
+
+    private val _selectedOfferingIds = MutableStateFlow<Set<Int>>(emptySet())
+    val selectedOfferingIds: StateFlow<Set<Int>> = _selectedOfferingIds.asStateFlow()
+
+    private val _disabledOfferingIds = MutableStateFlow<Set<Int>>(emptySet())
+    val disabledOfferingIds: StateFlow<Set<Int>> = _disabledOfferingIds.asStateFlow()
+
+    private val _allOfferingInfos = MutableStateFlow<List<OfferingInfo>>(emptyList())
+
+    private val _currentCourseQuery = MutableStateFlow("")
+
+    val offeringItems: StateFlow<List<Course>> = combine(
+        _allOfferingInfos, _currentCourseQuery
+    ) { all, query ->
+        if (query.isBlank()) all
+        else all.filter { it.courseName.contains(query, ignoreCase = true) || it.courseCode.contains(query, ignoreCase = true) }
+    }.map { list -> list.map { it.toCourse() } }
+     .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val selectedOfferingItems: StateFlow<List<SelectedCourse>> = combine(
+        _selectedOfferingIds, _allOfferingInfos
+    ) { ids, all ->
+        all.filter { it.offeringId in ids }.map { it.toSelectedCourse() }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    private val _currentCoursesLoading = MutableStateFlow(true)
+    val currentCoursesLoading: StateFlow<Boolean> = _currentCoursesLoading.asStateFlow()
+
+    fun toggleOffering(offeringId: Int) {
+        val current = _selectedOfferingIds.value.toMutableSet()
+        if (offeringId in current) current.remove(offeringId) else current.add(offeringId)
+        _selectedOfferingIds.value = current
+        recomputeDisabled()
+    }
+
+    fun onCurrentCourseSearchChanged(query: String) {
+        _currentCourseQuery.value = query
+    }
+
+    private fun recomputeDisabled() {
+        val selected = _selectedOfferingIds.value
+        val all = _allOfferingInfos.value
+        val selectedInfos = all.filter { it.offeringId in selected }
+        val selectedCourseCodes = selectedInfos.map { it.courseCode }.toSet()
+        val selectedSchedules = selectedInfos.flatMap { it.schedules }
+        _disabledOfferingIds.value = all.asSequence()
+            .filter { it.offeringId !in selected }
+            .filter { o ->
+                o.courseCode in selectedCourseCodes ||
+                o.schedules.any { s ->
+                    selectedSchedules.any { ss ->
+                        s.dayOfWeek == ss.dayOfWeek &&
+                        s.startTime < ss.endTime &&
+                        ss.startTime < s.endTime
+                    }
+                }
+            }
+            .map { it.offeringId }
+            .toSet()
+    }
+
+    // ── Course API search (수강이력용) ──────────────────────────────────────
     private val _courseSearchResults = MutableStateFlow<List<Course>>(emptyList())
     val courseSearchResults: StateFlow<List<Course>> = _courseSearchResults.asStateFlow()
-
-    private val _offeringSearchResults = MutableStateFlow<List<Course>>(emptyList())
-    val offeringSearchResults: StateFlow<List<Course>> = _offeringSearchResults.asStateFlow()
 
     private var searchJob: Job? = null
 
@@ -156,60 +205,12 @@ class ProfileEditViewModel @Inject constructor(
         }
     }
 
-    fun onOfferingQueryChanged(query: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            if (query.isNotBlank()) delay(300)
-            val q = query.takeIf { it.isNotBlank() }
-            val allOfferings = mutableListOf<CourseOfferingDto>()
-            var page = 1
-            while (true) {
-                val result = coursesRepository.searchOfferings(query = q, page = page, pageSize = 300)
-                val data = result.getOrNull() ?: break
-                allOfferings.addAll(data.results)
-                if (data.next == null) break
-                page++
-            }
-            if (allOfferings.isNotEmpty()) {
-                _offeringSearchResults.value = allOfferings.map { it.toCourse() }
-            }
-        }
-    }
-
     private fun CourseListDto.toCourse(): Course {
         val meta = listOfNotNull(college, department, major)
             .filter { it.isNotBlank() }
             .joinToString(" · ")
             .ifEmpty { category }
         return Course(name = name, meta = meta, code = courseCode, category = category)
-    }
-
-    private val offeringScheduleMap = mutableMapOf<Int, List<CourseScheduleDto>>()
-
-    private fun CourseOfferingDto.toCourse(): Course {
-        offeringScheduleMap[id] = schedules
-        val timePart = schedules.joinToString(" · ") {
-            "${it.dayOfWeek} ${it.startTime.take(5)}~${it.endTime.take(5)}"
-        }
-        val meta = listOfNotNull(
-            professor?.takeIf { it.isNotBlank() },
-            timePart.takeIf { it.isNotBlank() }
-        ).joinToString(" · ").ifEmpty { category }
-        return Course(name = name, meta = meta, code = courseCode, offeringId = id, category = category)
-    }
-
-    fun hasTimeConflict(offeringId: Int): Boolean {
-        val candidate = offeringScheduleMap[offeringId] ?: return false
-        val selectedIds = selectedCurrentCourses.mapNotNull { it.offeringId }
-            .filter { it != offeringId }
-        return selectedIds.any { selectedId ->
-            val selected = offeringScheduleMap[selectedId] ?: return@any false
-            candidate.any { cs ->
-                selected.any { ss ->
-                    cs.dayOfWeek == ss.dayOfWeek && cs.startTime < ss.endTime && ss.startTime < cs.endTime
-                }
-            }
-        }
     }
 
     // ── Course history prefill ───────────────────────────────────────────────
@@ -242,52 +243,49 @@ class ProfileEditViewModel @Inject constructor(
         }
     }
 
-    // ── Current courses prefill ──────────────────────────────────────────────
-    private val courseNameToEnrollmentId = mutableMapOf<String, Int>()
-    private val originalEnrolledOfferingIds = mutableSetOf<Int>()
-
-    fun isOriginalEnrollment(offeringId: Int): Boolean = offeringId in originalEnrolledOfferingIds
-
-    private val _currentCoursesLoaded = MutableStateFlow(false)
-    val currentCoursesLoaded: StateFlow<Boolean> = _currentCoursesLoaded.asStateFlow()
-
+    // ── Current courses 로드 ─────────────────────────────────────────────────
     fun loadCurrentCourses() {
-        _currentCoursesLoaded.value = false
         viewModelScope.launch {
+            _currentCoursesLoading.value = true
+
+            // 1. 기존 enrollment 로드 (프로필 API)
+            // current_courses.id == offering_id (서버 설계)
             profileRepository.getProfile().onSuccess { profile ->
-                selectedCurrentCourses.clear()
-                courseNameToEnrollmentId.clear()
-                originalEnrolledOfferingIds.clear()
-                profile.currentCourses?.forEach { dto ->
-                    courseNameToEnrollmentId[dto.courseName] = dto.id
-                    val offeringId = dto.offeringId ?: dto.id
-                    originalEnrolledOfferingIds.add(offeringId)
-                    // offerings 페이지네이션 완료 전에도 시간 충돌 판단이 되도록 미리 채움
-                    // (offerings 로딩 완료 시 toCourse()에서 완전한 스케줄로 덮어씌워짐)
-                    if (dto.dayOfWeek != null && dto.startTime != null && dto.endTime != null) {
-                        offeringScheduleMap[offeringId] = listOf(
-                            CourseScheduleDto(dayOfWeek = dto.dayOfWeek, startTime = dto.startTime, endTime = dto.endTime, room = null)
-                        )
-                    }
-                    val timePart = dto.dayOfWeek?.takeIf { it.isNotBlank() }?.let { day ->
-                        val start = dto.startTime?.take(5).orEmpty()
-                        val end = dto.endTime?.take(5).orEmpty()
-                        when {
-                            start.isNotBlank() && end.isNotBlank() -> "$day $start~$end"
-                            start.isNotBlank() -> "$day $start"
-                            else -> day
-                        }
-                    }
-                    val meta = listOfNotNull(
-                        dto.professor?.takeIf { it.isNotBlank() },
-                        timePart
-                    ).joinToString(" · ")
-                    selectedCurrentCourses.add(
-                        SelectedCourse(name = dto.courseName, meta = meta, offeringId = offeringId)
-                    )
-                }
+                originalEnrollments = profile.currentCourses
+                    ?.map { dto -> Pair(dto.id, dto.offeringId ?: dto.id) }
+                    ?: emptyList()
+                _selectedOfferingIds.value = originalEnrollments.map { it.second }.toSet()
             }
-            _currentCoursesLoaded.value = true
+
+            // 2. 전체 분반 목록 1회 로드
+            val allOfferings = mutableListOf<CourseOfferingDto>()
+            var page = 1
+            while (true) {
+                val result = coursesRepository.searchOfferings(query = null, page = page, pageSize = 300)
+                val data = result.getOrNull() ?: break
+                allOfferings.addAll(data.results)
+                if (data.next == null) break
+                page++
+            }
+            _allOfferingInfos.value = allOfferings.map { dto ->
+                val timePart = dto.schedules.joinToString(" · ") {
+                    "${it.dayOfWeek} ${it.startTime.take(5)}~${it.endTime.take(5)}"
+                }
+                val meta = listOfNotNull(
+                    dto.professor?.takeIf { it.isNotBlank() },
+                    timePart.takeIf { it.isNotBlank() }
+                ).joinToString(" · ").ifEmpty { dto.category }
+                OfferingInfo(
+                    offeringId = dto.id,
+                    courseCode = dto.courseCode,
+                    courseName = dto.name,
+                    category = dto.category,
+                    meta = meta,
+                    schedules = dto.schedules
+                )
+            }
+            recomputeDisabled()
+            _currentCoursesLoading.value = false
         }
     }
 
@@ -495,18 +493,19 @@ class ProfileEditViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
-                for (id in courseNameToEnrollmentId.values) {
-                    val result = currentCourseRepository.deleteCurrentCourse(id)
+                // 기존 enrollment 전체 삭제
+                for ((enrollmentId, _) in originalEnrollments) {
+                    val result = currentCourseRepository.deleteCurrentCourse(enrollmentId)
                     if (result.isFailure) {
-                        _saveResult.send(ProfileSaveResult.Failure(result.exceptionOrNull()?.message ?: "수강 과목 저장에 실패했습니다."))
+                        _saveResult.send(ProfileSaveResult.Failure("수강 과목 저장에 실패했습니다."))
                         return@launch
                     }
                 }
-                for (course in selectedCurrentCourses) {
-                    val offeringId = course.offeringId ?: continue
+                // 선택된 offering 저장
+                for (offeringId in _selectedOfferingIds.value) {
                     val result = currentCourseRepository.createCurrentCourse(offeringId)
                     if (result.isFailure) {
-                        _saveResult.send(ProfileSaveResult.Failure(result.exceptionOrNull()?.message ?: "수강 과목 저장에 실패했습니다."))
+                        _saveResult.send(ProfileSaveResult.Failure("수강 과목 저장에 실패했습니다."))
                         return@launch
                     }
                 }

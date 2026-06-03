@@ -18,7 +18,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentSignupStep5Binding
+import com.ultimatejw.mjcn.ui.auth.signup.Course
 import com.ultimatejw.mjcn.ui.auth.signup.CourseAdapter
+import com.ultimatejw.mjcn.ui.auth.signup.SelectedCourse
 import com.ultimatejw.mjcn.ui.auth.signup.SelectedCourseAdapter
 import com.ultimatejw.mjcn.ui.auth.signup.applyTabStyle
 import com.ultimatejw.mjcn.ui.auth.signup.filterByTab
@@ -38,7 +40,11 @@ class ProfileEditCurrentCourseFragment : Fragment() {
     private lateinit var chipAdapter: SelectedCourseAdapter
 
     private var isMajorTab = true
-    private var fullOfferingList: List<com.ultimatejw.mjcn.ui.auth.signup.Course> = emptyList()
+    private var fullOfferingList: List<Course> = emptyList()
+
+    // 최신 상태 캐시 (람다에서 참조)
+    private var currentSelectedIds: Set<Int> = emptySet()
+    private var currentDisabledIds: Set<Int> = emptySet()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,10 +71,17 @@ class ProfileEditCurrentCourseFragment : Fragment() {
         setupButtons()
         setupTabs()
         observeViewModel()
-        refreshLists()
 
         viewModel.loadCurrentCourses()
-        viewModel.onOfferingQueryChanged("")
+    }
+
+    private fun hidePrevButton() {
+        binding.btnPrev.visibility = View.GONE
+        val cs = ConstraintSet()
+        cs.clone(binding.root as ConstraintLayout)
+        cs.connect(R.id.btn_next, ConstraintSet.START, ConstraintLayout.LayoutParams.PARENT_ID, ConstraintSet.START, 0)
+        cs.connect(R.id.rv_courses, ConstraintSet.BOTTOM, R.id.btn_next, ConstraintSet.TOP, 0)
+        cs.applyTo(binding.root as ConstraintLayout)
     }
 
     private fun setupTabs() {
@@ -85,45 +98,22 @@ class ProfileEditCurrentCourseFragment : Fragment() {
         courseAdapter.submit(fullOfferingList.filterByTab(isMajorTab))
     }
 
-    private fun hidePrevButton() {
-        binding.btnPrev.visibility = View.GONE
-        val cs = ConstraintSet()
-        cs.clone(binding.root as ConstraintLayout)
-        cs.connect(R.id.btn_next, ConstraintSet.START, ConstraintLayout.LayoutParams.PARENT_ID, ConstraintSet.START, 0)
-        cs.connect(R.id.rv_courses, ConstraintSet.BOTTOM, R.id.btn_next, ConstraintSet.TOP, 0)
-        cs.applyTo(binding.root as ConstraintLayout)
-    }
-
     private fun setupRecyclers() {
         courseAdapter = CourseAdapter(
             onAddClick = { course ->
                 val id = course.offeringId ?: return@CourseAdapter
-                // 비활성화된 과목은 버튼 동작 안 함
-                if (viewModel.isOriginalEnrollment(id)) return@CourseAdapter
-                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
-                if (!isSelected) {
-                    val sameCourseSelected = viewModel.selectedCurrentCourses
-                        .any { it.name == course.name && it.offeringId != null }
-                    if (sameCourseSelected || viewModel.hasTimeConflict(id)) return@CourseAdapter
-                }
-                viewModel.toggleCurrentCourse(course.name, course.meta, id)
-                refreshLists()
+                if (id in currentDisabledIds) return@CourseAdapter
+                viewModel.toggleOffering(id)
             },
             selectionProvider = { course ->
-                val id = course.offeringId ?: return@CourseAdapter viewModel.findCurrentCourse(course.name)
-                if (viewModel.isOriginalEnrollment(id)) null  // 기존 수강 = 포커스 없음
-                else viewModel.findCurrentCourseByOfferingId(id)
+                val id = course.offeringId ?: return@CourseAdapter null
+                if (id in currentSelectedIds)
+                    SelectedCourse(name = course.name, meta = course.meta, offeringId = id)
+                else null
             },
             disabledProvider = { course ->
                 val id = course.offeringId ?: return@CourseAdapter false
-                if (viewModel.isOriginalEnrollment(id)) return@CourseAdapter true  // 기존 수강 = 비활
-                val isSelected = viewModel.findCurrentCourseByOfferingId(id) != null
-                if (isSelected) false
-                else {
-                    val sameCourseSelected = viewModel.selectedCurrentCourses
-                        .any { it.name == course.name && it.offeringId != null }
-                    sameCourseSelected || viewModel.hasTimeConflict(id)
-                }
+                id in currentDisabledIds
             },
             showGradeOnSelect = false
         )
@@ -132,11 +122,7 @@ class ProfileEditCurrentCourseFragment : Fragment() {
 
         chipAdapter = SelectedCourseAdapter(
             onRemove = { selected ->
-                if (selected.offeringId != null)
-                    viewModel.toggleCurrentCourse(selected.name, selected.meta, selected.offeringId)
-                else
-                    viewModel.toggleCurrentCourse(selected.name, selected.meta, null)
-                refreshLists()
+                selected.offeringId?.let { viewModel.toggleOffering(it) }
             }
         )
         binding.rvSelectedCourses.layoutManager =
@@ -149,7 +135,7 @@ class ProfileEditCurrentCourseFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                viewModel.onOfferingQueryChanged(s?.toString().orEmpty())
+                viewModel.onCurrentCourseSearchChanged(s?.toString().orEmpty())
             }
         })
     }
@@ -163,23 +149,57 @@ class ProfileEditCurrentCourseFragment : Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                // 전체 과목 목록 (검색 필터 포함)
                 launch {
-                    viewModel.offeringSearchResults.collect { list ->
+                    viewModel.offeringItems.collect { list ->
                         fullOfferingList = list
                         applyFilter()
                     }
                 }
+
+                // 선택 상태 변경 → 어댑터 갱신
                 launch {
-                    viewModel.currentCoursesLoaded.collect { loaded ->
-                        if (loaded) refreshLists()
+                    viewModel.selectedOfferingIds.collect { ids ->
+                        currentSelectedIds = ids
+                        courseAdapter.notifyDataSetChanged()
                     }
                 }
+
+                // 비활성화 상태 변경 → 어댑터 갱신
+                launch {
+                    viewModel.disabledOfferingIds.collect { ids ->
+                        currentDisabledIds = ids
+                        courseAdapter.notifyDataSetChanged()
+                    }
+                }
+
+                // 선택된 과목 칩 실시간 업데이트
+                launch {
+                    viewModel.selectedOfferingItems.collect { items ->
+                        binding.rvSelectedCourses.visibility =
+                            if (items.isEmpty()) View.GONE else View.VISIBLE
+                        chipAdapter.submit(items)
+                    }
+                }
+
+                // 로딩 상태
+                launch {
+                    viewModel.currentCoursesLoading.collect { loading ->
+                        if (loading) LoadingDialog.show(childFragmentManager)
+                        else LoadingDialog.hide(childFragmentManager)
+                    }
+                }
+
+                // 저장 중
                 launch {
                     viewModel.isSaving.collect { saving ->
                         if (saving) LoadingDialog.show(childFragmentManager)
                         else LoadingDialog.hide(childFragmentManager)
                     }
                 }
+
+                // 저장 결과
                 launch {
                     viewModel.saveResult.collect { result ->
                         when (result) {
@@ -190,13 +210,6 @@ class ProfileEditCurrentCourseFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun refreshLists() {
-        val chips = viewModel.selectedCurrentCourses.toList()
-        binding.rvSelectedCourses.visibility = if (chips.isEmpty()) View.GONE else View.VISIBLE
-        chipAdapter.submit(chips)
-        courseAdapter.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

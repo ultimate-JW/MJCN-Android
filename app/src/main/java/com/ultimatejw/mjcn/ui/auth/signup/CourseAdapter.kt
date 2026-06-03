@@ -65,15 +65,17 @@ class CourseAdapter(
 
         // 카드 선택 상태 (테두리)
         holder.card.isSelected = isSelected
-        // 비활성화 시 탁하게
+        // 비활성화 시 탁하게 + 터치 불가
         holder.itemView.alpha = if (isDisabled) 0.35f else 1.0f
+        holder.itemView.isClickable = !isDisabled
+        holder.btnAdd.isEnabled = !isDisabled
 
         // + / - 아이콘 전환
         holder.btnAdd.setImageResource(
             if (isSelected) R.drawable.ic_minus_circle else R.drawable.ic_plus_circle
         )
 
-        holder.btnAdd.setOnClickListener { onAddClick(course) }
+        holder.btnAdd.setOnClickListener { if (!isDisabled) onAddClick(course) }
 
         // 연도·학기·성적 드롭다운 (수강이력 모드)
         if (isSelected && showGradeOnSelect) {
