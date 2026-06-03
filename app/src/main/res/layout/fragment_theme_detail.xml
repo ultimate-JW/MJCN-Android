@@ -339,11 +339,21 @@
                         android:textSize="18sp" />
 
                     <LinearLayout
-                        android:id="@+id/container_contest_cards"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:orientation="vertical" />
+                        android:background="@drawable/bg_white_radius12"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="18dp">
+
+                        <LinearLayout
+                            android:id="@+id/container_contest_cards"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

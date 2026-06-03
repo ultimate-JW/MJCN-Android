@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -245,51 +246,54 @@ class ThemeDetailFragment : Fragment() {
         val container = binding.containerNecessity
         container.removeAllViews()
         val dp = resources.displayMetrics.density
-        val primary = ContextCompat.getColor(requireContext(), R.color.primary)
-        val font1 = ContextCompat.getColor(requireContext(), R.color.font_color1)
+        val ctx = requireContext()
+        val primary = ContextCompat.getColor(ctx, R.color.primary)
+        val font1 = ContextCompat.getColor(ctx, R.color.font_color1)
+        val boldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_bold)
+        val regularFont = ResourcesCompat.getFont(ctx, R.font.pretendard_regular)
 
+        val gap = (8 * dp).toInt()
         items.forEachIndexed { index, item ->
-            val headerRow = LinearLayout(requireContext()).apply {
+            val itemCard = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_keypoint_inner_card)
+                setPadding((18 * dp).toInt(), (16 * dp).toInt(), (18 * dp).toInt(), (16 * dp).toInt())
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = if (index == items.lastIndex) 0 else gap }
+            }
+
+            val headerRow = LinearLayout(ctx).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
             }
-            val tvOption = TextView(requireContext()).apply {
+            val tvOption = TextView(ctx).apply {
                 text = "${item.icon} ${item.option}"
                 textSize = 15f
-                setTypeface(typeface, Typeface.BOLD)
+                typeface = boldFont
                 setTextColor(font1)
             }
-            val tvStars = TextView(requireContext()).apply {
+            val tvStars = TextView(ctx).apply {
                 text = scoreToStars(item.score)
                 textSize = 15f
+                typeface = boldFont
                 setTextColor(primary)
             }
-            headerRow.addView(
-                tvOption,
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            )
+            headerRow.addView(tvOption, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
             headerRow.addView(tvStars)
-            container.addView(headerRow)
+            itemCard.addView(headerRow)
 
-            val tvReason = TextView(requireContext()).apply {
+            val tvReason = TextView(ctx).apply {
                 text = item.reason
-                textSize = 13f
+                textSize = 14f
+                typeface = regularFont
                 setTextColor(Color.parseColor("#888888"))
-                setPadding(0, (4 * dp).toInt(), 0, 0)
+                setLineSpacing(4 * dp, 1f)
+                setPadding(0, (6 * dp).toInt(), 0, 0)
             }
-            container.addView(tvReason)
-
-            if (index < items.lastIndex) {
-                val divider = View(requireContext())
-                divider.setBackgroundColor(Color.parseColor("#F0F0F0"))
-                val dlp = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
-                ).apply {
-                    topMargin = (12 * dp).toInt()
-                    bottomMargin = (12 * dp).toInt()
-                }
-                container.addView(divider, dlp)
-            }
+            itemCard.addView(tvReason)
+            container.addView(itemCard)
         }
     }
 
@@ -297,59 +301,66 @@ class ThemeDetailFragment : Fragment() {
         val container = binding.containerEvaluation
         container.removeAllViews()
         val dp = resources.displayMetrics.density
-        val primary = ContextCompat.getColor(requireContext(), R.color.primary)
-        val font1 = ContextCompat.getColor(requireContext(), R.color.font_color1)
+        val ctx = requireContext()
+        val primary = ContextCompat.getColor(ctx, R.color.primary)
+        val font1 = ContextCompat.getColor(ctx, R.color.font_color1)
+        val boldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_bold)
+        val regularFont = ResourcesCompat.getFont(ctx, R.font.pretendard_regular)
 
+        val gap = (8 * dp).toInt()
         items.forEachIndexed { index, item ->
-            val tvHeader = TextView(requireContext()).apply {
+            val itemCard = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_keypoint_inner_card)
+                setPadding((18 * dp).toInt(), (16 * dp).toInt(), (18 * dp).toInt(), (16 * dp).toInt())
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = if (index == items.lastIndex) 0 else gap }
+            }
+
+            val tvHeader = TextView(ctx).apply {
                 text = "${item.icon} ${item.option}"
                 textSize = 15f
-                setTypeface(typeface, Typeface.BOLD)
+                typeface = boldFont
                 setTextColor(font1)
             }
-            container.addView(tvHeader)
+            itemCard.addView(tvHeader)
 
             item.fits.forEach { fit ->
-                val tvFit = TextView(requireContext()).apply {
+                val tvFit = TextView(ctx).apply {
                     text = "• $fit"
-                    textSize = 13f
+                    textSize = 14f
+                    typeface = regularFont
                     setTextColor(font1)
-                    setPadding((4 * dp).toInt(), (3 * dp).toInt(), 0, 0)
+                    setLineSpacing(4 * dp, 1f)
+                    setPadding((4 * dp).toInt(), (4 * dp).toInt(), 0, 0)
                 }
-                container.addView(tvFit)
+                itemCard.addView(tvFit)
             }
 
             item.caveat?.let { caveat ->
-                val tvCaveat = TextView(requireContext()).apply {
+                val tvCaveat = TextView(ctx).apply {
                     text = "※ $caveat"
-                    textSize = 12f
+                    textSize = 13f
+                    typeface = regularFont
                     setTextColor(Color.parseColor("#888888"))
                     setPadding(0, (4 * dp).toInt(), 0, 0)
                 }
-                container.addView(tvCaveat)
+                itemCard.addView(tvCaveat)
             }
 
             item.interestNote?.let { note ->
-                val tvNote = TextView(requireContext()).apply {
+                val tvNote = TextView(ctx).apply {
                     text = "✓ $note"
-                    textSize = 12f
+                    textSize = 13f
+                    typeface = regularFont
                     setTextColor(primary)
                     setPadding(0, (2 * dp).toInt(), 0, 0)
                 }
-                container.addView(tvNote)
+                itemCard.addView(tvNote)
             }
-
-            if (index < items.lastIndex) {
-                val divider = View(requireContext())
-                divider.setBackgroundColor(Color.parseColor("#F0F0F0"))
-                val dlp = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
-                ).apply {
-                    topMargin = (12 * dp).toInt()
-                    bottomMargin = (12 * dp).toInt()
-                }
-                container.addView(divider, dlp)
-            }
+            container.addView(itemCard)
         }
     }
 
@@ -357,19 +368,31 @@ class ThemeDetailFragment : Fragment() {
         val container = binding.containerCurrentRecommendation
         container.removeAllViews()
         val dp = resources.displayMetrics.density
-        val primary = ContextCompat.getColor(requireContext(), R.color.primary)
-        val font1 = ContextCompat.getColor(requireContext(), R.color.font_color1)
+        val ctx = requireContext()
+        val primary = ContextCompat.getColor(ctx, R.color.primary)
+        val font1 = ContextCompat.getColor(ctx, R.color.font_color1)
+        val boldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_bold)
+        val semiBoldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_semibold)
+        val regularFont = ResourcesCompat.getFont(ctx, R.font.pretendard_regular)
         val badgeSize = (28 * dp).toInt()
 
+        val gap = (8 * dp).toInt()
         items.forEachIndexed { index, item ->
-            val rowLayout = LinearLayout(requireContext()).apply {
+            val itemCard = LinearLayout(ctx).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.TOP
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_keypoint_inner_card)
+                setPadding((18 * dp).toInt(), (16 * dp).toInt(), (18 * dp).toInt(), (16 * dp).toInt())
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = if (index == items.lastIndex) 0 else gap }
             }
 
-            val tvRank = TextView(requireContext()).apply {
+            val tvRank = TextView(ctx).apply {
                 text = "${item.rank}"
                 textSize = 12f
+                typeface = semiBoldFont
                 setTextColor(Color.WHITE)
                 gravity = Gravity.CENTER
                 background = android.graphics.drawable.GradientDrawable().apply {
@@ -379,35 +402,29 @@ class ThemeDetailFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(badgeSize, badgeSize)
             }
 
-            val contentLayout = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.VERTICAL
-            }
-            val tvTitle = TextView(requireContext()).apply {
+            val contentLayout = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
+            val tvTitle = TextView(ctx).apply {
                 text = item.title
-                textSize = 14f
-                setTypeface(typeface, Typeface.BOLD)
+                textSize = 15f
+                typeface = boldFont
                 setTextColor(font1)
             }
-            val tvNote = TextView(requireContext()).apply {
+            val tvNote = TextView(ctx).apply {
                 text = item.note
-                textSize = 13f
+                textSize = 14f
+                typeface = regularFont
                 setTextColor(Color.parseColor("#888888"))
-                setPadding(0, (2 * dp).toInt(), 0, 0)
+                setLineSpacing(4 * dp, 1f)
+                setPadding(0, (4 * dp).toInt(), 0, 0)
             }
             contentLayout.addView(tvTitle)
             contentLayout.addView(tvNote)
 
-            rowLayout.addView(tvRank)
-            val clp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            clp.marginStart = (10 * dp).toInt()
-            rowLayout.addView(contentLayout, clp)
-
-            val rlp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            rlp.bottomMargin = if (index < items.lastIndex) (12 * dp).toInt() else 0
-            container.addView(rowLayout, rlp)
+            itemCard.addView(tvRank)
+            itemCard.addView(contentLayout, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                marginStart = (10 * dp).toInt()
+            })
+            container.addView(itemCard)
         }
     }
 
@@ -426,8 +443,8 @@ class ThemeDetailFragment : Fragment() {
         data.cards.forEachIndexed { index, card ->
             val cardView = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                background = ContextCompat.getDrawable(context, R.drawable.bg_white_radius12)
-                setPadding((16 * dp).toInt(), (14 * dp).toInt(), (16 * dp).toInt(), (14 * dp).toInt())
+                background = ContextCompat.getDrawable(context, R.drawable.bg_keypoint_inner_card)
+                setPadding((18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt())
             }
             renderContestCard(cardView, card, dp, primary, font1)
             val lp = LinearLayout.LayoutParams(
@@ -449,9 +466,15 @@ class ThemeDetailFragment : Fragment() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        val tvDday = TextView(cardView.context).apply {
+        val ctx = cardView.context
+        val boldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_bold)
+        val semiBoldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_semibold)
+        val regularFont = ResourcesCompat.getFont(ctx, R.font.pretendard_regular)
+
+        val tvDday = TextView(ctx).apply {
             text = "D-${card.dday}"
             textSize = 11f
+            typeface = semiBoldFont
             setTextColor(Color.WHITE)
             setPadding((6 * dp).toInt(), (2 * dp).toInt(), (6 * dp).toInt(), (2 * dp).toInt())
             background = android.graphics.drawable.GradientDrawable().apply {
@@ -460,10 +483,10 @@ class ThemeDetailFragment : Fragment() {
                 cornerRadius = 6 * dp
             }
         }
-        val tvTitle = TextView(cardView.context).apply {
+        val tvTitle = TextView(ctx).apply {
             text = card.title
-            textSize = 14f
-            setTypeface(typeface, Typeface.BOLD)
+            textSize = 16f
+            typeface = boldFont
             setTextColor(font1)
             maxLines = 2
             ellipsize = android.text.TextUtils.TruncateAt.END
@@ -476,28 +499,31 @@ class ThemeDetailFragment : Fragment() {
         )
         cardView.addView(headerRow)
 
-        val tvOrganizer = TextView(cardView.context).apply {
+        val tvOrganizer = TextView(ctx).apply {
             text = card.organizer
-            textSize = 12f
+            textSize = 14f
+            typeface = regularFont
             setTextColor(Color.parseColor("#888888"))
-            setPadding(0, (6 * dp).toInt(), 0, 0)
+            setLineSpacing(4 * dp, 1f)
+            setPadding((4 * dp).toInt(), (8 * dp).toInt(), 0, 0)
         }
         cardView.addView(tvOrganizer)
 
         if (card.endDate.isNotBlank()) {
-            val tvEndDate = TextView(cardView.context).apply {
+            val tvEndDate = TextView(ctx).apply {
                 text = "마감: ${card.endDate}"
-                textSize = 12f
-                setTextColor(Color.parseColor("#AAAAAA"))
-                setPadding(0, (2 * dp).toInt(), 0, 0)
+                textSize = 14f
+                typeface = regularFont
+                setTextColor(Color.parseColor("#888888"))
+                setPadding((4 * dp).toInt(), (2 * dp).toInt(), 0, 0)
             }
             cardView.addView(tvEndDate)
         }
 
-        val btnLayout = LinearLayout(cardView.context).apply {
+        val btnLayout = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            background = ContextCompat.getDrawable(cardView.context, R.drawable.bg_btn_primary)
+            background = ContextCompat.getDrawable(ctx, R.drawable.bg_btn_primary)
             isClickable = true
             isFocusable = true
             layoutParams = LinearLayout.LayoutParams(
@@ -508,10 +534,10 @@ class ThemeDetailFragment : Fragment() {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url)))
             }
         }
-        val tvLabel = TextView(cardView.context).apply {
+        val tvLabel = TextView(ctx).apply {
             text = "바로가기"
             textSize = 14f
-            setTypeface(typeface, Typeface.BOLD)
+            typeface = semiBoldFont
             setTextColor(Color.WHITE)
         }
         val ivIcon = ImageView(cardView.context).apply {
@@ -533,61 +559,42 @@ class ThemeDetailFragment : Fragment() {
         val container = binding.containerStudySections
         container.removeAllViews()
         val dp = resources.displayMetrics.density
-        val context = requireContext()
-        val font1 = ContextCompat.getColor(context, R.color.font_color1)
-        val sectionGap = (16 * dp).toInt()
+        val inflater = LayoutInflater.from(requireContext())
+        val tipGap = (8 * dp).toInt()
 
         data.sections.forEachIndexed { sIndex, section ->
-            val tvSectionTitle = TextView(context).apply {
+            val tvSectionTitle = TextView(requireContext()).apply {
                 text = section.title
                 textSize = 18f
-                setTypeface(typeface, Typeface.BOLD)
-                setTextColor(ContextCompat.getColor(context, R.color.black))
-                if (sIndex > 0) setPadding(0, sectionGap, 0, 0)
+                typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = if (sIndex == 0) (18 * dp).toInt() else (24 * dp).toInt() }
             }
             container.addView(tvSectionTitle)
 
-            val card = LinearLayout(context).apply {
+            val outerCard = LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.VERTICAL
-                background = ContextCompat.getDrawable(context, R.drawable.bg_white_radius12)
+                background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_white_radius12)
                 setPadding((18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt())
-                val lp = LinearLayout.LayoutParams(
+                layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply { topMargin = (8 * dp).toInt() }
-                layoutParams = lp
             }
 
             section.tips.forEachIndexed { tIndex, tip ->
-                if (tIndex > 0) {
-                    val divider = View(context).apply {
-                        setBackgroundColor(Color.parseColor("#F0F0F0"))
-                    }
-                    card.addView(divider, LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
-                    ).apply {
-                        topMargin = (12 * dp).toInt()
-                        bottomMargin = (12 * dp).toInt()
-                    })
-                }
-                val tvTipHeader = TextView(context).apply {
-                    text = "${tip.emoji} ${tip.title}"
-                    textSize = 15f
-                    setTypeface(typeface, Typeface.BOLD)
-                    setTextColor(font1)
-                }
-                card.addView(tvTipHeader)
-
-                val tvTipBody = TextView(context).apply {
-                    text = tip.body
-                    textSize = 13f
-                    setTextColor(Color.parseColor("#555555"))
-                    setLineSpacing(2 * dp, 1f)
-                    setPadding(0, (4 * dp).toInt(), 0, 0)
-                }
-                card.addView(tvTipBody)
+                val tipView = inflater.inflate(R.layout.item_keypoint_card, outerCard, false) as LinearLayout
+                tipView.findViewById<TextView>(R.id.tv_kp_title).text = "${tip.emoji} ${tip.title}"
+                tipView.findViewById<TextView>(R.id.tv_kp_body).text = tip.body
+                val lp = tipView.layoutParams as LinearLayout.LayoutParams
+                lp.bottomMargin = if (tIndex == section.tips.lastIndex) 0 else tipGap
+                tipView.layoutParams = lp
+                outerCard.addView(tipView)
             }
-            container.addView(card)
+            container.addView(outerCard)
         }
     }
 
