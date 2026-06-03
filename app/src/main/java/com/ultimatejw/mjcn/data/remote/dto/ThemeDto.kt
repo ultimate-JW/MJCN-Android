@@ -24,7 +24,8 @@ data class ThemeDetailDto(
     val description: String?,
     val order: Int,
     @SerializedName("created_at") val createdAt: String?,
-    val items: List<ThemeItemDto>
+    val items: List<ThemeItemDto>,
+    @SerializedName("quick_questions") val quickQuestions: List<QuickQuestionDto>?
 )
 
 data class ThemeItemDto(

@@ -106,13 +106,6 @@ class ThemeDetailFragment : Fragment() {
                 state.courseRecommend?.let { renderCourseSection(it) }
                 updateQuickQuestions(state.quickQuestions)
             }
-            "career" -> {
-                binding.layoutContentSection.visibility = View.GONE
-                binding.layoutCourseSection.visibility = View.GONE
-                binding.layoutExchangeSection.visibility = View.GONE
-                renderCareerSection(state.assessmentItems, state.contentItems)
-                updateQuickQuestions(state.quickQuestions)
-            }
             "exchange" -> {
                 binding.layoutContentSection.visibility = View.GONE
                 binding.layoutCourseSection.visibility = View.GONE
@@ -138,13 +131,16 @@ class ThemeDetailFragment : Fragment() {
             else -> {
                 binding.layoutCourseSection.visibility = View.GONE
                 binding.layoutExchangeSection.visibility = View.GONE
+                binding.layoutCareerSection.visibility = View.GONE
+                binding.layoutContestSection.visibility = View.GONE
+                binding.layoutAcademicSection.visibility = View.GONE
                 if (state.contentItems.isEmpty()) {
                     binding.layoutContentSection.visibility = View.GONE
                 } else {
                     binding.layoutContentSection.visibility = View.VISIBLE
-                    renderItemCards(binding.containerContent, state.contentItems)
+                    renderGenericItems(binding.containerContent, state.contentItems)
                 }
-                updateLinkButtons(state.linkItems)
+                updateQuickQuestions(state.quickQuestions)
             }
         }
     }
@@ -654,6 +650,45 @@ class ThemeDetailFragment : Fragment() {
             lp.bottomMargin = if (index == items.lastIndex) 0 else gap
             card.layoutParams = lp
             container.addView(card)
+        }
+    }
+
+    private fun renderGenericItems(container: LinearLayout, items: List<ThemeItem>) {
+        container.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        val dp = resources.displayMetrics.density
+        val boldFont = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+        val bg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_keypoint_inner_card)
+        val gap = (8 * dp).toInt()
+
+        items.forEach { item ->
+            if (item.content.isBlank()) {
+                // 빈 content → 섹션 헤더
+                val tv = TextView(requireContext()).apply {
+                    text = item.title
+                    textSize = 15f
+                    typeface = boldFont
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.font_color1))
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        topMargin = if (container.childCount == 0) 0 else (14 * dp).toInt()
+                        bottomMargin = (4 * dp).toInt()
+                    }
+                }
+                container.addView(tv)
+            } else {
+                // content 있음 → keypoint 카드
+                val card = inflater.inflate(R.layout.item_keypoint_card, container, false) as LinearLayout
+                card.background = bg?.constantState?.newDrawable()?.mutate()
+                card.findViewById<TextView>(R.id.tv_kp_title).text = item.title
+                card.findViewById<TextView>(R.id.tv_kp_body).text = item.content
+                val lp = card.layoutParams as LinearLayout.LayoutParams
+                lp.bottomMargin = gap
+                card.layoutParams = lp
+                container.addView(card)
+            }
         }
     }
 

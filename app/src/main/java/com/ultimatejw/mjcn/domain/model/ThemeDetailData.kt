@@ -5,5 +5,6 @@ data class ThemeDetailData(
     val title: String,
     val category: String,
     val description: String,
-    val items: List<ThemeItem>
+    val items: List<ThemeItem>,
+    val quickQuestions: List<QuickQuestion>
 )

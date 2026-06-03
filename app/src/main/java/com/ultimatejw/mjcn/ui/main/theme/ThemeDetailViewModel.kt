@@ -49,7 +49,6 @@ class ThemeDetailViewModel @Inject constructor(
             _uiState.value = ThemeDetailUiState(isLoading = true)
             when (category) {
                 "course_registration" -> loadCourseRegistration(themeTitle)
-                "career" -> loadCareer(themeTitle)
                 "exchange" -> loadExchange(themeTitle)
                 "contest", "grant" -> loadContest(themeTitle)
                 "academic" -> loadAcademic(themeTitle)
@@ -170,22 +169,16 @@ class ThemeDetailViewModel @Inject constructor(
     private suspend fun loadGeneric(themeId: Int) {
         themeRepository.fetchThemeDetail(themeId)
             .onSuccess { detail ->
-                val guideItems = detail.items.filter { it.itemType == "guide" }
-                val checklistItems = detail.items.filter { it.itemType == "checklist" }
+                val contentItems = detail.items.filter { it.itemType == "guide" || it.itemType == "checklist" }
                 val linkItems = detail.items.filter { it.itemType == "link" }
-
-                val adviceText = guideItems.firstOrNull()?.let { first ->
-                    if (first.title.isNotBlank()) "${first.title}\n\n${first.content}"
-                    else first.content
-                } ?: detail.description
-
                 _uiState.value = ThemeDetailUiState(
                     isLoading = false,
                     category = detail.category,
                     title = detail.title,
-                    adviceText = adviceText,
-                    contentItems = guideItems.drop(1) + checklistItems,
-                    linkItems = linkItems
+                    adviceText = detail.description,
+                    contentItems = contentItems,
+                    linkItems = linkItems,
+                    quickQuestions = detail.quickQuestions
                 )
             }
             .onFailure { e ->

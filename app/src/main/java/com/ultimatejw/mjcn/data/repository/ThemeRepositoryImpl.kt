@@ -49,7 +49,8 @@ class ThemeRepositoryImpl @Inject constructor(
                     externalUrl = dto.externalUrl?.takeIf { it.isNotBlank() },
                     itemType = dto.itemType
                 )
-            }
+            },
+            quickQuestions = (body.quickQuestions ?: emptyList()).map { QuickQuestion(it.label, it.prompt) }
         )
     }
 
