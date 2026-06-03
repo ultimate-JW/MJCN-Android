@@ -60,7 +60,7 @@ class ProfileEditBasicFragment : Fragment() {
 
     private fun setupPickers() {
         val grades = listOf("1학년", "2학년", "3학년", "4학년", "5학년")
-        val semesters = listOf("1학기", "여름학기", "2학기", "겨울학기")
+        val semesters = listOf("1학기", "2학기")
         val entranceYears = (2026 downTo 2021).map { "$it" }
         val graduationTerms = listOf(
             "선택 안 함", "2026년 2월", "2026년 8월",
@@ -186,9 +186,7 @@ class ProfileEditBasicFragment : Fragment() {
         profile.semester?.let { semester ->
             val text = when (semester) {
                 1 -> "1학기"
-                2 -> "여름학기"
-                3 -> "2학기"
-                4 -> "겨울학기"
+                2 -> "2학기"
                 else -> null
             }
             if (text != null) {
@@ -255,9 +253,7 @@ class ProfileEditBasicFragment : Fragment() {
         } else 0
         val semesterIndex = when (selectedSemester) {
             "1학기" -> 1
-            "여름학기" -> 2
-            "2학기" -> 3
-            "겨울학기" -> 4
+            "2학기" -> 2
             else -> 0
         }
         val entranceYear = selectedEntranceYear?.toIntOrNull() ?: 0
