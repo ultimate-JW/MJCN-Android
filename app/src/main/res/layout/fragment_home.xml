@@ -74,46 +74,52 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/card_ai_guide"
                 android:layout_width="match_parent"
-                android:layout_height="133dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_point_color1_radius18">
 
                 <TextView
                     android:id="@+id/tv_ai_guide"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
                     android:gravity="top"
                     android:text="AI 가이드 · 지금 해야 할 일"
                     android:textColor="@color/white"
                     android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_guide_content"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
                     android:gravity="top"
                     android:text="수강신청 정정기간이 3일 남았어요."
                     android:textColor="@color/white"
                     android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_ai_guide" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="39dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginBottom="16dp"
                     android:orientation="horizontal"
                     android:paddingHorizontal="11dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_guide_content">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_check_notice"

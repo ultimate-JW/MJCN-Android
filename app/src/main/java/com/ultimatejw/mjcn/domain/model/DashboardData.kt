@@ -2,6 +2,7 @@ package com.ultimatejw.mjcn.domain.model
 
 data class DashboardData(
     val userName: String,
+    val greetingMessage: String,
     val todayClasses: List<TodayClass>,
     val notices: List<Notice>,
     val infoList: List<Info>,

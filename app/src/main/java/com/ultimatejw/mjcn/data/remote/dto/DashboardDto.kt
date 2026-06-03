@@ -12,6 +12,7 @@ data class DashboardDto(
 )
 
 data class GreetingDto(
+    val message: String?,
     @SerializedName("user_name") val userName: String,
     val weekday: String,
     @SerializedName("today_class_count") val todayClassCount: Int

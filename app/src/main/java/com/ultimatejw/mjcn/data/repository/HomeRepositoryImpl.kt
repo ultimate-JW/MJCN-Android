@@ -44,6 +44,7 @@ class HomeRepositoryImpl @Inject constructor(
                 ApiResult.Success(
                     DashboardData(
                         userName = dto.greeting?.userName ?: "",
+                        greetingMessage = dto.greeting?.message ?: "",
                         todayClasses = dto.todaySchedule?.map { it.toDomain() } ?: emptyList(),
                         notices = dto.notices?.map { it.toDomain() } ?: emptyList(),
                         infoList = dto.information?.map { it.toDomain() } ?: emptyList(),

@@ -28,6 +28,7 @@ import javax.inject.Inject
 data class HomeUiState(
     val currentUser: User? = null,
     val dashboardUserName: String = "",
+    val greetingMessage: String = "",
     val todayClasses: List<TodayClass> = emptyList(),
     val infoList: List<Info> = emptyList(),
     val noticeList: List<Notice> = emptyList(),
@@ -116,6 +117,7 @@ class HomeViewModel @Inject constructor(
                     rawInfoList = data.infoList
                     _uiState.value = _uiState.value!!.copy(
                         dashboardUserName = data.userName,
+                        greetingMessage = data.greetingMessage,
                         todayClasses = data.todayClasses,
                         noticeList = rawNoticeList.map { it.copy(isBookmarked = it.id in noticeBookmarkedIds) },
                         infoList = rawInfoList.map { it.copy(isBookmarked = it.id in infoBookmarkedIds) },

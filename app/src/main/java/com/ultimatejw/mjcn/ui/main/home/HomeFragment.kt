@@ -268,6 +268,10 @@ class HomeFragment : Fragment() {
                 "${user.major} ${user.grade}학년 · ${year}학년도 ${user.semester}학기"
             } else ""
 
+            if (state.greetingMessage.isNotBlank()) {
+                binding.tvGuideContent.text = state.greetingMessage
+            }
+
             todayClassAdapter.submitList(state.todayClasses)
             val todayEmpty = state.todayClasses.isEmpty()
             binding.tvTodayClassEmpty.visibility = if (todayEmpty) View.VISIBLE else View.GONE
