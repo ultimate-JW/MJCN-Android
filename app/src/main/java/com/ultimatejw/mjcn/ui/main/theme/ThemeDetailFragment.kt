@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentThemeDetailBinding
@@ -39,8 +40,14 @@ class ThemeDetailFragment : Fragment() {
 
     private val navigateToChat: (String) -> Unit = { message ->
         val nav = findNavController()
-        nav.popBackStack(R.id.themeDetailFragment, true)
-        nav.navigate(R.id.chatFragment)
+        nav.navigate(
+            R.id.chatFragment,
+            null,
+            NavOptions.Builder()
+                .setPopUpTo(R.id.homeFragment, false)
+                .setLaunchSingleTop(true)
+                .build()
+        )
         nav.navigate(
             R.id.action_chat_to_detail,
             bundleOf("sessionId" to "", "initialMessage" to message)
