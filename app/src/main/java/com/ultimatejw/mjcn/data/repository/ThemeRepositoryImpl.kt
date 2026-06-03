@@ -4,6 +4,8 @@ import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.data.remote.MjcnApiService
 import com.ultimatejw.mjcn.data.remote.dto.RecommendScheduleDto
 import com.ultimatejw.mjcn.data.remote.dto.ThemeListItemDto
+import com.ultimatejw.mjcn.domain.model.ContestCard
+import com.ultimatejw.mjcn.domain.model.ContestGuide
 import com.ultimatejw.mjcn.domain.model.CourseRecommendSections
 import com.ultimatejw.mjcn.domain.model.ExchangeEvaluationItem
 import com.ultimatejw.mjcn.domain.model.ExchangeGuide
@@ -12,6 +14,9 @@ import com.ultimatejw.mjcn.domain.model.ExchangeRecommendItem
 import com.ultimatejw.mjcn.domain.model.QuickQuestion
 import com.ultimatejw.mjcn.domain.model.RecommendCourse
 import com.ultimatejw.mjcn.domain.model.RecommendOffering
+import com.ultimatejw.mjcn.domain.model.StudyTip
+import com.ultimatejw.mjcn.domain.model.StudyTipSection
+import com.ultimatejw.mjcn.domain.model.StudyTips
 import com.ultimatejw.mjcn.domain.model.Theme
 import com.ultimatejw.mjcn.domain.model.ThemeDetailData
 import com.ultimatejw.mjcn.domain.model.ThemeItem
@@ -119,6 +124,52 @@ class ThemeRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun fetchContestGuide(): Result<ContestGuide> = runCatching {
+        val response = apiService.getContestGuide()
+        val body = response.body() ?: error("공모전 가이드 응답이 비어있습니다 (${response.code()})")
+        val cardById = (body.cards ?: emptyList()).associateBy { it.id }
+        val sortedCards = (body.priority ?: emptyList())
+            .sortedBy { it.rank }
+            .mapNotNull { cardById[it.cardId] }
+            .ifEmpty { body.cards ?: emptyList() }
+        ContestGuide(
+            adviceLine1 = body.advice?.line1.orEmpty(),
+            adviceLine2 = body.advice?.line2.orEmpty(),
+            cards = sortedCards.map {
+                ContestCard(
+                    id = it.id,
+                    title = it.title,
+                    organizer = it.organizer.orEmpty(),
+                    endDate = it.endDate.orEmpty(),
+                    dday = it.dday ?: 0,
+                    url = it.url
+                )
+            },
+            quickQuestions = (body.quickQuestions ?: emptyList()).map { QuickQuestion(it.label, it.prompt) }
+        )
+    }
+
+    override suspend fun fetchStudyTips(): Result<StudyTips> = runCatching {
+        val response = apiService.getStudyTips()
+        val body = response.body() ?: error("학업 꿀팁 응답이 비어있습니다 (${response.code()})")
+        StudyTips(
+            advice = body.advice.orEmpty(),
+            sections = (body.sections ?: emptyList()).map { sec ->
+                StudyTipSection(
+                    title = sec.title,
+                    tips = sec.tips.map { tip ->
+                        StudyTip(
+                            emoji = tip.emoji.orEmpty(),
+                            title = tip.title,
+                            body = tip.body
+                        )
+                    }
+                )
+            },
+            quickQuestions = (body.quickQuestions ?: emptyList()).map { QuickQuestion(it.label, it.prompt) }
+        )
+    }
+
     private fun List<RecommendScheduleDto>.toScheduleText(): String =
         joinToString(" · ") { "${it.dayOfWeek}(${it.startTime.take(5)}~${it.endTime.take(5)})" }
 
@@ -126,6 +177,7 @@ class ThemeRepositoryImpl @Inject constructor(
         "course_registration" -> R.drawable.ic_hat to "#E1F5EE"
         "career"              -> R.drawable.ic_bag to "#E6F1FB"
         "exchange"            -> R.drawable.ic_plane to "#EAF3DE"
+        "contest"             -> R.drawable.ic_donate to "#FAEEDA"
         "grant"               -> R.drawable.ic_donate to "#FAEEDA"
         "academic"            -> R.drawable.ic_heart to "#FBEAF0"
         else                  -> R.drawable.ic_theme to "#F0F0F0"

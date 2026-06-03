@@ -321,6 +321,49 @@
 
                 </LinearLayout>
 
+                <!-- 공모전 가이드 섹션 -->
+                <LinearLayout
+                    android:id="@+id/layout_contest_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/pretendard_bold"
+                        android:text="추천 공모전"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/container_contest_cards"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+
+                </LinearLayout>
+
+                <!-- 학업 스트레스 & 시간관리 섹션 -->
+                <LinearLayout
+                    android:id="@+id/layout_academic_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/container_study_sections"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:orientation="vertical" />
+
+                </LinearLayout>
+
                 <!-- 주요 내용 (guide + checklist 아이템, API에 없으면 숨김) -->
                 <LinearLayout
                     android:id="@+id/layout_content_section"

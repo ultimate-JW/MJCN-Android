@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ultimatejw.mjcn.domain.model.ContestGuide
 import com.ultimatejw.mjcn.domain.model.CourseRecommendSections
 import com.ultimatejw.mjcn.domain.model.ExchangeGuide
 import com.ultimatejw.mjcn.domain.model.QuickQuestion
+import com.ultimatejw.mjcn.domain.model.StudyTips
 import com.ultimatejw.mjcn.domain.model.ThemeItem
 import com.ultimatejw.mjcn.domain.repository.ThemeRepository
 import com.ultimatejw.mjcn.ui.common.CurrentUser
@@ -25,6 +27,8 @@ data class ThemeDetailUiState(
     val quickQuestions: List<QuickQuestion> = emptyList(),
     val courseRecommend: CourseRecommendSections? = null,
     val exchangeGuide: ExchangeGuide? = null,
+    val contestGuide: ContestGuide? = null,
+    val studyTips: StudyTips? = null,
     val error: String? = null
 )
 
@@ -47,6 +51,8 @@ class ThemeDetailViewModel @Inject constructor(
                 "course_registration" -> loadCourseRegistration(themeTitle)
                 "career" -> loadCareer(themeTitle)
                 "exchange" -> loadExchange(themeTitle)
+                "contest" -> loadContest(themeTitle)
+                "academic" -> loadAcademic(themeTitle)
                 else -> {
                     if (themeId <= 0) {
                         _uiState.value = ThemeDetailUiState(isLoading = false, error = "유효하지 않은 테마입니다")
@@ -119,6 +125,41 @@ class ThemeDetailViewModel @Inject constructor(
                     adviceText = data.adviceText,
                     quickQuestions = data.quickQuestions,
                     exchangeGuide = data
+                )
+            }
+            .onFailure { e ->
+                _uiState.value = ThemeDetailUiState(isLoading = false, error = e.message)
+            }
+    }
+
+    private suspend fun loadContest(themeTitle: String) {
+        themeRepository.fetchContestGuide()
+            .onSuccess { data ->
+                _uiState.value = ThemeDetailUiState(
+                    isLoading = false,
+                    category = "contest",
+                    title = themeTitle.ifBlank { "공모전 알아보고 신청하기" },
+                    adviceText = listOf(data.adviceLine1, data.adviceLine2)
+                        .filter { it.isNotBlank() }.joinToString("\n"),
+                    quickQuestions = data.quickQuestions,
+                    contestGuide = data
+                )
+            }
+            .onFailure { e ->
+                _uiState.value = ThemeDetailUiState(isLoading = false, error = e.message)
+            }
+    }
+
+    private suspend fun loadAcademic(themeTitle: String) {
+        themeRepository.fetchStudyTips()
+            .onSuccess { data ->
+                _uiState.value = ThemeDetailUiState(
+                    isLoading = false,
+                    category = "academic",
+                    title = themeTitle.ifBlank { "학업 스트레스 & 시간관리 꿀팁" },
+                    adviceText = data.advice,
+                    quickQuestions = data.quickQuestions,
+                    studyTips = data
                 )
             }
             .onFailure { e ->

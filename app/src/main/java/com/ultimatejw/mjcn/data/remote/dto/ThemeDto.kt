@@ -81,6 +81,54 @@ data class QuickQuestionDto(
     val prompt: String
 )
 
+// === 공모전 가이드 ===
+data class ContestGuideDto(
+    val state: String?,
+    val advice: ContestAdviceDto?,
+    val cards: List<ContestCardDto>?,
+    val priority: List<ContestPriorityDto>?,
+    @SerializedName("quick_questions") val quickQuestions: List<QuickQuestionDto>?,
+    val note: String?
+)
+
+data class ContestAdviceDto(
+    val line1: String?,
+    val line2: String?
+)
+
+data class ContestCardDto(
+    val id: Int,
+    val title: String,
+    val organizer: String?,
+    val categories: List<String>?,
+    @SerializedName("end_date") val endDate: String?,
+    val dday: Int?,
+    val url: String
+)
+
+data class ContestPriorityDto(
+    val rank: Int,
+    @SerializedName("card_id") val cardId: Int
+)
+
+// === 학업 스트레스 & 시간관리 꿀팁 ===
+data class StudyTipsDto(
+    val advice: String?,
+    val sections: List<StudyTipSectionDto>?,
+    @SerializedName("quick_questions") val quickQuestions: List<QuickQuestionDto>?
+)
+
+data class StudyTipSectionDto(
+    val title: String,
+    val tips: List<StudyTipDto>
+)
+
+data class StudyTipDto(
+    val emoji: String?,
+    val title: String,
+    val body: String
+)
+
 // === 교환학생·해외 인턴십 가이드 ===
 data class ExchangeGuideDto(
     val advice: ExchangeAdviceDto,

@@ -20,6 +20,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.ultimatejw.mjcn.R
 import com.ultimatejw.mjcn.databinding.FragmentThemeDetailBinding
+import com.ultimatejw.mjcn.domain.model.ContestCard
+import com.ultimatejw.mjcn.domain.model.ContestGuide
 import com.ultimatejw.mjcn.domain.model.CourseRecommendSections
 import com.ultimatejw.mjcn.domain.model.ExchangeGuide
 import com.ultimatejw.mjcn.domain.model.ExchangeNecessityItem
@@ -27,6 +29,7 @@ import com.ultimatejw.mjcn.domain.model.ExchangeEvaluationItem
 import com.ultimatejw.mjcn.domain.model.ExchangeRecommendItem
 import com.ultimatejw.mjcn.domain.model.QuickQuestion
 import com.ultimatejw.mjcn.domain.model.RecommendCourse
+import com.ultimatejw.mjcn.domain.model.StudyTips
 import com.ultimatejw.mjcn.domain.model.ThemeItem
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -113,6 +116,22 @@ class ThemeDetailFragment : Fragment() {
                 binding.layoutContentSection.visibility = View.GONE
                 binding.layoutCourseSection.visibility = View.GONE
                 state.exchangeGuide?.let { renderExchangeSection(it) }
+                updateQuickQuestions(state.quickQuestions)
+            }
+            "contest" -> {
+                binding.layoutContentSection.visibility = View.GONE
+                binding.layoutCourseSection.visibility = View.GONE
+                binding.layoutExchangeSection.visibility = View.GONE
+                binding.layoutAcademicSection.visibility = View.GONE
+                state.contestGuide?.let { renderContestSection(it) }
+                updateQuickQuestions(state.quickQuestions)
+            }
+            "academic" -> {
+                binding.layoutContentSection.visibility = View.GONE
+                binding.layoutCourseSection.visibility = View.GONE
+                binding.layoutExchangeSection.visibility = View.GONE
+                binding.layoutContestSection.visibility = View.GONE
+                state.studyTips?.let { renderAcademicSection(it) }
                 updateQuickQuestions(state.quickQuestions)
             }
             else -> {
@@ -389,6 +408,160 @@ class ThemeDetailFragment : Fragment() {
             )
             rlp.bottomMargin = if (index < items.lastIndex) (12 * dp).toInt() else 0
             container.addView(rowLayout, rlp)
+        }
+    }
+
+    // ── 공모전 섹션 ───────────────────────────────────────────────────
+
+    private fun renderContestSection(data: ContestGuide) {
+        binding.layoutContestSection.visibility = View.VISIBLE
+        val container = binding.containerContestCards
+        container.removeAllViews()
+        val dp = resources.displayMetrics.density
+        val context = requireContext()
+        val primary = ContextCompat.getColor(context, R.color.primary)
+        val font1 = ContextCompat.getColor(context, R.color.font_color1)
+        val gap = (8 * dp).toInt()
+
+        data.cards.forEachIndexed { index, card ->
+            val cardView = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ContextCompat.getDrawable(context, R.drawable.bg_white_radius12)
+                setPadding((16 * dp).toInt(), (14 * dp).toInt(), (16 * dp).toInt(), (14 * dp).toInt())
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url)))
+                }
+            }
+            renderContestCard(cardView, card, dp, primary, font1)
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = if (index == data.cards.lastIndex) 0 else gap }
+            container.addView(cardView, lp)
+        }
+    }
+
+    private fun renderContestCard(
+        cardView: LinearLayout,
+        card: ContestCard,
+        dp: Float,
+        primary: Int,
+        font1: Int
+    ) {
+        val headerRow = LinearLayout(cardView.context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val tvDday = TextView(cardView.context).apply {
+            text = "D-${card.dday}"
+            textSize = 11f
+            setTextColor(Color.WHITE)
+            setPadding((6 * dp).toInt(), (2 * dp).toInt(), (6 * dp).toInt(), (2 * dp).toInt())
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                setColor(primary)
+                cornerRadius = 6 * dp
+            }
+        }
+        val tvTitle = TextView(cardView.context).apply {
+            text = card.title
+            textSize = 14f
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(font1)
+            maxLines = 2
+            ellipsize = android.text.TextUtils.TruncateAt.END
+            setPadding((8 * dp).toInt(), 0, 0, 0)
+        }
+        headerRow.addView(tvDday)
+        headerRow.addView(
+            tvTitle,
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        )
+        cardView.addView(headerRow)
+
+        val tvOrganizer = TextView(cardView.context).apply {
+            text = card.organizer
+            textSize = 12f
+            setTextColor(Color.parseColor("#888888"))
+            setPadding(0, (6 * dp).toInt(), 0, 0)
+        }
+        cardView.addView(tvOrganizer)
+
+        if (card.endDate.isNotBlank()) {
+            val tvEndDate = TextView(cardView.context).apply {
+                text = "마감: ${card.endDate}"
+                textSize = 12f
+                setTextColor(Color.parseColor("#AAAAAA"))
+                setPadding(0, (2 * dp).toInt(), 0, 0)
+            }
+            cardView.addView(tvEndDate)
+        }
+    }
+
+    // ── 학업 스트레스 & 시간관리 섹션 ─────────────────────────────────
+
+    private fun renderAcademicSection(data: StudyTips) {
+        binding.layoutAcademicSection.visibility = View.VISIBLE
+        val container = binding.containerStudySections
+        container.removeAllViews()
+        val dp = resources.displayMetrics.density
+        val context = requireContext()
+        val font1 = ContextCompat.getColor(context, R.color.font_color1)
+        val sectionGap = (16 * dp).toInt()
+
+        data.sections.forEachIndexed { sIndex, section ->
+            val tvSectionTitle = TextView(context).apply {
+                text = section.title
+                textSize = 18f
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(ContextCompat.getColor(context, R.color.black))
+                if (sIndex > 0) setPadding(0, sectionGap, 0, 0)
+            }
+            container.addView(tvSectionTitle)
+
+            val card = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ContextCompat.getDrawable(context, R.drawable.bg_white_radius12)
+                setPadding((18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt(), (18 * dp).toInt())
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = (8 * dp).toInt() }
+                layoutParams = lp
+            }
+
+            section.tips.forEachIndexed { tIndex, tip ->
+                if (tIndex > 0) {
+                    val divider = View(context).apply {
+                        setBackgroundColor(Color.parseColor("#F0F0F0"))
+                    }
+                    card.addView(divider, LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, (1 * dp).toInt()
+                    ).apply {
+                        topMargin = (12 * dp).toInt()
+                        bottomMargin = (12 * dp).toInt()
+                    })
+                }
+                val tvTipHeader = TextView(context).apply {
+                    text = "${tip.emoji} ${tip.title}"
+                    textSize = 15f
+                    setTypeface(typeface, Typeface.BOLD)
+                    setTextColor(font1)
+                }
+                card.addView(tvTipHeader)
+
+                val tvTipBody = TextView(context).apply {
+                    text = tip.body
+                    textSize = 13f
+                    setTextColor(Color.parseColor("#555555"))
+                    setLineSpacing(2 * dp, 1f)
+                    setPadding(0, (4 * dp).toInt(), 0, 0)
+                }
+                card.addView(tvTipBody)
+            }
+            container.addView(card)
         }
     }
 
