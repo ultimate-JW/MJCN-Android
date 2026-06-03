@@ -51,7 +51,7 @@ class ThemeDetailViewModel @Inject constructor(
                 "course_registration" -> loadCourseRegistration(themeTitle)
                 "career" -> loadCareer(themeTitle)
                 "exchange" -> loadExchange(themeTitle)
-                "contest" -> loadContest(themeTitle)
+                "contest", "grant" -> loadContest(themeTitle)
                 "academic" -> loadAcademic(themeTitle)
                 else -> {
                     if (themeId <= 0) {

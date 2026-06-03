@@ -118,7 +118,7 @@ class ThemeDetailFragment : Fragment() {
                 state.exchangeGuide?.let { renderExchangeSection(it) }
                 updateQuickQuestions(state.quickQuestions)
             }
-            "contest" -> {
+            "contest", "grant" -> {
                 binding.layoutContentSection.visibility = View.GONE
                 binding.layoutCourseSection.visibility = View.GONE
                 binding.layoutExchangeSection.visibility = View.GONE
@@ -428,11 +428,6 @@ class ThemeDetailFragment : Fragment() {
                 orientation = LinearLayout.VERTICAL
                 background = ContextCompat.getDrawable(context, R.drawable.bg_white_radius12)
                 setPadding((16 * dp).toInt(), (14 * dp).toInt(), (16 * dp).toInt(), (14 * dp).toInt())
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url)))
-                }
             }
             renderContestCard(cardView, card, dp, primary, font1)
             val lp = LinearLayout.LayoutParams(
@@ -498,6 +493,37 @@ class ThemeDetailFragment : Fragment() {
             }
             cardView.addView(tvEndDate)
         }
+
+        val btnLayout = LinearLayout(cardView.context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            background = ContextCompat.getDrawable(cardView.context, R.drawable.bg_btn_primary)
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                (46 * dp).toInt()
+            ).apply { topMargin = (10 * dp).toInt() }
+            setOnClickListener {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url)))
+            }
+        }
+        val tvLabel = TextView(cardView.context).apply {
+            text = "바로가기"
+            textSize = 14f
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.WHITE)
+        }
+        val ivIcon = ImageView(cardView.context).apply {
+            setImageDrawable(ContextCompat.getDrawable(cardView.context, R.drawable.ic_external_link))
+            val size = (14 * dp).toInt()
+            layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                marginStart = (4 * dp).toInt()
+            }
+        }
+        btnLayout.addView(tvLabel)
+        btnLayout.addView(ivIcon)
+        cardView.addView(btnLayout)
     }
 
     // ── 학업 스트레스 & 시간관리 섹션 ─────────────────────────────────
