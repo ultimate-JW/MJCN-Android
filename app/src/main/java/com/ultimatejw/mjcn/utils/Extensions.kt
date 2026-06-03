@@ -37,12 +37,18 @@ fun String.toRelativeTime(): String {
         sdf.timeZone = TimeZone.getTimeZone("UTC")
         val date = sdf.parse(normalized) ?: return this
         val diff = System.currentTimeMillis() - date.time
+        val days = diff / 86_400_000L
+        val weeks = days / 7
+        val months = days / 30
+        val years = days / 365
         when {
-            diff < 60_000L -> "방금 전"
-            diff < 3_600_000L -> "${diff / 60_000}분 전"
-            diff < 86_400_000L -> "${diff / 3_600_000}시간 전"
-            diff < 2 * 86_400_000L -> "어제"
-            else -> "${diff / 86_400_000}일 전"
+            diff < 60_000L          -> "방금 전"
+            diff < 3_600_000L       -> "${diff / 60_000}분 전"
+            diff < 86_400_000L      -> "${diff / 3_600_000}시간 전"
+            days < 7                -> "${days}일 전"
+            weeks < 5               -> "${weeks}주 전"
+            months < 12             -> "${months}개월 전"
+            else                    -> "${years}년 전"
         }
     } catch (e: Exception) {
         this
