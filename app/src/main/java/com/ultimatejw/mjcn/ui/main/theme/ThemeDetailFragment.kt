@@ -164,37 +164,9 @@ class ThemeDetailFragment : Fragment() {
             cardView.findViewById<TextView>(R.id.tv_course_meta).text =
                 "${course.category} · ${course.credits}학점"
 
-            val previewText = course.offerings.firstOrNull()
-                ?.let { "${it.professor} · ${it.scheduleText}" } ?: ""
-            val tvPreview = cardView.findViewById<TextView>(R.id.tv_course_preview)
-            tvPreview.text = previewText
-
-            val expandChip = cardView.findViewById<TextView>(R.id.tv_expand_chip)
-            expandChip.text = "${course.offerings.size}분반 ∨"
-
-            val offeringsContainer =
-                cardView.findViewById<LinearLayout>(R.id.container_offerings)
-
-            course.offerings.forEach { offering ->
-                val offeringView = LayoutInflater.from(requireContext())
-                    .inflate(R.layout.item_recommend_offering, offeringsContainer, false)
-                offeringView.findViewById<TextView>(R.id.tv_offering_info).text =
-                    "${offering.sectionNo} · ${offering.professor}"
-                offeringView.findViewById<TextView>(R.id.tv_offering_schedule).text =
-                    offering.scheduleText
-                val toggleBtn = offeringView.findViewById<ImageView>(R.id.iv_offering_toggle)
-                offeringView.setOnClickListener {
-                    toggleBtn.isSelected = !toggleBtn.isSelected
-                }
-                offeringsContainer.addView(offeringView)
-            }
-
-            cardView.findViewById<View>(R.id.layout_course_header).setOnClickListener {
-                val expanded = offeringsContainer.visibility == View.VISIBLE
-                offeringsContainer.visibility = if (expanded) View.GONE else View.VISIBLE
-                tvPreview.visibility = if (expanded) View.VISIBLE else View.GONE
-                expandChip.text = if (expanded) "${course.offerings.size}분반 ∨" else "접기 ∧"
-            }
+            cardView.findViewById<View>(R.id.tv_course_preview).visibility = View.GONE
+            cardView.findViewById<View>(R.id.tv_expand_chip).visibility = View.GONE
+            cardView.findViewById<View>(R.id.container_offerings).visibility = View.GONE
 
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
