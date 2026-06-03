@@ -167,23 +167,36 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <!-- 카카오 로그인 -->
-            <androidx.appcompat.widget.AppCompatButton
-                style="@style/Widget.AppCompat.Button.Colored"
+            <LinearLayout
                 android:id="@+id/btn_kakao_login"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_btn_kakao"
-                app:backgroundTint="@null"
-                android:drawableLeft="@drawable/ic_kakao"
-                android:drawablePadding="-80dp"
-                android:paddingLeft="90dp"
-                android:text="@string/kakao_login"
-                android:textColor="@color/btn_kakao_text"
-                android:textSize="15sp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintTop_toBottomOf="@id/btn_login"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_kakao_talk"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/kakao_login"
+                    android:textColor="@color/btn_kakao_text"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/pretendard_semibold" />
+
+            </LinearLayout>
 
             <!-- 회원가입 -->
             <TextView
