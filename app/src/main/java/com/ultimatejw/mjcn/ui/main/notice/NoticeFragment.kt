@@ -96,8 +96,8 @@ class NoticeFragment : Fragment() {
 
     private fun setupCategoryChips() {
         val categories = listOf(
-            "전체", "일반", "학사", "공모전/대외활동",
-            "장학/학자금", "취업", "해외", "지원사업"
+            "전체", "일반", "학사", "학생활동",
+            "장학/학자금", "진로/취업/창업", "해외", "지원사업"
         )
         chipAdapter = NoticeCategoryChipAdapter(categories, 0) { selected ->
             viewModel.selectCategory(selected)

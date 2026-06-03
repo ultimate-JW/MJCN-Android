@@ -84,6 +84,11 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
                 if (!firstBlock) addDivider(ctx, containerContent, density)
                 firstBlock = false
 
+                if (isTableBlock(block)) {
+                    addTable(ctx, containerContent, block, density)
+                    return@forEach
+                }
+
                 block.lines().forEach { rawLine ->
                     val line = rawLine.trimEnd()
                     if (line.isBlank()) {
@@ -333,6 +338,90 @@ class ChatMessageAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(Dif
                 setOnClickListener { onClick() }
             }
             container.addView(tv)
+        }
+
+        private fun isTableBlock(block: String): Boolean {
+            val lines = block.lines().filter { it.isNotBlank() }
+            return lines.size >= 2 && lines.count { it.trimStart().startsWith("|") } >= 2
+        }
+
+        private fun addTable(ctx: android.content.Context, container: LinearLayout, block: String, density: Float) {
+            val lines = block.lines().filter { it.isNotBlank() }
+            val rows = mutableListOf<List<String>>()
+
+            for (line in lines) {
+                val trimmed = line.trim()
+                if (!trimmed.startsWith("|")) continue
+                // 구분선 행 건너뜀 (|---|---|)
+                if (trimmed.replace("|", "").replace("-", "").replace(":", "").replace(" ", "").isEmpty()) continue
+                val cells = trimmed.split("|")
+                    .drop(1)
+                    .let { if (it.lastOrNull()?.isBlank() == true) it.dropLast(1) else it }
+                    .map { it.trim() }
+                if (cells.isNotEmpty()) rows.add(cells)
+            }
+            if (rows.isEmpty()) return
+
+            val colCount = rows.maxOf { it.size }
+            val primary = ContextCompat.getColor(ctx, R.color.primary)
+            val font1 = ContextCompat.getColor(ctx, R.color.font_color1)
+            val boldFont = ResourcesCompat.getFont(ctx, R.font.pretendard_bold)
+            val regularFont = ResourcesCompat.getFont(ctx, R.font.pretendard_regular)
+
+            val tableContainer = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ContextCompat.getDrawable(ctx, R.drawable.bg_white_radius12)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = (8 * density).toInt() }
+            }
+
+            rows.forEachIndexed { rowIndex, cells ->
+                val isHeader = rowIndex == 0
+                val row = LinearLayout(ctx).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    if (isHeader) setBackgroundColor(primary)
+                    else if (rowIndex % 2 == 1) setBackgroundColor(0xFFF5F4FF.toInt())
+                }
+
+                for (i in 0 until colCount) {
+                    val raw = cells.getOrNull(i)?.trim() ?: ""
+                    // 볼드 마크다운 제거 후 (교수명) → 줄바꿈
+                    val cleaned = raw.replace("**", "")
+                    val formatted = cleaned.replace(Regex("\\s*\\(([^)]+)\\)")) { "\n${it.groupValues[1]}" }.trim()
+
+                    val tv = TextView(ctx).apply {
+                        text = formatted.ifEmpty { "-" }
+                        textSize = 11f
+                        typeface = if (isHeader) boldFont else regularFont
+                        setTextColor(if (isHeader) android.graphics.Color.WHITE else font1)
+                        setPadding((6 * density).toInt(), (6 * density).toInt(), (6 * density).toInt(), (6 * density).toInt())
+                        layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    }
+                    row.addView(tv)
+
+                    if (i < colCount - 1) {
+                        val vDivider = android.view.View(ctx).apply {
+                            setBackgroundColor(if (isHeader) 0x40FFFFFF else 0xFFDDDDDD.toInt())
+                            layoutParams = LinearLayout.LayoutParams((1 * density).toInt(), LinearLayout.LayoutParams.MATCH_PARENT)
+                        }
+                        row.addView(vDivider)
+                    }
+                }
+
+                tableContainer.addView(row)
+
+                if (rowIndex < rows.size - 1) {
+                    val hDivider = android.view.View(ctx).apply {
+                        setBackgroundColor(0xFFDDDDDD.toInt())
+                        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (1 * density).toInt())
+                    }
+                    tableContainer.addView(hDivider)
+                }
+            }
+
+            container.addView(tableContainer)
         }
 
         private fun addSpacer(container: LinearLayout, height: Int) {

@@ -159,9 +159,9 @@ class NoticeViewModel @Inject constructor(
         "전체"         -> null
         "일반"         -> "general"
         "학사"         -> "academic"
-        "공모전/대외활동" -> "contest,student_activity"
+        "학생활동"      -> "contest,student_activity"
         "장학/학자금"   -> "scholarship"
-        "취업"         -> "career"
+        "진로/취업/창업" -> "career"
         "해외"         -> "overseas"
         "지원사업"      -> "event"
         else           -> null
